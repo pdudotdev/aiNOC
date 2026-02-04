@@ -40,7 +40,7 @@ The main tools and technologies used for building the project:
 
 # 🎓 Networking Topics
 Below you'll find the network protocols and concepts that are part of this topology:
-- 
+
 
 
 ## 🎯 Planned Upgrades

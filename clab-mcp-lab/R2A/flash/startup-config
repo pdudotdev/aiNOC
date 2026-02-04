@@ -1,4 +1,4 @@
-! Startup-config last modified at Wed Feb  4 08:53:59 2026 by root
+! Startup-config last modified at Wed Feb  4 12:16:53 2026 by root
 ! device: R2A (cEOSLab, EOS-4.35.0F-44178984.4350F (engineering build))
 !
 no aaa root
@@ -69,8 +69,6 @@ interface Management0
 !
 ip routing
 !
-ip route 0.0.0.0/0 172.20.20.1
-!
 ipv6 route ::/0 3fff:172:20:20::1
 !
 router multicast
@@ -84,8 +82,8 @@ router ospf 1
    router-id 2.2.2.2
    auto-cost reference-bandwidth 100000
    passive-interface Loopback1
-   area 0.0.0.0 range 10.0.0.0/24
-   area 0.0.0.1 range 10.1.1.0/24
+   area 0.0.0.1 nssa no-summary
+   area 0.0.0.1 nssa default-information-originate
    network 2.2.2.66/32 area 0.0.0.1
    network 10.0.0.0/30 area 0.0.0.0
    network 10.0.0.8/30 area 0.0.0.0

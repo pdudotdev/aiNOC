@@ -9,7 +9,7 @@
   - [📋 Included Vendors](#-included-vendors)
   - [🎓 Networking Topics](#-networking-topics)
   - [🔄 Network Topology](#-network-topology)
-  - [🔥 Automation and Troubleshooting](#-scenarios)
+  - [🔥 Automation and Troubleshooting](#-automation-and-troubleshooting)
   - [⬆️ Planned Upgrades](#-planned-upgrades)
   - [⚠️ Disclaimer](#-disclaimer)
   - [📜 License](#-license)
@@ -119,41 +119,55 @@ Troubleshooting scenarios are located in the [**troubleshoot.md**](https://githu
 Each **troubleshooting scenario** has the following structure:
 - [x] **Summary**:
 ```
-R3C lost R2A as an OSPF neighbor.
+R1A OSPF adjacency stuck in EXCHANGE, while R2A is stuck in EXCH START state.
 ```
 - [x] **Causing Failure**: 
 ```
-Changing the MTU on R2A to cause a mismatch, using the commands below:
+Changing the MTU on R2A to cause a mismatch with R1A, using the commands below:
 
-interface FastEthernet0/1
+interface Ethernet 3
  mtu 1400
 ```
 - [x] **Confirming Failure**:
 ```
 Checking the effects of the commands above:
 
-show interfaces FastEthernet0/1
-show ip ospf neighbor
+R2A(config-if-Et3)#show interfaces Ethernet 3 | i MTU
+  IP MTU 1400 bytes, BW 1000000 kbit
+R2A(config-if-Et3)#show ip ospf neighbor 
+Neighbor ID     Instance VRF      Pri State                  Dead Time   Address         Interface
+3.3.3.3         1        default  1   FULL                   00:00:35    10.0.0.10       Ethernet4
+1.1.1.1         1        default  0   EXCH START             00:00:34    10.0.0.1        Ethernet3
+7.7.7.7         1        default  0   FULL                   00:00:34    10.1.1.9        Ethernet2
+6.6.6.6         1        default  0   FULL                   00:00:33    10.1.1.13       Ethernet1
+
+R1A#show ip ospf neighbor
+Neighbor ID     Instance VRF      Pri State                  Dead Time   Address         Interface
+2.2.2.2         1        default  0   EXCHANGE               00:00:32    10.0.0.2        Ethernet4
+3.3.3.3         1        default  1   FULL                   00:00:38    10.0.0.6        Ethernet3
+11.11.11.11     1        default  1   FULL                   00:00:32    172.16.0.10     Ethernet2
+10.10.10.10     1        default  1   FULL                   00:00:30    172.16.0.6      Ethernet1
 ```
 - [x] **User Prompt**:
 ```
-Why is the R2A-R3C OSPF neighborship broken? Can you check and fix please?
+Why is the R1A-R2A OSPF adjacency stuck? Can you check and fix please?
 ```
 - [x] **Commands issued by Claude**:
 ```
 show ip ospf neighbor
-show interfaces FastEthernet0/1
-show ip ospf interface FastEthernet0/1
-interface FastEthernet0/1
-mtu 1500
+show ip ospf interface Ethernet 3
+show running-config interface Ethernet 3
+interface Ethernet 3
+no mtu 1400
 ```
-- [x] **Confirmation provided by Claude**:
+- [x] **Confirmation**:
 ```
-Problem found!
-Cause: The MTU on R2A's FastEthernet0/1 doesn't match R3C's.
-<...>
-Fix: Setting MTU to 1500 on R2A's FastEthernet0/1.
-OSPF adjacency is now fully operational.
+R2A#show ip ospf neighbor
+Neighbor ID     Instance VRF      Pri State                  Dead Time   Address         Interface
+3.3.3.3         1        default  1   FULL                   00:00:34    10.0.0.10       Ethernet4
+1.1.1.1         1        default  0   FULL                   00:00:38    10.0.0.1        Ethernet3
+7.7.7.7         1        default  0   FULL                   00:00:29    10.1.1.9        Ethernet2
+6.6.6.6         1        default  0   FULL                   00:00:33    10.1.1.13       Ethernet1 
 ```
 
 📂 **NOTE**: All automation (non-troubleshooting) scenarios related to **network information gathering**, **pushing changes to multiple network devices**, **network state validation** etc. are going to be added in an upcoming release. The priority now is **troubleshooting**.

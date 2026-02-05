@@ -19,9 +19,14 @@ The purpose of this project is to showcase the capabilities of **Claude AI** and
 
 By design, the project is **multi-vendor**, **multi-protocol**, **multi-area/multi-AS**, **OSI L3-focused**, in order to automate and troubleshoot various scenarios in a diverse and complex network.
 
-I am **NOT** going to explain here how to build the topology | write the MCP server in Python | enhance the MCP server with new tools. I already did that from scratch in my beginner-friendly [**Udemy course**](https://www.udemy.com/course/mcp-server/?referralCode=D62613A8194D2D915B55). Feel free to join to get instructor support, regular updates, access to Discord etc.
+I am **NOT** going to explain here how to: build the topology • write the MCP server in Python • enhance the MCP server with new tools. I already did that from scratch in my beginner-friendly [**Udemy course**](https://www.udemy.com/course/mcp-server/?referralCode=D62613A8194D2D915B55). Feel free to join for instructor support, regular updates, access to Discord etc.
 
-However, I am providing the **topology diagram**, the **startup config** of each router, as well as the actual **Containerlab YAML file** defining the network.
+However, I do provide:
+- [x] The **topology diagram** PNG
+- [x] The **startup config** of each router
+- [x] The **Containerlab YAML file** defining the network
+- [x] The **NETWORK.json** inventory file
+- [x] The **MCPServer.py** code
 
 ⚠️ **NOTE**: This project assumes at least **CCNA**-level knowledge (**CCNP** preferred), as well as familiarity with **Linux** terminal commands, **Python** syntax, and multi-vendor **CLIs**.
 

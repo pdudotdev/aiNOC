@@ -3,18 +3,18 @@
 [![Last Commit](https://img.shields.io/github/last-commit/pdudotdev/netaimcp)](https://github.com/pdudotdev/netaimcp/commits/main/)
 
 ## 📖 Table of Contents
-- 🔥 **Troubleshooting Networks with Claude and MCP**
-  - [🔍 Overview](#-overview)
-  - [⚒️ Tech Stack]()
-  - [📋 Included Vendors]()
-  - [🎓 Networking Topics]()
-  - [🔄 Network Topology]()
-  - [🧪 Automation and Troubleshooting Tests]()
+- ⚙️ **Troubleshooting Networks with Claude and MCP**
+  - [🔭 Overview](#-overview)
+  - [⚒️ Tech Stack](#-tech-stack)
+  - [📋 Included Vendors](#-included-vendors)
+  - [🎓 Networking Topics](#-networking-topics)
+  - [🔄 Network Topology](#-network-topology)
+  - [🔥 Scenarios](#-scenarios)
   - [⬆️ Planned Upgrades](#-planned-upgrades)
   - [⚠️ Disclaimer](#-disclaimer)
   - [📜 License](#-license)
 
-## 🔍 Overview
+## 🔭 Overview
 The purpose of this project is to showcase the capabilities of **Claude AI** and **MCP**, combined with **Python** and **Scrapli**, in regards to network automation and troubleshooting.
 
 By design, the project is **multi-vendor**, **multi-protocol**, **multi-area/multi-AS**, **OSI L3-focused**, in order to automate and troubleshoot various scenarios in a diverse and complex network.
@@ -86,19 +86,23 @@ Network concepts currently in this topology:
     - **Y**: vendor (A-Arista, C-Cisco, etc.)
 
 - [x] Router configuration files:
-  - R1A: [startupconfig](https://github.com/pdudotdev/netaimcp/blob/main/clab-mcp-lab/R1A/flash/)
-  - R2A: [startupconfig](https://github.com/pdudotdev/netaimcp/blob/main/clab-mcp-lab/R2A/flash/)
+  - R1A: [startup-config](https://github.com/pdudotdev/netaimcp/blob/main/clab-mcp-lab/R1A/flash/)
+  - R2A: [startup-config](https://github.com/pdudotdev/netaimcp/blob/main/clab-mcp-lab/R2A/flash/)
   - R3C: [nvram_id](https://github.com/pdudotdev/netaimcp/blob/main/clab-mcp-lab/R3C)
   - R4C: [nvram_id](https://github.com/pdudotdev/netaimcp/tree/main/clab-mcp-lab/R4C)
   - R5C: [nvram_id](https://github.com/pdudotdev/netaimcp/tree/main/clab-mcp-lab/R5C)
-  - R6A: [startupconfig](https://github.com/pdudotdev/netaimcp/blob/main/clab-mcp-lab/R6A/flash/)
-  - R7A: [startupconfig](https://github.com/pdudotdev/netaimcp/blob/main/clab-mcp-lab/R7A/flash/)
+  - R6A: [startup-config](https://github.com/pdudotdev/netaimcp/blob/main/clab-mcp-lab/R6A/flash/)
+  - R7A: [startup-config](https://github.com/pdudotdev/netaimcp/blob/main/clab-mcp-lab/R7A/flash/)
   - R8C: [nvram_id](https://github.com/pdudotdev/netaimcp/tree/main/clab-mcp-lab/R8C)
   - R9C: [nvram_id](https://github.com/pdudotdev/netaimcp/tree/main/clab-mcp-lab/R9C)
   - R10C: [nvram_id](https://github.com/pdudotdev/netaimcp/tree/main/clab-mcp-lab/R10C)
   - R11C: [nvram_id](https://github.com/pdudotdev/netaimcp/tree/main/clab-mcp-lab/R11C)
 
 ⚠️ **NOTE**: To see the contents of the **nvram** files for Cisco routers, simply use **Notepad** in Windows or **cat** in Linux.
+
+⚠️ **NOTE**: The config files above are considered the **default configuration** for this network, and their contents may change (or new files may be added) with each new Release, as the topology grows in complexity. Watch the release number and notes for this repository.
+
+⚠️ **NOTE**: Since these config files above are considered the **default configuration** for this network, they are going to be your fallback config whenever you use `containerlab redeploy -t lab.yml`
 
 ## 🧪 Planned Upgrades
 - [ ] Adding BGP

@@ -71,6 +71,34 @@ Network concepts currently in this topology:
   - Policy-Based Routing
   - IP SLA icmp-echo
 
+## 🔄 Network Topology
+- [x] Current network topology - subject to periodic upgrades:
+
+![topology](/topology/TOPOLOGY.png)
+
+- [x] Containerlab YAML file:
+  - [Lab topology](lab.yaml)
+
+- [x] Router naming convention:
+  - **RXY** where:
+    - **R**: device type (router)
+    - **X**: device number id
+    - **Y**: vendor (A-Arista, C-Cisco, etc.)
+
+- [x] Router configuration files:
+  - R1A: [startupconfig](https://github.com/pdudotdev/netaimcp/blob/main/clab-mcp-lab/R1A/flash/)
+  - R2A: [startupconfig](https://github.com/pdudotdev/netaimcp/blob/main/clab-mcp-lab/R2A/flash/)
+  - R3C: [nvram_id](https://github.com/pdudotdev/netaimcp/blob/main/clab-mcp-lab/R3C)
+  - R4C: [nvram_id](https://github.com/pdudotdev/netaimcp/tree/main/clab-mcp-lab/R4C)
+  - R5C: [nvram_id](https://github.com/pdudotdev/netaimcp/tree/main/clab-mcp-lab/R5C)
+  - R6A: [startupconfig](https://github.com/pdudotdev/netaimcp/blob/main/clab-mcp-lab/R6A/flash/)
+  - R7A: [startupconfig](https://github.com/pdudotdev/netaimcp/blob/main/clab-mcp-lab/R7A/flash/)
+  - R8C: [nvram_id](https://github.com/pdudotdev/netaimcp/tree/main/clab-mcp-lab/R8C)
+  - R9C: [nvram_id](https://github.com/pdudotdev/netaimcp/tree/main/clab-mcp-lab/R9C)
+  - R10C: [nvram_id](https://github.com/pdudotdev/netaimcp/tree/main/clab-mcp-lab/R10C)
+  - R11C: [nvram_id](https://github.com/pdudotdev/netaimcp/tree/main/clab-mcp-lab/R11C)
+
+⚠️ **NOTE**: To see the contents of the **nvram** files for Cisco routers, simply use **Notepad** in Windows or **cat** in Linux.
 
 ## 🧪 Planned Upgrades
 - [ ] Adding BGP
@@ -78,7 +106,7 @@ Network concepts currently in this topology:
 - [ ] Adding new vendors
 
 ## ⚠️ Disclaimer
-This project is intended for educational purposes only. Users are responsible for building their own lab environment and meeting the necessary conditions (e.g., RAM/vCPU, router OS images, Claude subscription/API key, etc.). Users are responsible for ensuring that their use of this tool complies with all applicable laws and regulations. The developer of this project does not endorse or support any malicious or unauthorized activities. Use this tool responsibly.
+This project is intended for educational purposes only. Users are responsible for building their own lab environment and meeting the necessary conditions (e.g., RAM/vCPU, router OS images, Claude subscription/API key, etc.). Use this tool responsibly.
 
 ## 📜 License
 Licensed under the [GNU GENERAL PUBLIC LICENSE Version 3](https://github.com/pdudotdev/netaimcp/blob/main/LICENSE).

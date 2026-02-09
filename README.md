@@ -56,7 +56,7 @@ Networking topics in this topology:
     - Passive interfaces
     - MD5 authentication
     - External type 1 routes
-  - Route redistribution
+  - Route redistribution (ASBR)
   - Route summarization (ABR)
   - Route filtering with prefix lists
   - Route filtering with distribute lists

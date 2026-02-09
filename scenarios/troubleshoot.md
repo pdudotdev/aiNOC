@@ -3,9 +3,11 @@ In this file you'll find troubleshooting scenarios based on the structure discus
 
 ⚠️ **NOTE**: Make sure to use `containerlab redeploy -t lab.yml` after each scenario to start clean from the default network configuration.
 
+---
+
 ## 🍀 CCNA-level scenarios
 
-### ◻️ Scenario 1
+### ⭐ Scenario 1
 
 - [x] **Summary**:
 ```
@@ -60,7 +62,9 @@ Neighbor ID     Instance VRF      Pri State                  Dead Time   Address
 6.6.6.6         1        default  0   FULL                   00:00:33    10.1.1.13       Ethernet1 
 ```
 
-### ◻️ Scenario 2
+---
+
+### ⭐ Scenario 2
 
 - [x] **Summary**:
 ```
@@ -107,7 +111,9 @@ Neighbor ID     Pri   State           Dead Time   Address         Interface
 1.1.1.1           0   FULL/  -        00:00:30    10.0.0.5        Ethernet0/3
 ```
 
-### ◻️ Scenario 3
+---
+
+### ⭐ Scenario 3
 
 - [x] **Summary**:
 ```
@@ -167,9 +173,11 @@ Neighbor ID     Instance VRF      Pri State                  Dead Time   Address
 6.6.6.6         1        default  0   FULL                   00:00:33    10.1.1.13       Ethernet1 
 ```
 
+---
+
 ## 🔥 CCNP-level scenarios
 
-### ◻️ Scenario 1
+### ⭐ Scenario 1
 
 - [x] **Summary**:
 ```
@@ -261,7 +269,9 @@ R1A#show ip route
            via 10.0.0.2, Ethernet4
 ```
 
-### ◻️ Scenario 2
+---
+
+### ⭐ Scenario 2
 
 - [x] **Summary**:
 ```
@@ -411,7 +421,9 @@ L        192.168.10.9/32 is directly connected, Ethernet0/2
 D EX     192.168.20.0 [170/307200] via 192.168.10.1, 00:01:14, Ethernet0/1
 ```
 
-### ◻️ Scenario 3
+---
+
+### ⭐ Scenario 3
 
 - [x] **Summary**:
 ```

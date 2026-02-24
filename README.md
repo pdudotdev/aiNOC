@@ -612,7 +612,6 @@ router ospf 1
 router bgp 1010
  bgp router-id 2.2.2.2
  bgp log-neighbor-changes
- neighbor 10.0.0.10 remote-as 1010
  neighbor 200.40.40.2 remote-as 4040
  neighbor 200.50.50.2 remote-as 5050
 !
@@ -714,7 +713,6 @@ interface Ethernet1/3
 router eigrp 10
  network 192.168.10.0 0.0.0.3
  network 192.168.10.4 0.0.0.3
- redistribute ospf 1 route-map OSPF-TO-EIGRP
 !
 router ospf 1
  router-id 3.3.3.3
@@ -729,7 +727,6 @@ router ospf 1
 router bgp 1010
  bgp router-id 3.3.3.3
  bgp log-neighbor-changes
- neighbor 10.0.0.9 remote-as 1010
  neighbor 200.40.40.6 remote-as 4040
  neighbor 200.50.50.6 remote-as 5050
 !
@@ -750,8 +747,6 @@ ip access-list standard NAT_INSIDE
  30 permit 192.168.0.0 0.0.255.255
 no logging btrace
 ipv6 route vrf clab-mgmt ::/0 Ethernet0/0 3FFF:172:20:20::1
-route-map OSPF-TO-EIGRP permit 10 
- set metric 1000000 1 255 1 1500
 !
 route-map NAT-ISPA permit 10 
  match ip address NAT_INSIDE
@@ -1162,6 +1157,10 @@ router ospf 1
  network 172.16.0.8 0.0.0.3 area 2
 !
 ip sla responder
+!
+logging trap notifications
+logging source-interface Ethernet0/0 vrf clab-mgmt
+logging host 172.20.20.1 vrf clab-mgmt
 !
 ```
 
@@ -1621,8 +1620,6 @@ add interfaces=lo1 area=backbone passive
 /routing/bgp/instance/add name=default as=2020 router-id=18.18.18.18
 /routing/bgp/connection/add name=TO-R14C instance=default remote.as=4040 remote.address=220.40.40.1 local.role=ebgp
 /routing/bgp/connection/add name=TO-R17C instance=default remote.as=5050 remote.address=220.50.50.1 local.role=ebgp
-/routing/bgp/connection/add name=TO-R19M instance=default remote.as=2020 remote.address=172.16.77.1 local.role=ibgp
-/routing/bgp/connection/set [find where remote.address=172.16.77.1] nexthop-choice=force-self
 
 /routing/bgp/instance/print
 /routing/bgp/connection/print
@@ -1631,6 +1628,12 @@ add interfaces=lo1 area=backbone passive
 /ip firewall/nat/
 add chain=srcnat out-interface=ether2 action=masquerade
 add chain=srcnat out-interface=ether3 action=masquerade
+
+/ip route add dst-address=172.20.20.0/24 gateway=172.31.255.29
+
+/system ntp client set enabled=yes
+/system ntp client set servers=172.20.20.1
+/system/ntp/client/print
 
 /ip service/ enable www-ssl 
 /ip service set www-ssl address=172.20.20.0/24
@@ -1674,8 +1677,6 @@ add interfaces=lo1 area=backbone passive
 /routing/bgp/instance/add name=default as=2020 router-id=19.19.19.19
 /routing/bgp/connection/add name=TO-R14C instance=default remote.as=4040 remote.address=220.40.40.5 local.role=ebgp 
 /routing/bgp/connection/add name=TO-R17C instance=default remote.as=5050 remote.address=220.50.50.5 local.role=ebgp
-/routing/bgp/connection/add name=TO-R18M instance=default remote.as=2020 remote.address=172.16.77.2 local.role=ibgp
-/routing/bgp/connection/set [find where remote.address=172.16.77.2] nexthop-choice=force-self
 
 /routing/bgp/instance/print
 /routing/bgp/connection/print
@@ -1684,6 +1685,12 @@ add interfaces=lo1 area=backbone passive
 /ip firewall/nat/
 add chain=srcnat out-interface=ether3 action=masquerade
 add chain=srcnat out-interface=ether4 action=masquerade
+
+/ip route add dst-address=172.20.20.0/24 gateway=172.31.255.29
+
+/system ntp client set enabled=yes
+/system ntp client set servers=172.20.20.1
+/system/ntp/client/print
 
 /ip service/ enable www-ssl 
 /ip service set www-ssl address=172.20.20.0/24
@@ -1716,6 +1723,23 @@ add interfaces=lo1 area=backbone passive
 
 /routing ospf neighbor print
 /ip route print where ospf
+
+/ip route add dst-address=172.20.20.0/24 gateway=172.31.255.29
+
+/system/logging/action/add name=remoteSyslog target=remote remote=172.20.20.1 remote-port=514 src-address=0.0.0.0  
+/system/logging/action/set remoteSyslog syslog-facility=local7
+/system logging add topics=netwatch,info action=remoteSyslog
+/system logging export
+/system logging print
+
+/tool/netwatch/add host=220.40.40.1 interval=5 src-address=172.16.77.6
+/tool/netwatch/add host=220.50.50.5 interval=5 src-address=172.16.77.10
+/log print follow where topics~"netwatch"
+/log print where topics~"netwatch"
+
+/system ntp client set enabled=yes
+/system ntp client set servers=172.20.20.1
+/system/ntp/client/print
 
 /ip service/ enable www-ssl 
 /ip service set www-ssl address=172.20.20.0/24
@@ -1810,10 +1834,10 @@ Now let's go [back](#%EF%B8%8F-repository-lifecycle) to the top of this lab manu
 - [x] Access to a private Discord
 
 ## ⬆️ Planned Upgrades
-Expected in version v3.0:
+Expected in version v4.0:
 - [ ] New troubleshooting scenarios
-- [ ] Extra features: NetBox, RAG
 - [ ] Multi-agent architecture
+- [ ] Extra features: NetBox
 
 ## 📄 Disclaimer
 This project is intended for educational purposes only. You are responsible for building your own lab environment and meeting the necessary conditions (e.g., RAM/vCPU, router OS images, Claude subscription/API key, etc.).

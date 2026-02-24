@@ -148,16 +148,25 @@ async def execute_eapi(device, command):
 async def execute_rest(device, action):
     url = f"http://{device['host']}{action['path']}"
     auth = aiohttp.BasicAuth(USERNAME, PASSWORD)
+    method = action.get("method", "GET").upper()
 
     async with aiohttp.ClientSession(auth=auth) as session:
-        if action["method"] == "GET":
+        if method == "GET":
             async with session.get(url) as resp:
                 return await resp.json()
 
-        elif action["method"] == "POST":
+        elif method in ("POST", "PUT", "PATCH"):
             payload = action.get("body") or action.get("default_body", {})
-            async with session.post(url, json=payload) as resp:
+            async with getattr(session, method.lower())(url, json=payload) as resp:
                 return await resp.json()
+
+        elif method == "DELETE":
+            async with session.delete(url) as resp:
+                text = await resp.text()
+                return json.loads(text) if text.strip() else {"status": "deleted"}
+
+        else:
+            return {"error": f"Unsupported HTTP method: {method}"}
 
 # Instantiate the FastMCP class
 mcp = FastMCP("mcp_automation")
@@ -443,10 +452,12 @@ async def traceroute(params: TracerouteInput) -> dict:
     - Command syntax is vendor-specific and resolved via COMMAND_MAP.
     - Output format varies by platform.
     - Results are cached briefly.
+    - Source parameter is optional and may not be supported on all platforms.
 
     Recommended usage:
     - Use when ping succeeds but path is unexpected.
     - Use to locate where packets are dropped.
+    - Provide source=<ip> (from sla_paths source_ip field) to force traceroute on the monitored path.
     - Use only when necessary.
     """
     device = devices.get(params.device)
@@ -459,9 +470,13 @@ async def traceroute(params: TracerouteInput) -> dict:
 
     if isinstance(base, dict):
         action = base.copy()
-        action["body"] = {"address": params.destination,**base.get("default_body", {})}
+        action["body"] = {"address": params.destination, **base.get("default_body", {})}
+        if params.source and cli_style == "routeros":
+            action["body"]["src-address"] = params.source
     else:
         action = f"{base} {params.destination}"
+        if params.source and cli_style in ["ios", "eos"]:
+            action += f" source {params.source}"
 
     return await execute_command(params.device, action)
 
@@ -475,23 +490,72 @@ FORBIDDEN = {"reload", "write erase", "format", "delete", "boot"}
 
 def validate_commands(cmds: list[str]):
     for c in cmds:
+        # JSON-encoded REST actions (RouterOS) are not CLI commands — skip CLI forbidden check
+        try:
+            if isinstance(json.loads(c), dict):
+                continue
+        except (json.JSONDecodeError, ValueError):
+            pass
         if any(bad in c.lower() for bad in FORBIDDEN):
             raise ValueError(f"Forbidden command detected: {c}")
 
 # Function for pushing configs to a device
 async def push_config_to_device(dev_name, device, commands):
-    connection = {
-                "host": device["host"],
-                "platform": device["platform"],
-                "transport": device["transport"],
-                "auth_username": USERNAME,
-                "auth_password": PASSWORD,
-                "auth_strict_key": False,
-            }
+    transport = device["transport"]
 
-    async with AsyncScrapli(**connection) as conn:
-        response = await conn.send_configs(commands)
-        return dev_name, response.result
+    if transport == "eapi":
+        url = f"https://{device['host']}/command-api"
+        auth = aiohttp.BasicAuth(USERNAME, PASSWORD)
+        payload = {
+            "jsonrpc": "2.0",
+            "method": "runCmds",
+            "params": {
+                "version": 1,
+                "cmds": ["enable", "configure"] + commands,
+                "format": "text"
+            },
+            "id": 1,
+        }
+        async with aiohttp.ClientSession(auth=auth) as session:
+            async with session.post(url, json=payload, ssl=False) as resp:
+                data = await resp.json()
+                return dev_name, {"transport_used": "eapi", "result": data.get("result", data)}
+
+    elif transport == "asyncssh":
+        connection = {
+            "host": device["host"],
+            "platform": device["platform"],
+            "transport": device["transport"],
+            "auth_username": USERNAME,
+            "auth_password": PASSWORD,
+            "auth_strict_key": False,
+        }
+        async with AsyncScrapli(**connection) as conn:
+            response = await conn.send_configs(commands)
+            return dev_name, {"transport_used": "asyncssh", "result": response.result}
+
+    elif transport == "rest":
+        results = []
+        for cmd in commands:
+            try:
+                action = json.loads(cmd)
+            except json.JSONDecodeError:
+                results.append(f"ERROR: Invalid JSON action for RouterOS: {cmd}")
+                continue
+            result = await execute_rest(device, action)
+            results.append(result)
+        return dev_name, {"transport_used": "rest", "result": results}
+
+    else:
+        raise NotImplementedError(f"push_config not supported for transport: {transport}")
+
+
+# Safe wrapper: returns named error tuple instead of raising
+async def push_config_to_device_safe(dev_name, device, commands):
+    try:
+        return await push_config_to_device(dev_name, device, commands)
+    except Exception as e:
+        return dev_name, f"ERROR: {e}"
 
 # Send config tool
 @mcp.tool(name="push_config")
@@ -528,16 +592,13 @@ async def push_config(params: ConfigCommand) -> dict:
 
         tasks.append(
             asyncio.create_task(
-                push_config_to_device(dev_name, device, params.commands)
+                push_config_to_device_safe(dev_name, device, params.commands)
             )
         )
 
-    completed = await asyncio.gather(*tasks, return_exceptions=True)
+    completed = await asyncio.gather(*tasks)
 
-    for item in completed:
-        if isinstance(item, Exception):
-            continue
-        dev_name, result = item
+    for dev_name, result in completed:
         results[dev_name] = result
 
     end = time.perf_counter()

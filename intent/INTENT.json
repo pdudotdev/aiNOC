@@ -29,6 +29,32 @@
 
     "R1A": {
       "roles": ["ABR"],
+      "direct_links": {
+        "R10C": {
+            "local_interface": "Ethernet1",
+            "local_ip": "172.16.0.5",
+            "remote_ip": "172.16.0.6",
+            "subnet": "172.16.0.4/30"
+        },
+        "R11C": {
+            "local_interface": "Ethernet2",
+            "local_ip": "172.16.0.9",
+            "remote_ip": "172.16.0.10",
+            "subnet": "172.16.0.8/30"
+        },
+        "R2C": {
+            "local_interface": "Ethernet4",
+            "local_ip": "10.0.0.1",
+            "remote_ip": "10.0.0.2",
+            "subnet": "10.0.0.0/30"
+        },
+        "R3C": {
+            "local_interface": "Ethernet3",
+            "local_ip": "10.0.0.5",
+            "remote_ip": "10.0.0.6",
+            "subnet": "10.0.0.4/30"
+        }
+      },
       "igp": {
         "ospf": {
           "process_id": 1,
@@ -43,6 +69,44 @@
 
     "R2C": {
       "roles": ["ABR", "ASBR", "NAT_EDGE"],
+      "direct_links": {
+        "R1A": {
+            "local_interface": "Ethernet0/3",
+            "local_ip": "10.0.0.2",
+            "remote_ip": "10.0.0.1",
+            "subnet": "10.0.0.0/30"
+        },
+        "R3C": {
+            "local_interface": "Ethernet1/0",
+            "local_ip": "10.0.0.9",
+            "remote_ip": "10.0.0.10",
+            "subnet": "10.0.0.8/30"
+        },
+        "R16C": {
+            "local_interface": "Ethernet1/2",
+            "local_ip": "200.50.50.1",
+            "remote_ip": "200.50.50.2",
+            "subnet": "200.50.50.0/30"
+        },
+        "R12C": {
+            "local_interface": "Ethernet1/1",
+            "local_ip": "200.40.40.1",
+            "remote_ip": "200.40.40.2",
+            "subnet": "200.40.40.0/30"
+        },
+        "R6A": {
+            "local_interface": "Ethernet0/1",
+            "local_ip": "10.1.1.14",
+            "remote_ip": "10.1.1.13",
+            "subnet": "10.1.1.12/30"
+        },
+        "R7A": {
+            "local_interface": "Ethernet0/2",
+            "local_ip": "10.1.1.10",
+            "remote_ip": "10.1.1.9",
+            "subnet": "10.1.1.8/30"
+        }
+      },
       "asn": 1010,
       "igp": {
         "ospf": {
@@ -79,6 +143,44 @@
 
     "R3C": {
       "roles": ["ASBR", "IGP_REDISTRIBUTOR", "NAT_EDGE"],
+      "direct_links": {
+        "R1A": {
+            "local_interface": "Ethernet0/3",
+            "local_ip": "10.0.0.6",
+            "remote_ip": "10.0.0.5",
+            "subnet": "10.0.0.4/30"
+        },
+        "R2C": {
+            "local_interface": "Ethernet1/0",
+            "local_ip": "10.0.0.10",
+            "remote_ip": "10.0.0.9",
+            "subnet": "10.0.0.8/30"
+        },
+        "R16C": {
+            "local_interface": "Ethernet1/1",
+            "local_ip": "200.50.50.5",
+            "remote_ip": "200.50.50.6",
+            "subnet": "200.50.50.4/30"
+        },
+        "R12C": {
+            "local_interface": "Ethernet1/2",
+            "local_ip": "200.40.40.5",
+            "remote_ip": "200.40.40.6",
+            "subnet": "200.40.40.4/30"
+        },
+        "R4C": {
+            "local_interface": "Ethernet0/2",
+            "local_ip": "192.168.10.1",
+            "remote_ip": "192.168.10.2",
+            "subnet": "192.168.10.0/30"
+        },
+        "R5C": {
+            "local_interface": "Ethernet0/1",
+            "local_ip": "192.168.10.5",
+            "remote_ip": "192.168.10.6",
+            "subnet": "192.168.10.4/30"
+        }
+      },
       "asn": 1010,
       "igp": {
         "ospf": {
@@ -95,10 +197,9 @@
         },
         "eigrp": {
           "as": 10,
-          "default_summary": true,
-          "edge_behavior": "default-only",
+          "default_summary": false,
           "redistribution": {
-            "from_ospf": false
+            "from_ospf": true
           }
         }
       },
@@ -122,6 +223,20 @@
 
     "R4C": {
       "roles": ["EIGRP_LEAF"],
+      "direct_links": {
+        "R3C": {
+            "local_interface": "Ethernet0/1",
+            "local_ip": "192.168.10.2",
+            "remote_ip": "192.168.10.1",
+            "subnet": "192.168.10.0/30"
+        },
+        "R5C": {
+            "local_interface": "Ethernet0/2",
+            "local_ip": "192.168.10.9",
+            "remote_ip": "192.168.10.10",
+            "subnet": "192.168.10.8/30"
+        }
+      },
       "igp": {
         "eigrp": {"as": 10}
       },
@@ -130,6 +245,20 @@
 
     "R5C": {
       "roles": ["EIGRP_LEAF"],
+      "direct_links": {
+        "R3C": {
+            "local_interface": "Ethernet0/1",
+            "local_ip": "192.168.10.6",
+            "remote_ip": "192.168.10.5",
+            "subnet": "192.168.10.4/30"
+        },
+        "R4C": {
+            "local_interface": "Ethernet0/2",
+            "local_ip": "192.168.10.10",
+            "remote_ip": "192.168.10.9",
+            "subnet": "192.168.10.8/30"
+        }
+      },
       "igp": {
         "eigrp": {"as": 10}
       },
@@ -138,6 +267,20 @@
 
     "R6A": {
       "roles": ["OSPF_AREA1_ROUTER"],
+      "direct_links": {
+        "R2C": {
+            "local_interface": "Ethernet1",
+            "local_ip": "10.1.1.13",
+            "remote_ip": "10.1.1.14",
+            "subnet": "10.1.1.12/30"
+        },
+        "R8C": {
+            "local_interface": "Ethernet2",
+            "local_ip": "10.1.1.2",
+            "remote_ip": "10.1.1.1",
+            "subnet": "10.1.1.0/30"
+        }
+      },
       "igp": {
         "ospf": {
           "areas": {
@@ -151,6 +294,20 @@
 
     "R7A": {
       "roles": ["OSPF_AREA1_ROUTER"],
+      "direct_links": {
+        "R2C": {
+            "local_interface": "Ethernet1",
+            "local_ip": "10.1.1.9",
+            "remote_ip": "10.1.1.10",
+            "subnet": "10.1.1.8/30"
+        },
+        "R8C": {
+            "local_interface": "Ethernet2",
+            "local_ip": "10.1.1.6",
+            "remote_ip": "10.1.1.5",
+            "subnet": "10.1.1.4/30"
+        }
+      },
       "igp": {
         "ospf": {
           "areas": {
@@ -164,6 +321,26 @@
 
     "R8C": {
       "roles": ["ASBR", "IGP_REDISTRIBUTOR"],
+      "direct_links": {
+        "R6A": {
+            "local_interface": "Ethernet0/1",
+            "local_ip": "10.1.1.1",
+            "remote_ip": "10.1.1.2",
+            "subnet": "10.1.1.0/30"
+        },
+        "R7A": {
+            "local_interface": "Ethernet0/2",
+            "local_ip": "10.1.1.5",
+            "remote_ip": "10.1.1.6",
+            "subnet": "10.1.1.4/30"
+        },
+        "R9C": {
+            "local_interface": "Ethernet0/3",
+            "local_ip": "192.168.20.1",
+            "remote_ip": "192.168.20.2",
+            "subnet": "192.168.20.0/30"
+        }
+      },
       "igp": {
         "ospf": {
           "areas": {
@@ -185,6 +362,14 @@
 
     "R9C": {
       "roles": ["EIGRP_STUB"],
+      "direct_links": {
+        "R8C": {
+            "local_interface": "Ethernet0/1",
+            "local_ip": "192.168.20.2",
+            "remote_ip": "192.168.20.1",
+            "subnet": "192.168.20.0/30"
+        }
+      },
       "igp": {
         "eigrp": {
           "as": 20,
@@ -196,6 +381,20 @@
 
     "R10C": {
       "roles": ["OSPF_AREA2_LEAF"],
+      "direct_links": {
+        "R1A": {
+            "local_interface": "Ethernet0/1",
+            "local_ip": "172.16.0.6",
+            "remote_ip": "172.16.0.5",
+            "subnet": "172.16.0.4/30"
+        },
+        "R11C": {
+            "local_interface": "Ethernet0/2",
+            "local_ip": "172.16.0.1",
+            "remote_ip": "172.16.0.2",
+            "subnet": "172.16.0.0/30"
+        }
+      },
       "igp": {
         "ospf": {
           "areas": {
@@ -209,6 +408,20 @@
 
     "R11C": {
       "roles": ["OSPF_AREA2_LEAF"],
+      "direct_links": {
+        "R1A": {
+            "local_interface": "Ethernet0/1",
+            "local_ip": "172.16.0.10",
+            "remote_ip": "172.16.0.9",
+            "subnet": "172.16.0.8/30"
+        },
+        "R10C": {
+            "local_interface": "Ethernet0/2",
+            "local_ip": "172.16.0.2",
+            "remote_ip": "172.16.0.1",
+            "subnet": "172.16.0.0/30"
+        }
+      },
       "igp": {
         "ospf": {
           "areas": {
@@ -222,6 +435,38 @@
 
     "R12C": {
       "roles": ["ISP_A_EDGE", "ROUTE_REFLECTOR"],
+      "direct_links": {
+        "R2C": {
+            "local_interface": "Ethernet0/1",
+            "local_ip": "200.40.40.2",
+            "remote_ip": "200.40.40.1",
+            "subnet": "200.40.40.0/30"
+        },
+        "R3C": {
+            "local_interface": "Ethernet1/3",
+            "local_ip": "200.40.40.6",
+            "remote_ip": "200.40.40.5",
+            "subnet": "200.40.40.4/30"
+        },
+        "R13C": {
+            "local_interface": "Ethernet1/1",
+            "local_ip": "192.168.40.17",
+            "remote_ip": "192.168.40.18",
+            "subnet": "192.168.40.16/30"
+        },
+        "R14C": {
+            "local_interface": "Ethernet1/0",
+            "local_ip": "192.168.40.5",
+            "remote_ip": "192.168.40.6",
+            "subnet": "192.168.40.4/30"
+        },
+        "R15C": {
+            "local_interface": "Ethernet1/2",
+            "local_ip": "192.168.40.1",
+            "remote_ip": "192.168.40.2",
+            "subnet": "192.168.40.0/30"
+        }
+      },
       "asn": 4040,
       "reflector_clients": ["R13C", "R14C", "R15C"],
       "policy": {
@@ -233,11 +478,51 @@
 
     "R13C": {
       "roles": ["ISP_A_CORE"],
+      "direct_links": {
+        "R12C": {
+            "local_interface": "Ethernet1/0",
+            "local_ip": "192.168.40.18",
+            "remote_ip": "192.168.40.17",
+            "subnet": "192.168.40.16/30"
+        },
+        "R15C": {
+            "local_interface": "Ethernet1/1",
+            "local_ip": "192.168.40.13",
+            "remote_ip": "192.168.40.14",
+            "subnet": "192.168.40.12/30"
+        }
+      },
       "asn": 4040
     },
 
     "R14C": {
       "roles": ["ISP_A_EDGE"],
+      "direct_links": {
+        "R12C": {
+            "local_interface": "Ethernet1/0",
+            "local_ip": "192.168.40.6",
+            "remote_ip": "192.168.40.5",
+            "subnet": "192.168.40.4/30"
+        },
+        "R15C": {
+            "local_interface": "Ethernet1/1",
+            "local_ip": "192.168.40.9",
+            "remote_ip": "192.168.40.10",
+            "subnet": "192.168.40.8/30"
+        },
+        "R18M": {
+            "local_interface": "Ethernet1/2",
+            "local_ip": "220.40.40.1",
+            "remote_ip": "220.40.40.2",
+            "subnet": "220.40.40.0/30"
+        },
+        "R19M": {
+            "local_interface": "Ethernet1/3",
+            "local_ip": "220.40.40.5",
+            "remote_ip": "220.40.40.6",
+            "subnet": "220.40.40.4/30"
+        }
+      },
       "asn": 4040,
       "policy": {
         "block_customer_default": true,
@@ -247,11 +532,51 @@
 
     "R15C": {
       "roles": ["ISP_A_CORE"],
+      "direct_links": {
+        "R12C": {
+            "local_interface": "Ethernet1/2",
+            "local_ip": "192.168.40.2",
+            "remote_ip": "192.168.40.1",
+            "subnet": "192.168.40.0/30"
+        },
+        "R13C": {
+            "local_interface": "Ethernet1/0",
+            "local_ip": "192.168.40.14",
+            "remote_ip": "192.168.40.13",
+            "subnet": "192.168.40.12/30"
+        },
+        "R14C": {
+            "local_interface": "Ethernet1/1",
+            "local_ip": "192.168.40.10",
+            "remote_ip": "192.168.40.9",
+            "subnet": "192.168.40.8/30"
+        }
+      },
       "asn": 4040
     },
 
     "R16C": {
       "roles": ["ISP_B_EDGE"],
+      "direct_links": {
+        "R2C": {
+            "local_interface": "Ethernet1/1",
+            "local_ip": "200.50.50.2",
+            "remote_ip": "200.50.50.1",
+            "subnet": "200.50.50.0/30"
+        },
+        "R3C": {
+            "local_interface": "Ethernet1/2",
+            "local_ip": "200.50.50.6",
+            "remote_ip": "200.50.50.5",
+            "subnet": "200.50.50.4/30"
+        },
+        "R17C": {
+            "local_interface": "Ethernet1/0",
+            "local_ip": "192.168.50.1",
+            "remote_ip": "192.168.50.2",
+            "subnet": "192.168.50.0/30"
+        }
+      },
       "asn": 5050,
       "policy": {
         "block_customer_default": true,
@@ -261,6 +586,26 @@
 
     "R17C": {
       "roles": ["ISP_B_EDGE"],
+      "direct_links": {
+        "R18M": {
+            "local_interface": "Ethernet0/1",
+            "local_ip": "220.50.50.1",
+            "remote_ip": "220.50.50.2",
+            "subnet": "220.50.50.0/30"
+        },
+        "R19M": {
+            "local_interface": "Ethernet0/2",
+            "local_ip": "220.50.50.5",
+            "remote_ip": "220.50.50.6",
+            "subnet": "220.50.50.4/30"
+        },
+        "R16C": {
+            "local_interface": "Ethernet1/0",
+            "local_ip": "192.168.50.2",
+            "remote_ip": "192.168.50.1",
+            "subnet": "192.168.50.0/30"
+        }
+      },
       "asn": 5050,
       "policy": {
         "block_customer_default": true,
@@ -270,6 +615,32 @@
 
     "R18M": {
       "roles": ["ASBR", "NAT_EDGE"],
+      "direct_links": {
+        "R14C": {
+            "local_interface": "Ether2",
+            "local_ip": "220.40.40.2",
+            "remote_ip": "220.40.40.1",
+            "subnet": "220.40.40.0/30"
+        },
+        "R17C": {
+            "local_interface": "Ether3",
+            "local_ip": "220.50.50.2",
+            "remote_ip": "220.50.50.1",
+            "subnet": "220.50.50.0/30"
+        },
+        "R19M": {
+            "local_interface": "Ether4",
+            "local_ip": "172.16.77.2",
+            "remote_ip": "172.16.77.1",
+            "subnet": "172.16.77.0/30"
+        },
+        "R20M": {
+            "local_interface": "Ether5",
+            "local_ip": "172.16.77.5",
+            "remote_ip": "172.16.77.6",
+            "subnet": "172.16.77.4/30"
+        }
+      },
       "asn": 2020,
       "igp": {
         "ospf": {
@@ -295,6 +666,32 @@
 
     "R19M": {
       "roles": ["ASBR", "NAT_EDGE"],
+      "direct_links": {
+        "R14C": {
+            "local_interface": "Ether4",
+            "local_ip": "220.40.40.6",
+            "remote_ip": "220.40.40.5",
+            "subnet": "220.40.40.4/30"
+        },
+        "R17C": {
+            "local_interface": "Ether3",
+            "local_ip": "220.50.50.6",
+            "remote_ip": "220.50.50.5",
+            "subnet": "220.50.50.4/30"
+        },
+        "R18M": {
+            "local_interface": "Ether2",
+            "local_ip": "172.16.77.1",
+            "remote_ip": "172.16.77.2",
+            "subnet": "172.16.77.0/30"
+        },
+        "R20M": {
+            "local_interface": "Ether5",
+            "local_ip": "172.16.77.9",
+            "remote_ip": "172.16.77.10",
+            "subnet": "172.16.77.8/30"
+        }
+      },
       "asn": 2020,
       "igp": {
         "ospf": {
@@ -320,6 +717,20 @@
 
     "R20M": {
       "roles": ["OSPF_LEAF"],
+      "direct_links": {
+        "R18M": {
+            "local_interface": "Ether2",
+            "local_ip": "172.16.77.6",
+            "remote_ip": "172.16.77.5",
+            "subnet": "172.16.77.4/30"
+        },
+        "R19M": {
+            "local_interface": "Ether3",
+            "local_ip": "172.16.77.10",
+            "remote_ip": "172.16.77.9",
+            "subnet": "172.16.77.8/30"
+        }
+      },
       "igp": {
         "ospf": {
           "areas": {

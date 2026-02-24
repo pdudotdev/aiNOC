@@ -1,0 +1,347 @@
+#!/usr/bin/env python3
+"""
+aiNOC On-Call Watcher
+Monitors /var/log/network.json for IP SLA Down events and invokes Claude Code.
+Implements storm prevention (single-instance guard) and graceful shutdown.
+Deferred failures (events arriving during an active agent session) are saved to
+pending_events.json for the agent to present to the user at session closure.
+"""
+
+import re
+import json
+import os
+import time
+import subprocess
+import signal
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+
+# Configuration
+LOG_FILE = os.environ.get("NETWORK_LOG_FILE", "/var/log/network.json")
+PROJECT_DIR = Path(__file__).parent
+INVENTORY_FILE = PROJECT_DIR / "inventory" / "NETWORK.json"
+LOCK_FILE = PROJECT_DIR / "oncall.lock"
+WATCHER_LOG = PROJECT_DIR / "oncall_watcher.log"
+PENDING_EVENTS_FILE = PROJECT_DIR / "pending_events.json"
+DEFERRED_FILE = PROJECT_DIR / "deferred.json"
+CLAUDE_BIN = "/home/mcp/.local/bin/claude"
+
+# SLA Down patterns (multi-vendor)
+SLA_DOWN_RE = re.compile(
+    r'(?:'
+    # Cisco IOS/XE: BOM%TRACK-6-STATE: 1 ip sla 1 reachability Up -> Down
+    r'%?TRACK-\d+-STATE:.*ip\s+sla.*reachability\s+\S+\s+->\s+Down'
+    r'|'
+    # Cisco/Arista alternate phrasing
+    r'ip\s+sla\s+\d+.*(?:changed.*state|transition).*(?:up|reachable).*(?:to|->)\s*down'
+    r'|'
+    # MikroTik Netwatch: netwatch,info event down [ type: simple, host: x.x.x.x ]
+    r'netwatch.*event\s+down'
+    r')',
+    re.IGNORECASE
+)
+
+
+def log_watcher(message, console=True):
+    """Append timestamped message to watcher log and optionally print to console."""
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    log_msg = f"[{ts}] {message}"
+    with open(WATCHER_LOG, "a") as f:
+        f.write(log_msg + "\n")
+    if console:
+        print(f"[Watcher] {message}")
+
+
+def load_device_map():
+    """Build IP -> device name lookup from NETWORK.json."""
+    try:
+        with open(INVENTORY_FILE) as f:
+            devices = json.load(f)
+        return {info["host"]: name for name, info in devices.items()}
+    except Exception as e:
+        log_watcher(f"WARNING: Could not load device inventory: {e}")
+        return {}
+
+
+def resolve_device(ip, device_map):
+    """Resolve IP address to device name, fallback to IP if not found."""
+    return device_map.get(ip, ip)
+
+
+def is_sla_down_event(msg):
+    """Check if message is an IP SLA Down event."""
+    return bool(SLA_DOWN_RE.search(msg))
+
+
+def is_lock_stale():
+    """Check if lock file exists and if PID is still alive."""
+    if not LOCK_FILE.exists():
+        return False
+    try:
+        pid = int(LOCK_FILE.read_text().strip())
+        # Check if process is still alive
+        os.kill(pid, 0)
+        return False  # Process alive, lock is fresh
+    except (ValueError, ProcessLookupError, OSError):
+        # PID doesn't exist or invalid, lock is stale
+        return True
+
+
+def cleanup_lock():
+    """Remove lock file if it exists."""
+    if LOCK_FILE.exists():
+        try:
+            LOCK_FILE.unlink()
+        except OSError:
+            pass
+
+
+def parse_event_ts(event):
+    """Parse event timestamp string into a timezone-aware datetime. Returns None on failure."""
+    ts_str = event.get("ts", "")
+    if not ts_str:
+        return None
+    try:
+        return datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def scan_for_deferred_events(trigger_event, session_start, session_end, device_map,
+                             log_label="SKIPPED (deferred - occurred during active session)"):
+    """
+    Re-scan network.json for Down events that occurred between session_start and
+    session_end, excluding the trigger event itself (pass None to skip exclusion).
+
+    Each deferred event is logged as SKIPPED in the watcher log immediately.
+    Returns a list of enriched event dicts.
+    """
+    trigger_key = (trigger_event.get("ts"), trigger_event.get("device")) if trigger_event else None
+    deferred = []
+    try:
+        with open(LOG_FILE) as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    event = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                event_ts = parse_event_ts(event)
+                if event_ts is None or not (session_start < event_ts <= session_end):
+                    continue
+                if trigger_key and (event.get("ts"), event.get("device")) == trigger_key:
+                    continue
+                if is_sla_down_event(event.get("msg", "")):
+                    device_ip = event.get("device", "?")
+                    device_name = resolve_device(device_ip, device_map)
+                    deferred.append({**event, "device_name": device_name})
+                    log_watcher(
+                        f"{log_label} - "
+                        f"{device_name} ({device_ip}): {event.get('msg', '')}"
+                    )
+    except Exception as e:
+        log_watcher(f"WARNING: Could not scan for deferred events: {e}")
+    return deferred
+
+
+def save_pending_events(events):
+    """Write deferred events to pending_events.json for the agent to present at closure."""
+    PENDING_EVENTS_FILE.write_text(json.dumps(events, indent=2))
+
+
+def invoke_claude(event, device_map):
+    """
+    Invoke Claude Code with SLA event context.
+    Records session start/end times, scans for deferred failures after the session,
+    and saves them to pending_events.json for the review session.
+    """
+    device_ip = event.get("device", event.get("source_ip", "unknown"))
+    device_name = resolve_device(device_ip, device_map)
+
+    prompt = (
+        "On-Call Mode triggered: IP SLA path failure detected.\n\n"
+        f"Log event:\n"
+        f"  Timestamp : {event.get('ts', 'unknown')}\n"
+        f"  Source    : {device_name} ({device_ip})\n"
+        f"  Event     : {event.get('msg', 'unknown')}\n\n"
+        "Please follow the On-Call Mode troubleshooting workflow as defined in your instructions."
+    )
+
+    # Write lock file with this process's PID
+    LOCK_FILE.write_text(str(os.getpid()))
+    log_watcher(f"Agent invoked for event on {device_name}: {event.get('msg', '')}")
+
+    session_start = datetime.now(timezone.utc)
+    session_end = None
+
+    try:
+        subprocess.run([CLAUDE_BIN, prompt], cwd=PROJECT_DIR)
+    finally:
+        session_end = datetime.now(timezone.utc)
+        cleanup_lock()
+        log_watcher("Agent session ended.")
+
+    # Scan for failures that arrived during the session
+    deferred = scan_for_deferred_events(event, session_start, session_end, device_map)
+    if deferred:
+        save_pending_events(deferred)
+        log_watcher(f"Saved {len(deferred)} deferred failure(s) to pending_events.json")
+
+
+def invoke_deferred_review(device_map):
+    """
+    Spawn a focused agent session whose only job is to present deferred SLA failures
+    to the user and ask whether to investigate them.
+    Called from main() immediately after invoke_claude() if pending_events.json exists.
+    """
+    try:
+        events = json.loads(PENDING_EVENTS_FILE.read_text())
+        PENDING_EVENTS_FILE.unlink()
+    except Exception as e:
+        log_watcher(f"WARNING: Could not load pending_events.json for deferred review: {e}")
+        return
+
+    if not events:
+        return
+
+    # Write deferred.json so the agent can Read it if needed
+    DEFERRED_FILE.write_text(json.dumps(events, indent=2))
+
+    # Build a self-contained prompt — no reliance on session closure steps
+    lines = []
+    for i, e in enumerate(events, 1):
+        name = e.get("device_name", e.get("device", "?"))
+        ip   = e.get("device", "?")
+        lines.append(f"  {i}. {name} ({ip}): {e.get('msg', '')} (at {e.get('ts', '')})")
+    event_list = "\n".join(lines)
+
+    prompt = (
+        "Deferred SLA failure review.\n\n"
+        "During the previous On-Call session the following SLA path failures were detected\n"
+        "but could not be investigated at the time (logged as SKIPPED in oncall_watcher.log):\n\n"
+        f"{event_list}\n\n"
+        "Your only task: present this list to the user exactly as shown above and ask:\n"
+        "\"Would you like to investigate any of these? Reply with a number, 'all', or 'none'.\"\n\n"
+        "  - Number or 'all': investigate using the full On-Call workflow (read skills/oncall/SKILL.md\n"
+        "    Step 0 → Step 3). Document the case in cases/cases.md. Curate cases/lessons.md.\n"
+        "    Then return to the deferred list for any remaining failures.\n"
+        "  - 'none': type /exit to close this review session.\n\n"
+        "The full event details are also in `deferred.json` if you need to Read them."
+    )
+
+    LOCK_FILE.write_text(str(os.getpid()))
+    log_watcher(f"Deferred review session invoked for {len(events)} failure(s).")
+
+    try:
+        subprocess.run([CLAUDE_BIN, prompt], cwd=PROJECT_DIR)
+    finally:
+        cleanup_lock()
+        if DEFERRED_FILE.exists():
+            DEFERRED_FILE.unlink()
+        log_watcher("Deferred review session ended. Resuming monitoring.")
+
+
+def tail_follow(filepath, drain):
+    """Follow a file like `tail -f`, yielding new lines. Handles log rotation.
+    When drain[0] is True, seeks to EOF to skip all buffered events, then clears the flag."""
+    while True:  # outer loop handles rotation
+        try:
+            inode = os.stat(filepath).st_ino
+        except FileNotFoundError:
+            time.sleep(1)
+            continue
+
+        try:
+            with open(filepath) as f:
+                f.seek(0, 2)  # Seek to end of file
+                while True:
+                    # Drain: skip all buffered lines after session cycle
+                    if drain[0]:
+                        f.seek(0, 2)
+                        drain[0] = False
+                        continue
+                    line = f.readline()
+                    if line:
+                        yield line.strip()
+                    else:
+                        time.sleep(0.5)
+                        # Check for log rotation
+                        try:
+                            new_inode = os.stat(filepath).st_ino
+                            if new_inode != inode:
+                                break  # File rotated, reopen
+                        except FileNotFoundError:
+                            time.sleep(1)
+                            break
+        except (IOError, OSError):
+            time.sleep(1)
+
+
+def signal_handler(signum, frame):
+    """Handle SIGINT/SIGTERM gracefully."""
+    cleanup_lock()
+    log_watcher("Watcher stopped (signal received).")
+    sys.exit(0)
+
+
+def main():
+    """Main watcher loop."""
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
+    # Clean up any stale lock from previous session
+    if is_lock_stale():
+        cleanup_lock()
+
+    # Discard any leftover files from a previous watcher run
+    for stale_file in [PENDING_EVENTS_FILE, DEFERRED_FILE]:
+        if stale_file.exists():
+            stale_file.unlink()
+            log_watcher(f"Discarded stale {stale_file.name} from previous watcher run.")
+
+    log_watcher("Watcher started. Monitoring /var/log/network.json for IP SLA Down events.")
+
+    device_map = load_device_map()
+
+    # Mutable flag: when set to True, tail_follow seeks to EOF to drain buffered events
+    drain = [False]
+
+    for raw_line in tail_follow(LOG_FILE, drain):
+        try:
+            event = json.loads(raw_line)
+        except json.JSONDecodeError:
+            continue
+
+        msg = event.get("msg", "")
+
+        if not is_sla_down_event(msg):
+            continue
+
+        # Storm prevention: check if another agent is running
+        if LOCK_FILE.exists() and not is_lock_stale():
+            log_watcher(f"SKIPPED (agent busy) - {event.get('device', event.get('source_ip', '?'))}: {msg}")
+            continue
+
+        # Clean up stale lock if present
+        if is_lock_stale():
+            cleanup_lock()
+
+        # Invoke Claude
+        invoke_claude(event, device_map)
+
+        # If deferred failures were saved, handle them in a focused review session
+        if PENDING_EVENTS_FILE.exists():
+            invoke_deferred_review(device_map)
+        else:
+            log_watcher("Resuming monitoring.")
+
+        # Drain all buffered events — only process truly new ones after this point
+        drain[0] = True
+
+
+if __name__ == "__main__":
+    main()

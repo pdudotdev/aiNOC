@@ -6,9 +6,5 @@ __pycache__/
 **/.git/
 .claude/
 .MCPServer.py.swp
-clab-mcp-lab/**/flash/
-clab-mcp-lab/**
-!clab-mcp-lab/**/
-!clab-mcp-lab/topology-data.json
-!clab-mcp-lab/ansible-inventory.yml
-!clab-mcp-lab/nornir-simple-inventory.yml
+clab-mcp-lab/
+cases/

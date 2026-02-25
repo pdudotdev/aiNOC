@@ -27,7 +27,7 @@ claude
 
 ---
 
-### ST-001 — OSPF Timer Mismatch (R1A)
+### ST-001 - OSPF Timer Mismatch (R1A)
 
 **Protocol**: OSPF | **Device**: R1A (Arista EOS) | **Symptom**: Adjacency down
 
@@ -82,7 +82,7 @@ interface Ethernet4
 
 ---
 
-### ST-002 — EIGRP Passive Interface (R8C)
+### ST-002 - EIGRP Passive Interface (R8C)
 
 **Protocol**: EIGRP | **Device**: R8C (Cisco IOS) | **Symptom**: Neighbor down
 
@@ -137,7 +137,7 @@ router eigrp 20
 
 ---
 
-### ST-003 — Redistribution Break (R3C)
+### ST-003 - Redistribution Break (R3C)
 
 **Protocol**: Redistribution | **Device**: R3C (Cisco IOS) | **Symptom**: Routes missing
 
@@ -189,7 +189,7 @@ router eigrp 10
 
 ---
 
-### ST-004 — Policy-Based Routing Investigation (R8C)
+### ST-004 - Policy-Based Routing Investigation (R8C)
 
 **Protocol**: Routing Policy | **Device**: R8C (Cisco IOS) | **Symptom**: Traffic from R9C to 2.2.2.66 follows asymmetric path
 
@@ -253,7 +253,7 @@ no ip access-list extended 100
 
 ---
 
-### ST-005 — EIGRP Stub/Summary Misconfiguration (R9C)
+### ST-005 - EIGRP Stub/Summary Misconfiguration (R9C)
 
 **Protocol**: EIGRP | **Device**: R9C (Cisco IOS) | **Symptom**: Individual loopback /24 routes advertised instead of /22 summary
 
@@ -320,24 +320,21 @@ cd /home/mcp/mcp-project
 python3 oncall_watcher.py
 ```
 
+Also monitor `/var/log/network.json`:
+```bash
+tail -f /var/log/network.json
+```
+
 Monitor the watcher log in another terminal:
 ```bash
 tail -f /home/mcp/mcp-project/oncall_watcher.log
 ```
 
-Inject an SLA event using:
-```bash
-echo '{"ts":"<ISO_TIMESTAMP>","device":"<DEVICE_IP>","msg":"<SLA_MSG>"}' >> /var/log/network.json
-```
-
-Replace `<ISO_TIMESTAMP>` with current UTC time in ISO 8601 format, e.g.:
-```bash
-TS=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-```
+Generate real IP SLA path failures for On-Call tests.
 
 ---
 
-### OC-001 — OSPF Passive Interface → R4C SLA Failure
+### OC-001 - OSPF Passive Interface → R4C SLA Failure
 
 **SLA Path**: `R4C_TO_R10C` | **Break device**: R3C | **SLA source**: R4C (172.20.20.204)
 
@@ -417,7 +414,7 @@ router ospf 1
 
 ---
 
-### OC-002 — EIGRP Interface Shutdown → R9C SLA Failure
+### OC-002 - EIGRP Interface Shutdown → R9C SLA Failure
 
 **SLA Path**: `R9C_TO_R5C` or `R9C_TO_R11C` | **Break device**: R8C | **SLA source**: R9C (172.20.20.209)
 
@@ -478,7 +475,7 @@ interface Ethernet0/3
 
 ---
 
-### OC-003 — Deferred Event Handling (Storm Prevention)
+### OC-003 - Deferred Event Handling (Storm Prevention)
 
 **Purpose**: Validate that concurrent SLA events during an active session are deferred
 and surfaced in a follow-up review session.
@@ -488,7 +485,7 @@ and surfaced in a follow-up review session.
 1. Start the watcher.
 2. Break R3C OSPF (same as OC-001) and inject the R4C SLA Down event.
 3. **While the agent session is active** (within 30s of injection), inject a second SLA event
-   for a different device — e.g., R9C:
+   for a different device - e.g., R9C:
 
 ```bash
 TS=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
@@ -514,7 +511,7 @@ Second Claude session opens and presents the deferred failure list.
 
 ---
 
-### OC-004 — Stale Lock Cleanup
+### OC-004 - Stale Lock Cleanup
 
 **Purpose**: Validate that a crashed agent session does not permanently block new events.
 
@@ -538,7 +535,7 @@ Watcher startup log shows:
 ```
 No error about locked state. The stale lock was removed automatically.
 
-3. Inject an SLA event — watcher should invoke the agent normally.
+3. Inject an SLA event - watcher should invoke the agent normally.
 
 ---
 
@@ -546,7 +543,7 @@ No error about locked state. The stale lock was removed automatically.
 
 These checks can be done without breaking lab config.
 
-### WB-001 — Non-SLA Events Are Ignored
+### WB-001 - Non-SLA Events Are Ignored
 
 Inject a syslog message that is NOT an SLA Down event:
 ```bash
@@ -554,14 +551,14 @@ echo '{"ts":"2026-01-01T00:00:00Z","device":"172.20.20.201","msg":"%SYS-5-CONFIG
 ```
 Expected: Watcher does **not** invoke agent. Log shows no new `Agent invoked` entry.
 
-### WB-002 — SLA Up Events Are Ignored
+### WB-002 - SLA Up Events Are Ignored
 
 ```bash
 echo '{"ts":"2026-01-01T00:00:00Z","device":"172.20.20.204","msg":"%TRACK-6-STATE: 1 ip sla 1 reachability Down -> Up"}' >> /var/log/network.json
 ```
 Expected: No agent invocation. (Only `Down` transitions trigger.)
 
-### WB-003 — MikroTik Netwatch Event Detected
+### WB-003 - MikroTik Netwatch Event Detected
 
 ```bash
 echo '{"ts":"2026-01-01T00:00:00Z","device":"172.20.20.218","msg":"netwatch,info event down [ type: simple, host: 10.0.0.1 ]"}' >> /var/log/network.json
@@ -597,7 +594,7 @@ cat /home/mcp/mcp-project/cases/lessons.md
 The agent must refuse config pushes outside the maintenance window defined in
 `policy/MAINTENANCE.json` (UTC Mon–Fri 06:00–18:00).
 
-### MW-001 — Change Blocked Outside Window
+### MW-001 - Change Blocked Outside Window
 
 To test this, temporarily edit the maintenance window to exclude the current time
 (or run this test after 18:00 UTC on a weekday / any time on weekend).
@@ -608,26 +605,4 @@ Apply a break, submit a Standalone prompt, and confirm:
 - When user approves, `push_config` returns an error about maintenance window
 - Agent reports the block to the user without retrying
 
-**Do not modify `MAINTENANCE.json` permanently** — restore after testing.
-
----
-
-## Regression Checklist
-
-Run this checklist after any significant change to `MCPServer.py`, `oncall_watcher.py`,
-`platforms/platform_map.py`, or any skill file:
-
-| # | Check | Method |
-|---|-------|--------|
-| 1 | Unit tests pass | `./run_tests.sh unit` |
-| 2 | Integration tests pass | `./run_tests.sh integration` |
-| 3 | OSPF adjacency diagnosis works | ST-001 |
-| 4 | EIGRP passive-interface diagnosis works | ST-002 |
-| 5 | Redistribution diagnosis works | ST-003 |
-| 6 | On-Call watcher detects SLA Down | WB-001 / WB-002 |
-| 7 | On-Call agent invoked and diagnoses correctly | OC-001 or OC-002 |
-| 8 | Case documented in cases.md | Post-test check |
-| 9 | Deferred events handled | OC-003 (if relevant) |
-| 10 | Stale lock cleaned up at startup | OC-004 |
-| 11 | EIGRP stub/summary diagnosis works | ST-006 |
-| 12 | EIGRP redistribution metric diagnosis works | ST-007 |
+**Do not modify `MAINTENANCE.json` permanently** - restore after testing.

@@ -1,12 +1,12 @@
 # ✨ aiNOC
 
-[![Latest Release](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/pdudotdev/aiNOC/releases/tag/2.0.0)
+[![Latest Release](https://img.shields.io/badge/version-3.0.0-blue.svg)](https://github.com/pdudotdev/aiNOC/releases/tag/3.0.0)
 [![Last Commit](https://img.shields.io/github/last-commit/pdudotdev/aiNOC)](https://github.com/pdudotdev/aiNOCcommits/main/)
 
 ## 📖 **Table of Contents**
 - 📜 **Lab Manual**
   - [🔭 Overview](#-overview)
-  - [⭐ What's New in v2.0](#-whats-new-in-v20)
+  - [⭐ What's New in v3.0](#-whats-new-in-v30)
   - [🌱 AI Automation 101](#-ai-automation-101)
   - [♻️ Repository Lifecycle](#%EF%B8%8F-repository-lifecycle)
   - [⚒️ Project Tech Stack](#%EF%B8%8F-project-tech-stack)
@@ -74,8 +74,8 @@ This repository is **NOT** static. I am periodically adding **new features** (de
 
 ## ⚒️ Project Tech Stack
 The main tools and technologies used for building the project:
-- [x] Claude AI (Claude Code)
-- [x] MCP Server (FastMCP)
+- [x] Claude Code
+- [x] MCP (FastMCP)
 - [x] ContainerLab
 - [x] Python
 - [x] Scrapli
@@ -129,8 +129,8 @@ Networking topics in this topology:
   - IP SLA icmp-echo
   - MikroTik Netwatch
   - NAT/PAT on ASBRs
-  - Syslog, NTP
   - Management APIs
+  - Syslog, NTP
 
 ## 🛠️ Environment Setup
 Below you'll find guidance for building the lab before you move to the network topology section.
@@ -276,12 +276,12 @@ For this reason, I'm using **Tabby**:
   - **MikroTik RouterOS**: REST API
 
 **Important files:**
-- [x] Containerlab **lab.yml** file
-- [x] **NETWORK.json** inventory file
-- [x] **INTENT.json** state file
-- [x] **MAINTENANCE.json** policy file
-- [x] **sla_paths/paths.json** file
-- [x] **mcp_tool_map.json** file
+- [x] Containerlab: **lab.yml**
+- [x] Inventory: **NETWORK.json** 
+- [x] State: **INTENT.json**
+- [x] Policy: **MAINTENANCE.json**
+- [x] SLA Paths: **sla_paths/paths.json**
+- [x] Tool Map: **mcp_tool_map.json**
 
 **Network devices:**
 - [x] Router naming convention:
@@ -308,7 +308,7 @@ ROUTER_PASSWORD=admin
 ```
 
 - [x] Router configurations:
-  - Please find all the configuration files under the `/lab_configs` directory
+  - Please find all the configuration files under the [/lab_configs](https://github.com/pdudotdev/aiNOC/tree/main/lab_configs) directory
   - They are the network's fallback configs whenever you use `containerlab redeploy -t lab.yml`
 
 ## 🌱 Starting Fresh
@@ -325,6 +325,7 @@ Now let's go [back](#%EF%B8%8F-repository-lifecycle) to the top of this lab manu
 Expected in version v4.0:
 - [ ] New branch and vendors
 - [ ] Multi-agent architecture
+- [ ] Performance-based SLA
 - [ ] Discord integration
 - [ ] Netbox integration
 - [ ] Jira integration

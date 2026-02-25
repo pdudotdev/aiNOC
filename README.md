@@ -24,7 +24,7 @@
 ## 🔭 Overview
 The purpose of this project is to showcase the capabilities of **Claude Code**, **MCP**, **Python**, and other tools, in regards to troubleshooting and automating network tasks.
 
-Key characteristics of this automation project:
+**Key characteristics:**
 - [x] **Multi-vendor**
 - [x] **Multi-protocol**
 - [x] **Multi-area/multi-AS**
@@ -37,7 +37,7 @@ Operating modes of **aiNOC**:
 - [x] **On-Call mode (OC)**
   - Agent is invoked by SLA Path failure (See On-Call Mode)
 
-High-level architecture:
+**High-level architecture:**
 
 ![arch](topology/ARCHv3.png)
 

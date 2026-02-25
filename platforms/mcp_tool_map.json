@@ -1,0 +1,72 @@
+{
+  "_policy": "Before calling run_show, look up the command category here. If an MCP tool covers it, use that tool instead. run_show is ONLY for commands absent from this map. An empty result from any MCP tool means the feature is not configured on the device — it does NOT mean the query is unsupported. Never fall back to run_show after an empty MCP tool result.",
+
+  "get_ospf": {
+    "platform_map_section": "ospf",
+    "queries": {
+      "ios":      ["neighbors", "database", "borders", "config", "interfaces", "details"],
+      "eos":      ["neighbors", "database", "borders", "config", "interfaces", "details"],
+      "routeros": ["neighbors", "database", "interfaces", "config"]
+    }
+  },
+
+  "get_eigrp": {
+    "platform_map_section": "eigrp",
+    "queries": {
+      "ios":      ["neighbors", "topology", "config", "interfaces"],
+      "eos":      null,
+      "routeros": null
+    },
+    "notes": "EIGRP is IOS-only. Not supported on eos or routeros."
+  },
+
+  "get_bgp": {
+    "platform_map_section": "bgp",
+    "queries": {
+      "ios":      ["summary", "table", "config"],
+      "eos":      ["summary", "table", "config"],
+      "routeros": ["summary", "table", "config"]
+    }
+  },
+
+  "get_routing": {
+    "platform_map_section": "routing_table",
+    "queries": {
+      "ios":      ["ip_route"],
+      "eos":      ["ip_route"],
+      "routeros": ["ip_route"]
+    },
+    "notes": "Pass prefix=<ip> for targeted lookup, omit for full table."
+  },
+
+  "get_routing_policies": {
+    "platform_map_section": "routing_policies",
+    "queries": {
+      "ios":      ["redistribution", "route_maps", "prefix_lists", "policy_based_routing", "access_lists"],
+      "eos":      ["redistribution", "route_maps", "prefix_lists", "access_lists"],
+      "routeros": ["prefix_lists", "route_maps"]
+    },
+    "notes": "policy_based_routing is ios-only. routeros supports only prefix_lists and route_maps."
+  },
+
+  "get_interfaces": {
+    "platform_map_section": "interfaces",
+    "queries": {
+      "ios":      ["interface_status"],
+      "eos":      ["interface_status"],
+      "routeros": ["interface_status"]
+    }
+  },
+
+  "ping": {
+    "platform_map_section": "tools.ping",
+    "queries": null,
+    "notes": "Params: device, destination. Optional: source."
+  },
+
+  "traceroute": {
+    "platform_map_section": "tools.traceroute",
+    "queries": null,
+    "notes": "Params: device, destination. Optional: source."
+  }
+}

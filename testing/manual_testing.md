@@ -32,7 +32,7 @@ claude
 
 #### Setup (break)
 
-Connect to R1A via eAPI or SSH and apply:
+Connect to R1A via SSH and apply:
 ```
 interface Ethernet3
   ip ospf dead-interval 7
@@ -145,7 +145,7 @@ router eigrp 20
 SSH to R3C and remove OSPF→EIGRP redistribution:
 ```
 router eigrp 10
-  redistribute ospf 1 route-map OSPF-TO-EIGRP
+  no redistribute ospf 1 route-map OSPF-TO-EIGRP
 ```
 
 #### Verify break
@@ -205,6 +205,8 @@ interface Ethernet0/3
  ip policy route-map ACCESS-R2-LO
 ```
 
+**NOTE:** This configuration is already default on R8C in this lab.
+
 #### Verify break
 
 From R9C toward R2A loopback:
@@ -227,7 +229,7 @@ Why does R8C forward packets from R9C's 192.168.20.2 interface destined for 2.2.
 4. Calls `get_routing_policies(R8C, "access_lists")` → finds ACL 100 matching host 192.168.20.2 → host 2.2.2.66
 5. Identifies PBR on Et0/3 overriding normal routing decisions
 6. Correctly diagnoses root cause with explanation of ACL match and next-hop override
-7. No fix or documentation needed, it was just a user question.
+7. Agent documents the issue to `cases.md` automatically.
 
 #### Verify (diagnostic only)
 
@@ -379,10 +381,9 @@ Claude Code session opens automatically in the terminal where `oncall_watcher.lo
 7. Proposes removing passive-interface on R3C Ethernet0/3 and Ethernet1/0
 8. Asks user approval (displayed in the agent session)
 9. Applies fix, verifies R4C route to 10.10.10.10 returns
-10. Asks user to document case inside `cases.md`
-11. If step 10 is approved, adds new lesson to `lessons.md`
+10. Agent documents the issue to `cases.md` automatically.
 
-**NOTE: Keep the session open and see step 12 below after verifying the fix!**
+**NOTE: Keep the session open and see step 11 below after verifying the fix!**
 
 #### Verify fix
 
@@ -433,12 +434,12 @@ and surfaced in a follow-up review session.
 
 **NOTE:** The agent is invoked for the **first failure only**. If a second failure occurs during the investigation of the first one, agent skips it - this avoids any agent storms during outages, thus preventing chaotic config changes on multiple devices and increased API costs.
 
-12. After the fix for the first failure is applied and documentation written, type `/exit`
-13. Check second event logged as: `SKIPPED (deferred - occurred during active session) - R9C (...)` in `oncall_watcher.log`:
+11. After the fix for the first failure is applied and documentation written, type `/exit`
+12. Check second event logged as: `SKIPPED (deferred - occurred during active session) - R9C (...)` in `oncall_watcher.log`:
 ```
 [2026-02-25 07:53:52 UTC] SKIPPED (deferred - occurred during active session) - R9C (172.20.20.209): BOM%TRACK-6-STATE: 1 ip sla 1 reachability Up -> Down
 ```
-14. After first agent session closes (user types `/exit`), a **second agent session** opens automatically with the deferred review prompt listing the R9C failure.
+13. After first agent session closes (user types `/exit`), a **second agent session** opens automatically with the deferred review prompt listing the R9C failure.
 ```
 During the previous On-Call session the following SLA path failures were detected but could not be investigated at the time (logged as SKIPPED in oncall_watcher.log):
 
@@ -449,8 +450,8 @@ Would you like to investigate any of these? Reply with a number, 'all', or 'none
 - Number or 'all': I'll investigate using the full On-Call workflow, document the case in cases/cases.md, curate cases/lessons.md, and return to the deferred list for any remaining failures.
 - 'none': Type /exit to close this review session.
 ```
-15. If multiple SLA path failures occured during the initial investigation, they will be listed here and the user can choose a number to investigate a specific issue, or `/exit` to exit.
-16. If the user enters `/exit`, then the agent quits and the monitoring process resumes automatically to listen for new issues:
+14. If multiple SLA path failures occured during the initial investigation, they will be listed here and the user can choose a number to investigate a specific issue, or `/exit` to exit.
+15. If the user enters `/exit`, then the agent quits and the monitoring process resumes automatically to listen for new issues:
 ```
 [Watcher] Deferred review session ended. Resuming monitoring
 ```

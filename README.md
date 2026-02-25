@@ -1835,9 +1835,11 @@ Now let's go [back](#%EF%B8%8F-repository-lifecycle) to the top of this lab manu
 
 ## ⬆️ Planned Upgrades
 Expected in version v4.0:
-- [ ] New troubleshooting scenarios
+- [ ] New branch and vendors
 - [ ] Multi-agent architecture
-- [ ] Extra features: NetBox
+- [ ] Discord integration
+- [ ] Netbox integration
+- [ ] Jira integration
 
 ## 📄 Disclaimer
 This project is intended for educational purposes only. You are responsible for building your own lab environment and meeting the necessary conditions (e.g., RAM/vCPU, router OS images, Claude subscription/API key, etc.).

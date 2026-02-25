@@ -29,6 +29,7 @@ Protocol-specific troubleshooting guides are in the `/skills/` directory. Each s
 | EIGRP neighbor, topology, stub, or metric issue | `skills/eigrp/SKILL.md` |
 | BGP session, route, prefix policy, or default-route issue | `skills/bgp/SKILL.md` |
 | Routes missing after redistribution (R3C and R8C are bidirectional redistribution points) | `skills/redistribution/SKILL.md` |
+| Path selection, PBR, route-map/prefix-list policy, or ECMP behavior | `skills/routing/SKILL.md` |
 | On-Call mode: SLA path failure (any protocol) | `skills/oncall/SKILL.md` FIRST, then the protocol skill |
 
 ## Device Abstraction (`platforms/platform_map.py`)
@@ -79,7 +80,8 @@ Supported methods: `POST` (create resource), `PUT` (replace resource), `PATCH` (
 7. **Upon identifying one or more issues, present them in a Markdown table (| Finding | Detail | Status |) using ✓/✗ for quick visual scanning, along with possible remediation steps for each issue.**
 8. **Always ask the user whether to proceed with the proposed configuration change(s) - and which one of them, if multiple.**
 9. **If changes are approved by the user, always verify if the issue was indeed fixed. Don't assume, don't hope - verify.**
-10. **Document the case in `cases/cases.md` and curate `cases/lessons.md`** per the Case Management section.
+10. **Document the case — execute before step 11**: append the case to `cases/cases.md` and curate `cases/lessons.md` per the Case Management section. Mark the documentation TaskCreate task as `completed`. Do not proceed to step 11 until this is done (or explicitly noted as skipped due to Edit denial).
+11. **Confirm to the user**: "I've documented this as case NNNNN-[device]-TYPE." Then close the session.
 
 ### On-Call Mode (SLA Paths)
 **Considerations**:
@@ -98,8 +100,8 @@ Supported methods: `POST` (create resource), `PUT` (replace resource), `PATCH` (
 6. **After user approves, apply the fix and verify** it resolved the issue. Don't assume — verify.
 
 ### On-Call Mode — Session Closure
-After the fix is applied, verified (Verification: PASSED), and the case is documented in `cases/cases.md`:
-1. **Curate `cases/lessons.md` silently** — if this case produced a new broadly-applicable lesson, add or replace an entry per the Case Management guidelines. Do not announce or discuss the update — just do it. You will mention what was added (if anything) in the summary below.
+After the fix is applied and verified (Verification: PASSED):
+1. **Document the case and curate lessons**: automatically append the case to `cases/cases.md`, then curate `cases/lessons.md` silently per the Case Management guidelines.
 2. **Present a concise summary to the user** (include lessons update if one was made):
    - Issue detected
    - Root cause identified
@@ -112,12 +114,13 @@ After the fix is applied, verified (Verification: PASSED), and the case is docum
 
 ## Case Management
 **IMPORTANT!**
-- Regardless if you operate in **Standalone** or **On-Call** mode, always **document each case** by appending it to the `cases/cases.md` file, after you've done the work.
-- Make sure to not overwrite that file, only append. In time, this file becomes a self-reinforcing RAG that helps you become an even better engineer and learn from previous network issues, mistakes, and applied fixes. The structure of each documented case is at `cases/case_format.md`.
+- Regardless if you operate in **Standalone** or **On-Call** mode, always **document each case** by automatically appending it to the `cases/cases.md` file, after you've done the work. Do not preview or seek approval of the documentation content, just write it. Documentation is never a blocker for session closure.
+- Both `cases/cases.md` and `cases/lessons.md` are pre-approved for Edit in `.claude/settings.local.json` — no user confirmation is required. Use the **Edit** tool directly; do not fall back to Bash for these files.
+- Make sure to not overwrite the `cases.md` file, only append to it. The structure of each documented case is at `cases/case_format.md`.
 - **Case numbering**: Each case gets a globally sequential 5-digit number followed by the primary device and type: `NNNNN-<device>-SLA` (e.g., `00001-R10C-SLA`, `00012-R4C-SLA`). Before creating a new case, read the last case number in `cases/cases.md` and increment by 1.
 
 ### Task Management per Case
-- **Plan First**: Write a plan (before starting) with checkable items for pinpointing the issue to the **Case Handling Plan:** sub-section of the **CASE METADATA** section of the case.
+- **Plan First**: Write a plan (before starting) with checkable items for the full session lifecycle — investigation steps AND a mandatory final item: `[ ] Document case to cases/cases.md and curate lessons.md`. Record this in the **Case Handling Plan:** sub-section of the **CASE METADATA** section, AND use **TaskCreate** to register the same tasks in-session so documentation is visibly tracked. The documentation task must be the last one marked `completed`.
 - **Verify Plan**: Review the plan before starting the troubleshooting process.
 - **Track Progress**: Mark items (steps) complete as you go.
 - **Capture Lessons**: Update the **Lessons Learned:** sub-section of the **CASE METADATA** section of the case with learned lessons from troubleshooting this issue - these are important for future workflow optimizations. Use bullet points for enumerating the lessons and be very specific about what you've learned.
@@ -142,7 +145,7 @@ After the fix is applied, verified (Verification: PASSED), and the case is docum
 
 ## Common Pitfalls
 
-1. **Using `run_show` when a protocol tool already covers the query**: `run_show` is a last-resort fallback ONLY for commands with no mapping in the protocol/routing tools. Before using `run_show`, check `platforms/platform_map.py` for the device's `cli_style`. If the command (or its output category) is mapped there, a protocol tool covers it — use that tool instead. `run_show` is only for commands with NO mapping in `platform_map.py`.
+1. **Using `run_show` when a protocol tool already covers the query**: `run_show` is a last-resort fallback ONLY for commands not covered by any MCP tool. Before using `run_show`, consult `platforms/mcp_tool_map.json` to find the correct MCP tool and valid query values for the command category you need. An empty result from any MCP tool means the feature is not configured on the device — it does NOT mean the query is unsupported. Never fall back to `run_show` after an empty MCP tool result. `run_show` is only for commands with no entry in `platforms/mcp_tool_map.json`.
 2. **Ignoring intent context**: INTENT.json provides critical context info. Reference it to validate configs.
 3. **Modifying policy files**: Never edit MAINTENANCE.json or other policy files directly; they're read-only.
 4. **Confusing cli_style**: `cli_style` (ios/eos/routeros) drives command mapping, not the `platform` field.

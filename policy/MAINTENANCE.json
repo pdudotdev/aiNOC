@@ -3,8 +3,8 @@
   "windows": [
     {
       "days": ["mon", "tue", "wed", "thu", "fri"],
-      "start": "06:00",
-      "end": "18:00"
+      "start": "05:00",
+      "end": "20:00"
     }
   ]
 }

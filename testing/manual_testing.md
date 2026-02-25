@@ -7,9 +7,9 @@ Run these after significant codebase changes to confirm correct agent behavior.
 
 ## Prerequisites
 
-- Lab is up (`sudo clab deploy -t lab.yml`)
+- Lab is up (`sudo clab redeploy -t lab.yml`) for each test
 - All devices reachable (verify with `./run_tests.sh integration`)
-- MCP server running or accessible
+- MCP server running or accessible (check with `claude mcp list`)
 - `oncall_watcher.py` not already running (for On-Call tests)
 
 ---
@@ -51,8 +51,7 @@ Expected: R2C and R3C are **absent** from Area 0 neighbors (Ethernet3/Ethernet4)
 
 #### Agent prompt
 ```
-OSPF adjacencies are down on R1A. R1A shows no OSPF neighbors in Area 0
-(expected: R2C on Ethernet4 and R3C on Ethernet3). Please investigate.
+OSPF adjacencies are down on R1A. R1A shows no OSPF neighbors in Area 0. Please investigate.
 ```
 
 #### Expected agent behavior
@@ -111,8 +110,7 @@ Expected: R8C is **absent**.
 
 #### Agent prompt
 ```
-R9C has lost EIGRP connectivity. R9C cannot reach any OSPF-learned destinations
-(e.g. 172.16.0.0/24). EIGRP neighbor to R8C is down. Please investigate.
+R9C has lost EIGRP connectivity. R9C cannot reach any OSPF-learned destinations. Please investigate.
 ```
 
 #### Expected agent behavior
@@ -148,7 +146,7 @@ router eigrp 20
 SSH to R3C and remove OSPF→EIGRP redistribution:
 ```
 router eigrp 10
-  no redistribute ospf 1 metric 1000 1 255 1 1500
+  redistribute ospf 1 route-map OSPF-TO-EIGRP
 ```
 
 #### Verify break
@@ -163,16 +161,16 @@ Expected: No `D EX` routes for `172.16.0.0/24` (OSPF Area 2 subnet) or other OSP
 ```
 R4C is missing routes to the 172.16.0.0/24 subnet (Area 2 stub network).
 Routes that should be redistributed from OSPF into EIGRP AS10 are absent on R4C.
-Please investigate the redistribution configuration on R3C.
 ```
 
 #### Expected agent behavior
 
 1. Reads `skills/redistribution/SKILL.md`
-2. Calls `get_routing(R4C, "172.16.0.0/24")` → route missing
-3. Calls `get_routing_policies(R3C, "redistribution")` → redistribute statement absent
-4. Proposes restoring: `redistribute ospf 1 metric 1000 1 255 1 1500` under `router eigrp 10`
-5. Asks approval, applies, verifies route returns on R4C
+2. Calls `get_eigrp` and `get_ospf` tools
+3. Calls `get_routing(R4C, "172.16.0.0/24")` → route missing
+4. Calls `get_routing_policies(R3C, "redistribution")` → redistribute statement absent
+5. Proposes restoring: `redistribute ospf 1 metric 1000 1 255 1 1500` under `router eigrp 10`
+6. Asks approval, applies, verifies route returns on R4C
 
 #### Verify fix
 
@@ -191,224 +189,7 @@ router eigrp 10
 
 ---
 
-### ST-004 — OSPF Area Mismatch (R10C)
-
-**Protocol**: OSPF | **Device**: R10C (Cisco IOS) | **Symptom**: Adjacency down, routes missing
-
-#### Setup (break)
-
-SSH to R10C and move its R1A-facing interface to a wrong area:
-```
-router ospf 1
-  no network 172.16.0.4 0.0.0.3 area 2
-  network 172.16.0.4 0.0.0.3 area 3
-```
-
-#### Verify break
-
-From R1A:
-```
-show ip ospf neighbor
-```
-Expected: R10C missing from Area 2 neighbors.
-
-From R10C:
-```
-show ip ospf neighbor
-```
-Expected: No neighbors.
-
-#### Agent prompt
-```
-R10C has lost its OSPF adjacency to R1A. R10C is isolated and has no routes
-to the rest of the network. Please investigate.
-```
-
-#### Expected agent behavior
-
-1. Reads `skills/ospf/SKILL.md`
-2. Calls `get_ospf(R10C, "neighbors")` → no neighbors
-3. Calls `get_ospf(R10C, "config")` → area 3 mismatch
-4. Cross-references with `intent/INTENT.json` (R10C expected in area 2)
-5. Proposes correcting `network 172.16.0.4 0.0.0.3 area 2` on R10C
-6. Asks approval, applies, verifies adjacency restored
-
-#### Verify fix
-
-```
-show ip ospf neighbor
-```
-On R1A: R10C present, state FULL.
-
-#### Teardown (if agent did not fix)
-
-```
-router ospf 1
-  no network 172.16.0.4 0.0.0.3 area 3
-  network 172.16.0.4 0.0.0.3 area 2
-```
-
----
-
-### ST-005 — Interface Shutdown (R9C Upstream)
-
-**Protocol**: EIGRP | **Device**: R8C (Cisco IOS) | **Symptom**: Full connectivity loss from R9C
-
-#### Setup (break)
-
-SSH to R8C:
-```
-interface Ethernet0/3
-  shutdown
-```
-
-#### Verify break
-
-From R9C:
-```
-show ip eigrp neighbors
-show ip route
-```
-Expected: No EIGRP neighbors, no routes (stub isolated).
-
-#### Agent prompt
-```
-R9C has completely lost connectivity. No EIGRP neighbors visible and no routes
-to any remote destination. Please investigate.
-```
-
-#### Expected agent behavior
-
-1. Reads `skills/eigrp/SKILL.md`
-2. Calls `get_eigrp(R9C, "neighbors")` → empty
-3. Calls `get_interfaces(R8C)` → Ethernet0/3 down
-4. Identifies admin-shutdown on R8C Ethernet0/3
-5. Proposes `no shutdown` on R8C Ethernet0/3
-6. Asks approval, applies, verifies R9C neighbor and routes return
-
-#### Verify fix
-
-From R9C: `show ip eigrp neighbors` → R8C present.
-
-#### Teardown (if agent did not fix)
-
-```
-interface Ethernet0/3
-  no shutdown
-```
-
----
-
-### ST-006 — EIGRP Stub/Summary Misconfiguration (R9C)
-
-**Protocol**: EIGRP | **Device**: R9C (Cisco IOS) | **Symptom**: Individual loopback /24 routes advertised instead of /22 summary
-
-#### Setup (break)
-
-SSH to R9C and change stub from `connected summary` to `connected`:
-```
-router eigrp 20
-  eigrp stub connected
-```
-
-#### Verify break
-
-From R1A:
-```
-show ip route | include 9.9
-```
-Expected: Three separate `O E1 9.9.x.0/24` entries visible instead of a single `O E1 9.9.0.0/22`.
-
-#### Agent prompt
-
-```
-Why are all routers in the network showing individual routes to R9C's loopbacks.
-Check this and give me all potential fixes to choose from.
-```
-
-#### Expected agent behavior
-
-1. Reads `skills/eigrp/SKILL.md`
-2. Calls `get_routing(R1A, "9.9.0.0")` → confirms individual /24 routes
-3. Calls `get_eigrp(R9C, "config")` → finds `eigrp stub connected` (no `summary` keyword)
-4. Calls `get_eigrp(R9C, "interfaces")` → identifies summary-address on Et0/1
-5. Identifies conflict: stub `connected` without `summary` overrides and advertises individual connected routes
-6. Presents 3 fix options (change stub to include `summary`, modify interface summary, summarize at R8C)
-7. User selects Option 2 (`eigrp stub connected summary`)
-8. Applies fix, verifies /22 summary now present and individual /24s suppressed on R1A
-
-#### Verify fix
-
-```
-show ip route | include 9.9
-```
-Expected: Single `O E1 9.9.0.0/22` present.
-
-#### Teardown (if agent did not fix)
-
-```
-router eigrp 20
-  eigrp stub connected summary
-```
-
----
-
-### ST-007 — EIGRP Redistribution Missing Metric (R3C)
-
-**Protocol**: Redistribution | **Device**: R3C (Cisco IOS) | **Symptom**: R4C/R5C cannot reach OSPF domain
-
-#### Setup (break)
-
-SSH to R3C and replace the full redistribute command with bare `redistribute ospf 1` (no metric):
-```
-router eigrp 10
-  no redistribute ospf 1 metric 10000 100 255 1 1500
-  redistribute ospf 1
-```
-
-#### Verify break
-
-From R4C:
-```
-show ip route | include D EX
-```
-Expected: No external EIGRP routes (D EX) visible. No routes to OSPF domain.
-
-#### Agent prompt
-
-```
-R4C and R5C cannot reach anything beyond R3C. Verify and give me a few solutions.
-```
-
-#### Expected agent behavior
-
-1. Reads `skills/redistribution/SKILL.md`
-2. Calls `get_routing(R4C)` → confirms no D EX routes
-3. Calls `get_routing_policies(R3C, "redistribution")` → finds `redistribute ospf 1` with no metric
-4. Calls `get_eigrp(R3C, "config")` → identifies "Total Redist Count: 0"
-5. Identifies root cause: missing metric causes EIGRP to treat redistributed routes as unreachable (infinity metric)
-6. Presents multiple solutions (add metric inline, use default-metric, use route-map for selective redistribution)
-7. Applies recommended solution: `redistribute ospf 1 metric 10000 100 255 1 1500`
-8. Verifies D EX routes return on R4C
-
-#### Verify fix
-
-```
-show ip route | include D EX
-```
-Expected: Multiple `D EX` routes present (e.g., `172.16.0.0/24`, `10.x.x.x`/30 subnets, loopback addresses).
-
-#### Teardown (if agent did not fix)
-
-```
-router eigrp 10
-  no redistribute ospf 1
-  redistribute ospf 1 metric 10000 100 255 1 1500
-```
-
----
-
-### ST-008 — Policy-Based Routing Investigation (R8C)
+### ST-004 — Policy-Based Routing Investigation (R8C)
 
 **Protocol**: Routing Policy | **Device**: R8C (Cisco IOS) | **Symptom**: Traffic from R9C to 2.2.2.66 follows asymmetric path
 
@@ -468,6 +249,60 @@ interface Ethernet0/3
   no ip policy route-map ACCESS-R2-LO
 no route-map ACCESS-R2-LO
 no ip access-list extended 100
+```
+
+---
+
+### ST-005 — EIGRP Stub/Summary Misconfiguration (R9C)
+
+**Protocol**: EIGRP | **Device**: R9C (Cisco IOS) | **Symptom**: Individual loopback /24 routes advertised instead of /22 summary
+
+#### Setup (break)
+
+SSH to R9C and change stub from `connected summary` to `connected`:
+```
+router eigrp 20
+  eigrp stub connected
+```
+
+#### Verify break
+
+From R1A:
+```
+show ip route | include 9.9
+```
+Expected: Three separate `O E1 9.9.x.0/24` entries visible instead of a single `O E1 9.9.0.0/22`.
+
+#### Agent prompt
+
+```
+Why are all routers in the network showing individual routes to R9C's loopbacks.
+Check this and give me all potential fixes to choose from.
+```
+
+#### Expected agent behavior
+
+1. Reads `skills/eigrp/SKILL.md`
+2. Calls `get_routing(R1A, "9.9.0.0")` → confirms individual /24 routes
+3. Calls `get_eigrp(R9C, "config")` → finds `eigrp stub connected` (no `summary` keyword)
+4. Calls `get_eigrp(R9C, "interfaces")` → identifies summary-address on Et0/1
+5. Identifies conflict: stub `connected` without `summary` overrides and advertises individual connected routes
+6. Presents 3 fix options (change stub to include `summary`, modify interface summary, summarize at R8C)
+7. User selects Option 2 (`eigrp stub connected summary`)
+8. Applies fix, verifies /22 summary now present and individual /24s suppressed on R1A
+
+#### Verify fix
+
+```
+show ip route | include 9.9
+```
+Expected: Single `O E1 9.9.0.0/22` present.
+
+#### Teardown (if agent did not fix)
+
+```
+router eigrp 20
+  eigrp stub connected summary
 ```
 
 ---

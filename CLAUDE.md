@@ -32,22 +32,15 @@ Protocol-specific troubleshooting guides are in the `/skills/` directory. Each s
 | Path selection, PBR, route-map/prefix-list policy, or ECMP behavior | `skills/routing/SKILL.md` |
 | On-Call mode: SLA path failure (any protocol) | `skills/oncall/SKILL.md` FIRST, then the protocol skill |
 
-## Device Abstraction (`platforms/platform_map.py`)
+## Platform Abstraction (`platforms/platform_map.py`)
 
-Maps device CLI styles to vendor-agnostic command interfaces. Supports three "cli_style" values:
-- **"ios"**: Cisco IOS-XE (SSH via Scrapli)
-- **"eos"**: Arista EOS (HTTPS eAPI)
-- **"routeros"**: MikroTik RouterOS (REST API)
+Maps device `cli_style` to vendor-agnostic command interfaces. Each platform defines commands for OSPF, EIGRP, BGP, routing policies, interfaces, and tools (ping/traceroute).
 
-Each platform defines commands for OSPF, EIGRP, BGP, routing policies, interfaces, and tools (ping/traceroute).
+- **"ios"**: Cisco IOS-XE — SSH via Scrapli + Genie parsing. Commands are show/config CLI statements.
+- **"eos"**: Arista EOS — HTTPS eAPI (aiohttp). Similar show commands, JSON response.
+- **"routeros"**: MikroTik RouterOS — HTTP REST API (aiohttp). Commands are REST paths with method/body.
 
-## Platform-Specific Behaviors
-
-- **Cisco SSH** (Scrapli + Genie): `cli_style="ios"`, commands are show/config statements
-- **Arista eAPI** (aiohttp HTTPS): `cli_style="eos"`, similar show commands, JSON response
-- **MikroTik REST** (aiohttp HTTP): `cli_style="routeros"`, commands are REST paths with method/body
-
-**Example:** `get_ospf(device="R3C", query="neighbors")` automatically translates to `show ip ospf neighbor` on Cisco but returns REST JSON from MikroTik.
+**Example:** `get_ospf(device="R3C", query="neighbors")` translates to `show ip ospf neighbor` on Cisco but returns REST JSON from MikroTik.
 
 **MikroTik RouterOS config push**: `push_config` commands for RouterOS devices must be JSON-encoded REST action strings (not CLI commands). Use `PUT` to create, `PATCH` to modify (by ID), `DELETE` to remove (by ID). **Do NOT use POST** — it fails on RouterOS 7.x. See full reference at `vendors/mikrotik_api_reference.md`.
 
@@ -103,7 +96,7 @@ Vendor-specific API references and behavioral notes live in the `/vendors/` dire
 
 ### On-Call Mode — Session Closure
 After the fix is applied and verified (Verification: PASSED):
-1. **Document the case and curate lessons**: automatically append the case to `cases/cases.md`, then curate `cases/lessons.md` silently per the Case Management guidelines.
+1. **Document the case and curate lessons** per the Case Management section below.
 2. **Present a concise summary to the user** (include lessons update if one was made):
    - Issue detected
    - Root cause identified
@@ -130,20 +123,13 @@ After the fix is applied and verified (Verification: PASSED):
 - **Case Completion**: After the fix is applied and you verify it, mark the Verification: field in `cases.md` as PASSED. Also mark the case as Case Status: **FIXED**.
 - **Curate Lessons**: After documenting a case, read `cases/lessons.md` and decide if any new lesson should be added (if < 10 entries) or should replace a less broadly-applicable entry (if 10 entries). Promotion criteria: the lesson applies broadly to future cases, corrects a methodology mistake, and isn't already captured. Always use the **Edit** tool (not Bash) to update `cases/lessons.md`.
 
-### Don't Skip Planning and Documentation
-- Document each case as per the `cases/case_format.md` template. Make sure the format of each case is always correct, consistent, and professional.
-- Use task management for all troubleshooting work (both Standalone and On-Call modes).
-
-## Your Work Style and Ethics - Tactical Behavior
+## Your Work Style and Ethics
+- **Simplicity first, minimal impact**: every troubleshooting step and proposed fix should be as simple as possible. Only touch what's necessary. Find root causes — no wandering the network or temporary fixes. Senior network engineer (CCIE) standards.
 - Before drawing any conclusions about a network issue, make sure to **collect real data** first from the relevant devices.
 - Always be **precise, professional, concise**, and aim to provide the best solutions with minimal config changes and costs.
 - **Fix mismatches at the source**: when two devices have mismatched configuration (timers, authentication, area types, etc.), identify which side deviates from the standard/default and fix THAT device. Never change correctly-configured peers to match a misconfigured outlier.
 - **Handle denied tool calls gracefully**: if the user denies a tool call (Edit, Bash, push_config, etc.), do not retry the same call or stop the workflow. Acknowledge the denial, skip that step, and continue with the remaining workflow (session closure, /exit prompt, etc.).
 - IMPORTANT: If you're in On-Call mode and you've been invoked by an IP SLA Path failure, **focus solely on that issue** until completion and remediation. You will **NOT** be invoked or deviated from the current case, even if a new issue/invocation occurs in the meantime.
-
-## Maintenance & Policy Notes
-
-- **Maintenance window** (MAINTENANCE.json) is UTC-based and read-only. Do not modify.
 
 ## Common Pitfalls
 
@@ -154,8 +140,3 @@ After the fix is applied and verified (Verification: PASSED):
 5. **Using bash SSH to connect to devices**: Never SSH to devices via the Bash tool. All device interactions must go through MCP tools (`push_config`, `run_show`, `get_ospf`, etc.). Bash SSH bypasses credentials management, transport abstraction, and safety guardrails.
 6. **Using Task sub-agents for MCP tool calls**: Never use the `Task` tool to run network investigations or MCP tool calls (`get_ospf`, `get_eigrp`, `traceroute`, `push_config`, etc.). Sub-agents do not inherit the parent session's MCP connection and will attempt bash workarounds that fail. Call all MCP tools directly in the main agent session.
 7. **Using readMcpResource for local project files**: Never use `readMcpResource` to read local files — it is not supported and will always return an error. Use the **Read** tool instead for all local project files (skill files, `sla_paths/paths.json`, `intent/INTENT.json`, `cases/`, `deferred.json`, etc.).
-
-## Core Principles - Broader Philosophy
-- **Simplicity First**: Make every step of the troubleshooting process and every proposed fix as simple and to the point as possible. Minimize network config impact.
-- **No Laziness**: Find root causes. No wondering around the network or temporary fixes. Senior network engineer (CCIE) standards.
-- **Minimal Impact**: Proposed fixes and changes should only touch what's necessary. Avoid introducing other issues.

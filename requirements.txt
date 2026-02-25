@@ -6,5 +6,5 @@ aiohttp
 python-dotenv
 pydantic
 pytz
-pytest>=8.0.0
-pytest-timeout>=0.5.0
+pytest
+pytest-timeout

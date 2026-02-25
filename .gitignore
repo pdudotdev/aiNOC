@@ -1,10 +1,11 @@
 mcp/
 .env
-__pycache__/
 *.pyc
 *.log
 **/.git/
-.claude/
-.MCPServer.py.swp
-clab-mcp-lab/
 cases/
+.claude/
+__pycache__/
+clab-mcp-lab/
+.MCPServer.py.swp
+testing/agent-testing/integration/test_mcp_tools_results.md

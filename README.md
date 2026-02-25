@@ -32,9 +32,9 @@ Key characteristics of this automation project:
 - [x] **OSI L3-focused**
 
 Operating modes of **aiNOC**:
-- [x] Standalone mode (ST)
+- [x] **Standalone mode (ST)**
   - User specifies network issue and symptomps at the prompt
-- [x] On-Call mode (OC)
+- [x] **On-Call mode (OC)**
   - Agent is invoked by SLA Path failure (See On-Call Mode)
 
 ⚠️ **NOTE**: This project assumes **CCNP**-level knowledge, as well as familiarity with **Linux** terminal commands, **Python** syntax, and multi-vendor **CLIs**.
@@ -46,7 +46,7 @@ Operating modes of **aiNOC**:
 - [x] Optimizing AI performance
 - [x] Less hallucinations and costs
 
-• Updates for reduced hallucinations, command repetition avoidance, API cost reductions:
+• Updates for performance and costs:
 - [x] Added **mcp_tool_map.json** for better use of the MCP tooling
 - [x] Updated **INTENT.json** for cleaner network context
 - [x] Added **CLAUDE.md** with clear workflows and guidance
@@ -70,7 +70,7 @@ This repository is **NOT** static. I am periodically adding **new features** (de
 - [x] **Watch** and **Star** this repository
 
 **Current version**:
-- [x] The current version of this project is **v2.0**
+- [x] **aiNOC v3.0**
 
 ## ⚒️ Project Tech Stack
 The main tools and technologies used for building the project:
@@ -142,7 +142,7 @@ Below you'll find guidance for building the lab before you move to the network t
 - [x] 32 GB RAM memory
 - [x] 50 GB hard disk
 
-**Resource consumption**:
+**Resource consumption**:</br>
 Resources are not yet fully used, but they need to account for peak network usage and future expansions of the lab.
 ```
 free -h

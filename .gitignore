@@ -3,10 +3,11 @@ mcp/
 __pycache__/
 *.pyc
 *.log
+**/.git/
 .claude/
 .MCPServer.py.swp
 **/.config-repo-ar/
-**/.git/
+**/.config-repo-ar/**
 clab-mcp-lab/**
 !clab-mcp-lab/**/
 !clab-mcp-lab/topology-data.json

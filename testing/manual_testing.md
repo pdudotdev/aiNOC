@@ -72,13 +72,6 @@ show ip ospf neighbor
 ```
 Expected: R2C and R3C present, state FULL.
 
-#### Documentation check
-
-Confirm agent appended a new case to `cases/cases.md`:
-- Case ID format: `NNNNN-R1A-SLA`
-- `Verification: PASSED`
-- `Case Status: FIXED`
-
 #### Teardown (if agent did not fix)
 
 ```
@@ -137,10 +130,6 @@ show ip eigrp neighbors
 ```
 On R8C: R9C present. On R9C: R8C present.
 
-#### Documentation check
-
-New case in `cases/cases.md` for R8C, `Verification: PASSED`, `Case Status: FIXED`.
-
 #### Teardown (if agent did not fix)
 
 ```
@@ -192,10 +181,6 @@ From R4C:
 show ip route 172.16.0.0
 ```
 Expected: `D EX 172.16.0.0/24` present.
-
-#### Documentation check
-
-New case in `cases/cases.md` for R3C, `Verification: PASSED`, `Case Status: FIXED`.
 
 #### Teardown (if agent did not fix)
 
@@ -310,6 +295,179 @@ From R9C: `show ip eigrp neighbors` → R8C present.
 ```
 interface Ethernet0/3
   no shutdown
+```
+
+---
+
+### ST-006 — EIGRP Stub/Summary Misconfiguration (R9C)
+
+**Protocol**: EIGRP | **Device**: R9C (Cisco IOS) | **Symptom**: Individual loopback /24 routes advertised instead of /22 summary
+
+#### Setup (break)
+
+SSH to R9C and change stub from `connected summary` to `connected`:
+```
+router eigrp 20
+  eigrp stub connected
+```
+
+#### Verify break
+
+From R1A:
+```
+show ip route | include 9.9
+```
+Expected: Three separate `O E1 9.9.x.0/24` entries visible instead of a single `O E1 9.9.0.0/22`.
+
+#### Agent prompt
+
+```
+Why are all routers in the network showing individual routes to R9C's loopbacks.
+Check this and give me all potential fixes to choose from.
+```
+
+#### Expected agent behavior
+
+1. Reads `skills/eigrp/SKILL.md`
+2. Calls `get_routing(R1A, "9.9.0.0")` → confirms individual /24 routes
+3. Calls `get_eigrp(R9C, "config")` → finds `eigrp stub connected` (no `summary` keyword)
+4. Calls `get_eigrp(R9C, "interfaces")` → identifies summary-address on Et0/1
+5. Identifies conflict: stub `connected` without `summary` overrides and advertises individual connected routes
+6. Presents 3 fix options (change stub to include `summary`, modify interface summary, summarize at R8C)
+7. User selects Option 2 (`eigrp stub connected summary`)
+8. Applies fix, verifies /22 summary now present and individual /24s suppressed on R1A
+
+#### Verify fix
+
+```
+show ip route | include 9.9
+```
+Expected: Single `O E1 9.9.0.0/22` present.
+
+#### Teardown (if agent did not fix)
+
+```
+router eigrp 20
+  eigrp stub connected summary
+```
+
+---
+
+### ST-007 — EIGRP Redistribution Missing Metric (R3C)
+
+**Protocol**: Redistribution | **Device**: R3C (Cisco IOS) | **Symptom**: R4C/R5C cannot reach OSPF domain
+
+#### Setup (break)
+
+SSH to R3C and replace the full redistribute command with bare `redistribute ospf 1` (no metric):
+```
+router eigrp 10
+  no redistribute ospf 1 metric 10000 100 255 1 1500
+  redistribute ospf 1
+```
+
+#### Verify break
+
+From R4C:
+```
+show ip route | include D EX
+```
+Expected: No external EIGRP routes (D EX) visible. No routes to OSPF domain.
+
+#### Agent prompt
+
+```
+R4C and R5C cannot reach anything beyond R3C. Verify and give me a few solutions.
+```
+
+#### Expected agent behavior
+
+1. Reads `skills/redistribution/SKILL.md`
+2. Calls `get_routing(R4C)` → confirms no D EX routes
+3. Calls `get_routing_policies(R3C, "redistribution")` → finds `redistribute ospf 1` with no metric
+4. Calls `get_eigrp(R3C, "config")` → identifies "Total Redist Count: 0"
+5. Identifies root cause: missing metric causes EIGRP to treat redistributed routes as unreachable (infinity metric)
+6. Presents multiple solutions (add metric inline, use default-metric, use route-map for selective redistribution)
+7. Applies recommended solution: `redistribute ospf 1 metric 10000 100 255 1 1500`
+8. Verifies D EX routes return on R4C
+
+#### Verify fix
+
+```
+show ip route | include D EX
+```
+Expected: Multiple `D EX` routes present (e.g., `172.16.0.0/24`, `10.x.x.x`/30 subnets, loopback addresses).
+
+#### Teardown (if agent did not fix)
+
+```
+router eigrp 10
+  no redistribute ospf 1
+  redistribute ospf 1 metric 10000 100 255 1 1500
+```
+
+---
+
+### ST-008 — Policy-Based Routing Investigation (R8C)
+
+**Protocol**: Routing Policy | **Device**: R8C (Cisco IOS) | **Symptom**: Traffic from R9C to 2.2.2.66 follows asymmetric path
+
+#### Setup (break)
+
+SSH to R8C and apply PBR configuration:
+```
+ip access-list extended 100
+ 10 permit ip host 192.168.20.2 host 2.2.2.66
+route-map ACCESS-R2-LO permit 10
+ match ip address 100
+ set ip next-hop 10.1.1.6
+interface Ethernet0/3
+ ip policy route-map ACCESS-R2-LO
+```
+
+#### Verify break
+
+From R8C, trace from R9C toward R2A loopback:
+```
+traceroute 2.2.2.66 source 192.168.20.2
+```
+Expected: Path goes through `10.1.1.6` (R7A), not R6A.
+
+#### Agent prompt
+
+```
+Why does R8C forward packets from R9C destined for 2.2.2.66 to R7A?
+```
+
+#### Expected agent behavior
+
+1. Reads routing policy skills
+2. Calls `get_routing(R8C, "2.2.2.66")` → shows normal ECMP paths (R6A 10.1.1.2 and R7A 10.1.1.6 equal cost)
+3. Calls `get_routing_policies(R8C, "route_maps")` → finds `ACCESS-R2-LO` with `set ip next-hop 10.1.1.6`
+4. Calls `get_routing_policies(R8C, "access_lists")` → finds ACL 100 matching host 192.168.20.2 → host 2.2.2.66
+5. Identifies PBR on Et0/3 overriding normal routing decisions
+6. Correctly diagnoses root cause with explanation of ACL match and next-hop override
+7. Proposes removal of PBR config
+8. User responds "No" → agent gracefully accepts without applying changes
+9. Documents case (diagnostic scenario, no fix applied)
+
+#### Verify (diagnostic only)
+
+Agent correctly identified:
+- PBR as root cause
+- The specific ACL and route-map involved
+- The forced next-hop (10.1.1.6 = R7A)
+- Clear explanation of why traffic is asymmetric
+
+Agent gracefully accepted "No" and documented the case without forcing changes.
+
+#### Teardown (if agent did not fix, restore clean state)
+
+```
+interface Ethernet0/3
+  no ip policy route-map ACCESS-R2-LO
+no route-map ACCESS-R2-LO
+no ip access-list extended 100
 ```
 
 ---
@@ -636,3 +794,5 @@ Run this checklist after any significant change to `MCPServer.py`, `oncall_watch
 | 8 | Case documented in cases.md | Post-test check |
 | 9 | Deferred events handled | OC-003 (if relevant) |
 | 10 | Stale lock cleaned up at startup | OC-004 |
+| 11 | EIGRP stub/summary diagnosis works | ST-006 |
+| 12 | EIGRP redistribution metric diagnosis works | ST-007 |

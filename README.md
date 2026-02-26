@@ -4,7 +4,7 @@
 [![Last Commit](https://img.shields.io/github/last-commit/pdudotdev/aiNOC)](https://github.com/pdudotdev/aiNOCcommits/main/)
 
 ## 📖 **Table of Contents**
-- 📜 **Lab Manual**
+- 📜 **aiNOC Project**
   - [🔭 Overview](#-overview)
   - [🌱 AI Automation 101](#-ai-automation-101)
   - [♻️ Repository Lifecycle](#%EF%B8%8F-repository-lifecycle)
@@ -24,7 +24,7 @@
   - [📜 License](#-license)
 
 ## 🔭 Overview
-The purpose of this project is to showcase the capabilities of **Claude Code**, **MCP**, **Python**, and other tools, in regards to troubleshooting and automating network tasks.
+The purpose of this project is to showcase the capabilities of **Claude Code**, **MCP**, **Python**, and other tools, in regards to troubleshooting network tasks.
 
 **Key characteristics:**
 - [x] **Multi-vendor**
@@ -32,6 +32,7 @@ The purpose of this project is to showcase the capabilities of **Claude Code**, 
 - [x] **Multi-area/multi-AS**
 - [x] **SSH/eAPI/REST API**
 - [x] **OSI L3-focused**
+- [x] **Jira integration**
 
 Operating modes of **aiNOC**:
 - [x] **Standalone mode (ST)**
@@ -54,10 +55,10 @@ Operating modes of **aiNOC**:
 ⚠️ **NOTE**: This project assumes **CCNP**-level knowledge, as well as familiarity with **Linux** terminal commands, **Python** syntax, and multi-vendor **CLIs**.
 
 ## 🌱 AI Automation 101
-If you're completely new to Network Automation using AI & MCP, then you may want to [start here](#-starting-fresh) before moving on with this lab.
+If you're completely new to Network Automation using AI & MCP, then you may want to [start here](#-starting-fresh) before moving on.
 
 ## ♻️ Repository Lifecycle
-This repository is **NOT** static. I am periodically adding **new features** (devices, vendors, protocols, configs, optimizations).
+This repository is **NOT** static. **New features** are being added periodically (vendors, protocols, integrations, optimizations).
 
 **Stay up-to-date**:
 - [x] **Watch** and **Star** this repository
@@ -92,7 +93,7 @@ This repository is **NOT** static. I am periodically adding **new features** (de
 **On-Call Mode** has been introduced in v3.0.
 
 ### What it does, in a nutshell?
-- [x] User configures connectivity paths in the network
+- [x] User configures connectivity paths
   - **Cisco**: IP SLA & tracking
   - **Arista**: Monitor Connectivity
   - **MikroTik**: NetWatch
@@ -113,10 +114,10 @@ This repository is **NOT** static. I am periodically adding **new features** (de
 - [x] Agent invocations are logged to `oncall_watcher.log`
 - [x] Skipped events are deferred for later analysis
 
-**NOTE:** See section [⏰ NTP, Syslog, Vector](#-ntp-syslog-vector) for configs.
+👇 See [⏰ NTP, Syslog, Vector](#-ntp-syslog-vector) for configs.
 
 ## ⚒️ Project Tech Stack
-The main tools and technologies used for building the project:
+Main tools:
 - [x] Claude Code
 - [x] MCP (FastMCP)
 - [x] ContainerLab
@@ -125,9 +126,9 @@ The main tools and technologies used for building the project:
 - [x] Genie
 - [x] REST API
 - [x] EOS eAPI
+- [x] Jira API
 - [x] Vector
 - [x] Ubuntu
-- [x] Jira
 - [x] VS Code
 - [x] VirtualBox/VMware
 
@@ -139,32 +140,31 @@ The main tools and technologies used for building the project:
 ## 🎓 Networking Topics
 Networking topics in this topology:
 - [x] **OSPF multi-area**:
-  - Basic protocol config
+  - Basic protocol config:
     - Reference bandwidth
     - Point-to-point links
     - Passive interfaces
     - MD5 authentication
     - External type 1 routes
-  - Route redistribution EIGRP-OSPF
+    - Default routes injected
   - Route summarization (ABR)
+  - Route redistribution EIGRP-OSPF
   - Route filtering with prefix lists
   - Route filtering with distribute lists
-  - Area types: normal, totally stubby, totally nssa
+  - Area types: normal, stubby, totally NSSA
 
 - [x] **EIGRP**:
-  - Basic protocol config
+  - Basic protocol config:
     - Passive interfaces
     - MD5 authentication
-    - Stub connected/summary
-  - Local summarization
+    - EIGRP stub summary
   - Route redistribution OSPF-EIGRP
-  - Default metric via route map
+  - Default metric via route maps
 
 - [x] **BGP**:
-  - eBGP/iBGP neighbors
-  - iBGP next-hop-self
+  - eBGP, dual-ISP mode
   - ISP default-originate
-  - Prefix list and route map
+  - Prefix lists and route maps
   - Route reflector in ISP A
   - *More to come soon*
 
@@ -172,14 +172,14 @@ Networking topics in this topology:
   - Policy-Based Routing
   - IP SLA icmp-echo
   - MikroTik Netwatch
+  - Arista Monitor
   - NAT/PAT on ASBRs
   - Management APIs
+  - Static routing
   - Syslog, NTP
 
 ## 🛠️ Environment Setup
-Below you'll find guidance for building the lab before you move to the network topology section.
-
-**My VM resources for this lab**:
+**My VM resources for the test lab**:
 - [x] VirtualBox or VMware
 - [x] Ubuntu 24.04.4 VM
 - [x] 12 processor cores
@@ -187,7 +187,7 @@ Below you'll find guidance for building the lab before you move to the network t
 - [x] 50 GB hard disk
 
 **Resource consumption**:</br>
-Resources are not yet fully used, but they need to account for peak network usage and future expansions of the lab.
+Resources are not yet fully used, but they need to account for peak network usage and future expansions.
 ```
 free -h
                total        used        free      shared  buff/cache   available
@@ -195,7 +195,7 @@ Mem:            31Gi        14Gi        10Gi       732Mi       7.8Gi        16Gi
 ```
 
 **Summary checklist**:
-- [x] VirtualBox or VMware, Ubuntu VM
+- [x] VirtualBox or VMware, Ubuntu 24.04
 - [x] Initial configuration:
 ```
 sudo apt update && sudo apt upgrade -y
@@ -399,7 +399,7 @@ sudo ss -lunp | grep 514
 
 ## 📂 Router OS Images
 ### Arista EOS
-- [x] Download the official [Arista cEOS](https://www.arista.com/en/login) image.
+- [x] Download [Arista cEOS](https://www.arista.com/en/login) image.
 - [x] You need to import it into Docker using:
 ```
 sudo docker import ~/cEOS64-lab-4.35.0F.tar.xz ceos:4.35.0F
@@ -408,11 +408,11 @@ docker images
 - [x] Containerlab's [documentation for EOS](https://containerlab.dev/manual/kinds/ceos/)
 
 ### Cisco IOS
-You are responsible of getting your own Cisco IOL file, however here's a starting point:
+You are responsible of getting your own Cisco IOL file, here's a starting point:
 - [x] Containerlab's [documentation for IOL](https://containerlab.dev/manual/kinds/cisco_iol/)
 
 ### MikroTik RouterOS
-- [x] Go to https://mikrotik.com/download/chr
+- [x] Go to: https://mikrotik.com/download/chr
 - [x] Download the **VMDK image**
 - [x] `cp Downloads/chr-7.20.8.vmdk vrnetlab/mikrotik/routeros/`
 - [x] `cd ~/vrnetlab/mikrotik/routeros/`
@@ -476,20 +476,16 @@ For this reason, I'm using **Tabby**:
   - Cisco: `admin:admin`
   - MikroTik: `admin:admin`
 
-- [x] **.env** credentials file:
-```
-ROUTER_USERNAME=admin
-ROUTER_PASSWORD=admin
-```
+- [x] **.env** file: see [**.env.example**](.env.example)
 
 - [x] Router configurations:
-  - Please find all the configuration files under the [/lab_configs](https://github.com/pdudotdev/aiNOC/tree/main/lab_configs) directory
+  - Please find all the configuration files under the [lab_configs](https://github.com/pdudotdev/aiNOC/tree/main/lab_configs) directory
   - They are the network's fallback configs whenever you use `containerlab redeploy -t lab.yml`
 
 ## 🌱 Starting Fresh
-I have a [beginner-friendly course](https://www.udemy.com/course/mcp-server/?referralCode=D62613A8194D2D915B55) on Udemy on how to setup everything from scratch and build your first AI and MCP-based network automation project. Although a shameless plug, I highly recommend going through that course before moving on with this lab.
+I have a [beginner-friendly course](https://www.udemy.com/course/mcp-server/?referralCode=D62613A8194D2D915B55) on Udemy on how to **take your first step** into AI-based Network Automation using Claude Code, MCP Server, Python, Scrapli, and ContainerLab. Although a shameless plug, I highly recommend going through that course before moving on with this project.
 
-Now let's go [back](#%EF%B8%8F-repository-lifecycle) to the top of this lab manual.
+Now let's go [back](#%EF%B8%8F-repository-lifecycle) to the top.
 
 **Join the course to also get:**
 - [x] Full instructor support (Q&A)
@@ -503,7 +499,7 @@ Expected in version v4.0:
 - [ ] Netbox integration
 
 ## 📄 Disclaimer
-This project is intended for educational purposes only. You are responsible for building your own lab environment and meeting the necessary conditions (e.g., RAM/vCPU, router OS images, Claude subscription/API key, etc.).
+This project is intended for educational purposes only. You are responsible for building your own test environment and meeting the necessary conditions (e.g., RAM/vCPU, router OS images, Claude subscription/API key, etc.).
 
 ## 📜 License
 Licensed under the [GNU GENERAL PUBLIC LICENSE Version 3](https://github.com/pdudotdev/aiNOC/blob/main/LICENSE).

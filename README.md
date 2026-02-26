@@ -71,6 +71,7 @@ This repository is **NOT** static. I am periodically adding **new features** (de
 - [x] Improving diagnosis flow
 - [x] Optimizing AI performance
 - [x] Less hallucinations and costs
+- [x] Full Jira API integration
 
 • Updates for MTTR and costs:
 - [x] Added **mcp_tool_map.json** for better use of the MCP tooling
@@ -105,6 +106,10 @@ This repository is **NOT** static. I am periodically adding **new features** (de
 - [x] Once a new log arrives, the agent is invoked
 - [x] Agent gets log details pre-filled in prompt
 - [x] Agent starts troubleshooting procedures
+- [x] Agent creates a new Jira ticket / case
+- [x] Identifies root cause and potential fix
+- [x] Upon user approval, applies and verifies the fix
+- [x] Logs results to Jira ticket and marks completion
 - [x] Agent invocations are logged to `oncall_watcher.log`
 - [x] Skipped events are deferred for later analysis
 
@@ -122,6 +127,7 @@ The main tools and technologies used for building the project:
 - [x] EOS eAPI
 - [x] Vector
 - [x] Ubuntu
+- [x] Jira
 - [x] VS Code
 - [x] VirtualBox/VMware
 

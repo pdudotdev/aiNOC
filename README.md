@@ -14,7 +14,7 @@
   - [📋 Included Vendors](#-included-vendors)
   - [🎓 Networking Topics](#-networking-topics)
   - [🛠️ Environment Setup](#%EF%B8%8F-environment-setup)
-  - [⏰ NTP, Syslog, Vector]()
+  - [⏰ NTP, Syslog, Vector](#-ntp-syslog-vector)
   - [📂 Router OS Images](#-router-os-images)
   - [🖥️ Terminal Management](#%EF%B8%8F-terminal-management)
   - [🔄 Network Topology](#-network-topology)
@@ -48,6 +48,7 @@ Operating modes of **aiNOC**:
 - [x] Opus 4.6
 
 **High-level architecture:**
+
 ![arch](metadata/topology/ARCHv3.png)
 
 ⚠️ **NOTE**: This project assumes **CCNP**-level knowledge, as well as familiarity with **Linux** terminal commands, **Python** syntax, and multi-vendor **CLIs**.
@@ -107,7 +108,7 @@ This repository is **NOT** static. I am periodically adding **new features** (de
 - [x] Agent invocations are logged to `oncall_watcher.log`
 - [x] Skipped events are deferred for later analysis
 
-**NOTE:** See section [⏰ NTP, Syslog, Vector]() for configs.
+**NOTE:** See section [⏰ NTP, Syslog, Vector](#-ntp-syslog-vector) for configs.
 
 ## ⚒️ Project Tech Stack
 The main tools and technologies used for building the project:
@@ -433,7 +434,8 @@ For this reason, I'm using **Tabby**:
 - [x] To quickly create the same connection type for each router, **Duplicate** R1A, then just change the name and IP address.
 
 ## 🔄 Network Topology
-- [x] Current network topology:
+- [x] **Network diagram**:
+
 ![topology](metadata/topology/TOPOLOGY-v2.0.png)
 
 **Connection types:**
@@ -491,10 +493,9 @@ Now let's go [back](#%EF%B8%8F-repository-lifecycle) to the top of this lab manu
 ## ⬆️ Planned Upgrades
 Expected in version v4.0:
 - [ ] New branch and vendors
-- [ ] Performance-based SLA
+- [ ] Performance-based SLAs
 - [ ] Discord integration
 - [ ] Netbox integration
-- [ ] Jira integration
 
 ## 📄 Disclaimer
 This project is intended for educational purposes only. You are responsible for building your own lab environment and meeting the necessary conditions (e.g., RAM/vCPU, router OS images, Claude subscription/API key, etc.).

@@ -6,13 +6,15 @@
 ## 📖 **Table of Contents**
 - 📜 **Lab Manual**
   - [🔭 Overview](#-overview)
-  - [⭐ What's New in v3.0](#-whats-new-in-v30)
   - [🌱 AI Automation 101](#-ai-automation-101)
   - [♻️ Repository Lifecycle](#%EF%B8%8F-repository-lifecycle)
+  - [⭐ What's New in v3.0](#-whats-new-in-v30)
+  - [📞 On-Call Mode](#-on-call-mode)
   - [⚒️ Project Tech Stack](#%EF%B8%8F-project-tech-stack)
   - [📋 Included Vendors](#-included-vendors)
   - [🎓 Networking Topics](#-networking-topics)
   - [🛠️ Environment Setup](#%EF%B8%8F-environment-setup)
+  - [⏰ NTP, Syslog, Vector]()
   - [📂 Router OS Images](#-router-os-images)
   - [🖥️ Terminal Management](#%EF%B8%8F-terminal-management)
   - [🔄 Network Topology](#-network-topology)
@@ -35,34 +37,20 @@ Operating modes of **aiNOC**:
 - [x] **Standalone mode (ST)**
   - User specifies network issue and symptomps at the prompt
 - [x] **On-Call mode (OC)**
-  - Agent is invoked by SLA Path failure (See On-Call Mode)
+  - Agent is invoked by SLA path failure, see [**On-Call Mode**](#-on-call-mode)
+
+**Agent guardrails**:
+- [x] See [guardrails.txt](metadata/about/guardrails.txt)
+
+**Supported models**:
+- [x] Haiku 4.5 (best for costs)
+- [x] Sonnet 4.6
+- [x] Opus 4.6
 
 **High-level architecture:**
-
-![arch](topology/ARCHv3.png)
+![arch](metadata/topology/ARCHv3.png)
 
 ⚠️ **NOTE**: This project assumes **CCNP**-level knowledge, as well as familiarity with **Linux** terminal commands, **Python** syntax, and multi-vendor **CLIs**.
-
-## ⭐ What's New in v3.0
-• The **v3.0.0** upgrade is focused on:
-- [x] Multi-mode operations
-- [x] Improving diagnosis flow
-- [x] Optimizing AI performance
-- [x] Less hallucinations and costs
-
-• Updates for performance and costs:
-- [x] Added **mcp_tool_map.json** for better use of the MCP tooling
-- [x] Updated **INTENT.json** for cleaner network context
-- [x] Added **CLAUDE.md** with clear workflows and guidance
-- [x] Added specific **skills** for troubleshooting coherence
-- [x] Added **cases.md** and **lessons.md** (see **/cases.example**)
-- [x] aiNOC documents each case and curates lessons for future use
-
-• Enhancements:
-- [x] Well-defined test suites
-- [x] Regression tests checklist
-- [x] MikroTik API reference
-- [x] Minor bug fixing
 
 ## 🌱 AI Automation 101
 If you're completely new to Network Automation using AI & MCP, then you may want to [start here](#-starting-fresh) before moving on with this lab.
@@ -75,6 +63,51 @@ This repository is **NOT** static. I am periodically adding **new features** (de
 
 **Current version**:
 - [x] **aiNOC v3.0**
+
+## ⭐ What's New in v3.0
+• The **v3.0.0** upgrade is focused on:
+- [x] Multi-mode operations
+- [x] Improving diagnosis flow
+- [x] Optimizing AI performance
+- [x] Less hallucinations and costs
+
+• Updates for MTTR and costs:
+- [x] Added **mcp_tool_map.json** for better use of the MCP tooling
+- [x] Added **sla_paths.json** for clean paths to monitor
+- [x] Updated **INTENT.json** for cleaner network context
+- [x] Added **CLAUDE.md** with clear workflows and guidance
+- [x] Added specific **skills** for troubleshooting coherence
+- [x] Added **cases.md** and **lessons.md** (see **/cases.example**)
+- [x] aiNOC documents each case and curates lessons for future use
+
+• Enhancements:
+- [x] Well-defined test suites
+- [x] Regression tests checklist
+- [x] MikroTik API reference
+- [x] Minor bug fixing
+
+## 📞 On-Call Mode
+**On-Call Mode** has been introduced in v3.0.
+
+### What it does, in a nutshell?
+- [x] User configures connectivity paths in the network
+  - **Cisco**: IP SLA & tracking
+  - **Arista**: Monitor Connectivity
+  - **MikroTik**: NetWatch
+- [x] User configures **Syslog** and **NTP**
+- [x] User configures **Syslog** server (Vector)
+- [x] User configures **Vector** with correct parser
+- [x] Connectivity path failures are logged to **Syslog**
+- [x] **Vector** listens for and parses multi-vendor logs
+- [x] `sla_paths/paths.json` outlines paths for the agent
+- [x] `oncall_watcher.py` monitors Vector for new logs
+- [x] Once a new log arrives, the agent is invoked
+- [x] Agent gets log details pre-filled in prompt
+- [x] Agent starts troubleshooting procedures
+- [x] Agent invocations are logged to `oncall_watcher.log`
+- [x] Skipped events are deferred for later analysis
+
+**NOTE:** See section [⏰ NTP, Syslog, Vector]() for configs.
 
 ## ⚒️ Project Tech Stack
 The main tools and technologies used for building the project:
@@ -226,6 +259,137 @@ claude mcp add mcp_automation -s user -- ./mcp/bin/python MCPServer.py
 claude mcp list
 ```
 
+## ⏰ NTP, Syslog, Vector
+### Configuring NTP server on Ubuntu
+- [x] Install Chrony:
+```
+sudo apt update
+sudo apt install chrony -y
+sudo nano /etc/chrony/chrony.conf
+```
+
+- [x] Add these lines:
+```
+# Allow containerlab subnet
+allow 172.20.20.0/24
+
+# Listen on all interfaces
+bindaddress 0.0.0.0
+```
+
+- [x] Verifications:
+```
+sudo systemctl restart chrony
+sudo systemctl enable chrony
+
+systemctl is-enabled chrony
+ss -ulpn | grep 123
+chronyc tracking
+chronyc sources
+```
+
+### Configuring NTP on the routers
+- [x] **Arista**:
+```
+ntp server 172.20.20.1 prefer
+show ntp associations
+show ntp status
+```
+
+- [x] **Cisco**:
+```
+ntp server vrf clab-mgmt 172.20.20.1
+ntp source Ethernet0/0
+ntp update-calendar
+show ntp associations
+show ntp status
+```
+
+- [x] **Mikrotik**:
+```
+/system ntp client set enabled=yes
+/system ntp client set servers=172.20.20.1
+/system/ntp/client/print
+```
+
+### Configuring Syslog on the routers
+- [x] **Arista**:
+```
+logging trap 6
+logging format rfc5424
+logging host 172.20.20.1
+```
+
+- [x] **Cisco**:
+```
+logging trap 6 syslog-format rfc5424
+logging host 172.20.20.1 vrf clab-mgmt
+logging source-interface Ethernet0/0 vrf clab-mgmt
+```
+
+- [x] **Mikrotik**:
+```
+/system/logging/action/add name=remoteSyslog target=remote remote=172.20.20.1 remote-port=514 src-address=0.0.0.0  
+/system/logging/action/set remoteSyslog syslog-facility=local7
+/system/logging/action/set remoteSyslog syslog-time-format=bsd-syslog remote-log-format=syslog
+/system logging add action=remoteSyslog topics=netwatch,info
+```
+
+### Installing and configuring Vector
+- [x] Download [Vector](https://vector.dev/download/)
+- [x] Choose .deb and (x86_64 or ARM)
+- [x] `sudo dpkg -i vector_0.53.0-1_amd64.deb`
+- [x] Edit `sudo nano /etc/vector/vector.yaml`:
+```
+data_dir: "/var/lib/vector"
+
+sources:
+  syslog:
+    type: syslog
+    address: "0.0.0.0:514"
+    mode: udp
+
+transforms:
+  sla_events:
+    type: remap
+    inputs: ["syslog"]
+    source: |
+      . = {
+        "ts": .timestamp,
+        "device": .source_ip,
+        "severity": .severity,
+        "facility": .facility,
+        "msg": .message
+      }
+
+sinks:
+  file:
+    type: file
+    inputs: ["sla_events"]
+    path: "/var/log/network.json"
+    encoding:
+      codec: json
+```
+- [x] Create output file & permissions
+```
+sudo touch /var/log/network.json
+sudo chown vector:vector /var/log/network.json
+```
+- [x] Start Vector:
+```
+sudo systemctl restart vector
+sudo systemctl status vector
+```
+- [x] Monitor Vector:
+```
+tail -f /var/log/network.json
+sudo tcpdump -ni any udp port 514
+sudo ss -lunp | grep 514
+```
+
+### Configuring the connectivity paths
+- [x] Already configured in [lab_configs/](https://github.com/pdudotdev/aiNOC/tree/main/lab_configs)
+
 ## 📂 Router OS Images
 ### Arista EOS
 - [x] Download the official [Arista cEOS](https://www.arista.com/en/login) image.
@@ -270,8 +434,7 @@ For this reason, I'm using **Tabby**:
 
 ## 🔄 Network Topology
 - [x] Current network topology:
-
-![topology](topology/TOPOLOGY-v2.0.png)
+![topology](metadata/topology/TOPOLOGY-v2.0.png)
 
 **Connection types:**
 - [x] Multiple connection types, for diversity:

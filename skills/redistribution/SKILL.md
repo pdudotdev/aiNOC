@@ -3,6 +3,8 @@ name: Redistribution Troubleshooting
 description: "Cross-protocol redistribution (OSPF↔EIGRP) — seed metrics, subnets keyword, loop risk, route-map filtering"
 ---
 
+> **PREREQUISITE**: Before investigating redistribution, you MUST have verified that OSPF and/or EIGRP adjacencies are healthy on BOTH sides of the redistribution point. Run `get_ospf(device, "neighbors")` and `get_eigrp(device, "neighbors")`. If any adjacency is missing, fix that first (see `skills/ospf/SKILL.md` or `skills/eigrp/SKILL.md` Adjacency/Neighbor Checklist). Redistribution cannot work if the source protocol's adjacencies are down.
+
 # Redistribution Troubleshooting Skill
 
 ## Scope

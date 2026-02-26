@@ -63,22 +63,88 @@ Vendor-specific API references and behavioral notes live in the `/vendors/` dire
 - **`policy/MAINTENANCE.json`**: Maintenance windows (UTC Mon-Fri 06:00-18:00). Configuration pushes are blocked outside these windows.
 - **`sla_paths/paths.json`**: SLA monitoring paths (IP SLA Path definitions used in network troubleshooting).
 
+## Core Troubleshooting Methodology
+
+These six principles govern ALL troubleshooting — both Standalone and On-Call modes. They are mandatory and ordered. Do not skip or reorder them.
+
+### Principle 1: Map the Expected Path First
+Before running any tool on any device, read `intent/INTENT.json` and construct the expected forwarding path from source to destination. List it explicitly:
+
+**Example**: "Expected path: R9C --(EIGRP AS20)--> R8C --(OSPF Area 1)--> R6A/R7A --(OSPF Area 1)--> R2C --(OSPF Area 0)--> R3C --(EIGRP AS10)--> R5C"
+
+This path is your **investigation scope**. Identify transit points: ABRs, ASBRs, redistribution points. Do not query devices outside this path unless traceroute reveals an unexpected transit device (treat the last on-path device as the breaking hop).
+
+### Principle 2: Localize Before Investigating
+Run a single traceroute from source to destination. The **breaking hop** is the last device that responds (or the source if the first hop times out).
+
+- Traceroute stops at hop N → device at hop N or its next-hop peer is the breaking hop.
+- Traceroute completes → check source device interfaces and neighbors (may be transient).
+- Traceroute transits an off-path device → the last on-path device is the breaking hop.
+
+**One traceroute localizes the issue. Do not run protocol tools on any device before completing this step.**
+
+### Principle 3: Basics First at the Breaking Hop (MANDATORY)
+At the breaking hop, run exactly these two queries before anything else:
+
+```
+get_interfaces(device=<breaking_hop>)
+get_<protocol>(device=<breaking_hop>, query="neighbors")
+```
+
+Where `<protocol>` is `ospf`, `eigrp`, or `bgp` based on the expected path from Principle 1.
+
+**Decision gate — follow strictly:**
+
+| Result | Action |
+|--------|--------|
+| Interface admin-down or line-protocol down | Root cause found. Present findings. Stop. |
+| Zero neighbors or fewer than expected | Go directly to the protocol skill's **Adjacency Checklist**. Do NOT investigate any other device. Do NOT read LSDB, redistribution, or policy sections. |
+| All interfaces Up/Up AND all expected neighbors present | Proceed to deeper investigation (LSDB, redistribution, policies). |
+
+### Principle 4: Never Chase Downstream
+A missing route on device X means X's own adjacencies or config are broken. The correct next step is ALWAYS `get_<protocol>(X, "neighbors")` — NOT checking other devices in the path. Downstream devices are victims of the same failure; investigating them confirms the cascade but never finds the root cause.
+
+### Principle 5: One Device at a Time
+Fully resolve the breaking hop before querying any other device. "Resolve" means: interfaces checked, neighbors verified, and either root cause identified or all basics confirmed healthy. Only then may you move to an adjacent device.
+
+### Principle 6: Simple Before Complex
+Check in this order. Stop as soon as you find a mismatch:
+1. Interface state (up/up?)
+2. Protocol neighbors (present and FULL?)
+3. Timer/hello/dead-interval match
+4. Area/AS number match
+5. Network type match
+6. Authentication match
+7. Passive-interface flag
+8. LSDB / topology table contents
+9. Redistribution config
+10. Route-maps, prefix-lists, policies
+
 ## General Troubleshooting Guidelines
 
 ### Standalone Mode
-1. **User describes symptoms of the network issue at the Claude Code prompt.**
-2. **Test reachability when needed using the available operational tools.**
-3. **Read the relevant protocol skill from the Skills Library** before diving into protocol-level investigation.
-4. **Start with protocol-specific tools and queries.** (not `run_show`)
-5. **Drill down into specifics with routing-specific tools if you need more data.**
-6. **Fallback to the generic run_show tool only if you need more data after all the steps above.**
-7. **Upon identifying one or more issues, present them in a Markdown table (| Finding | Detail | Status |) using ✓/✗ for quick visual scanning, along with possible remediation steps for each issue.**
-8. **Always ask the user whether to proceed with the proposed configuration change(s) - and which one of them, if multiple.**
-9. **If changes are approved by the user, always verify if the issue was indeed fixed. Don't assume, don't hope - verify.**
-10. **Document the case — execute before step 11**: append the case to `cases/cases.md` and curate `cases/lessons.md` per the Case Management section. Mark the documentation TaskCreate task as `completed`. Do not proceed to step 11 until this is done (or explicitly noted as skipped due to Edit denial).
-11. **Confirm to the user**: "I've documented this as case NNNNN-[device]-TYPE." Then close the session.
+1. **Understand the problem**: Read the user's symptom description. Identify source device, destination device/prefix, and the symptom (unreachable, slow, wrong path).
+2. **Map the expected path** (Principle 1): Read `intent/INTENT.json`. List the expected device chain and protocols from source to destination. Identify ABRs, ASBRs, and redistribution points. This is your investigation scope.
+3. **Confirm the issue**: `ping(source_device, destination_ip)` to verify the problem is still present.
+4. **Localize** (Principle 2): `traceroute(source_device, destination_ip)`. Identify the breaking hop — the last responding device or the device before the first timeout.
+5. **Basics first at the breaking hop** (Principle 3 — MANDATORY):
+   - `get_interfaces(breaking_hop)` — check all relevant interfaces are Up/Up.
+   - `get_<protocol>(breaking_hop, "neighbors")` — check protocol adjacencies are healthy.
+   - **Decision gate**:
+     - Interface down → root cause found. Go to step 8.
+     - Zero or missing neighbors → read the protocol skill's **Adjacency Checklist only**. Do NOT read other sections. The checklist identifies timer/area/auth/passive mismatches. Go to step 8 when root cause is found.
+     - All healthy → proceed to step 6.
+6. **Read the relevant protocol skill**: ONLY if step 5 confirms all basics are healthy. Follow the skill's symptom-driven sections for deeper investigation (LSDB, redistribution, policies).
+7. **Deep investigation** (only after steps 5 and 6): Use `get_routing`, `get_routing_policies`, `get_ospf(database)`, `get_eigrp(topology)`, etc. as directed by the protocol skill.
+8. **Present findings**: Markdown table (| Finding | Detail | Status |) using ✓/✗ for quick visual scanning, with proposed remediation steps for each issue.
+9. **Always ask the user whether to proceed with the proposed configuration change(s)** — and which one, if multiple.
+10. **If changes are approved by the user, always verify if the issue was indeed fixed.** Don't assume, don't hope — verify with the same tools that identified the problem.
+11. **Document the case — execute before step 12**: append the case to `cases/cases.md` and curate `cases/lessons.md` per the Case Management section. Mark the documentation TaskCreate task as `completed`. Do not proceed to step 12 until this is done (or explicitly noted as skipped due to Edit denial).
+12. **Confirm to the user**: "I've documented this as case NNNNN-[device]-TYPE." If the user declined documentation, acknowledge it: "No case was documented. Session complete."
 
 ### On-Call Mode (SLA Paths)
+> The **Core Troubleshooting Methodology** above applies to On-Call mode. The oncall skill's Steps 1-2.5 implement Principles 1-5. After Step 2.5, follow Principle 6 (simple before complex) in the protocol skill.
+
 **Considerations**:
 - The user defined IP SLA Paths to monitor reachability between various points in the network.
 - Any failure of such a path is tracked on the source device and logged to the system logs.
@@ -96,7 +162,7 @@ Vendor-specific API references and behavioral notes live in the `/vendors/` dire
 
 ### On-Call Mode — Session Closure
 After the fix is applied and verified (Verification: PASSED):
-1. **Document the case and curate lessons** per the Case Management section below.
+1. **Document the case and curate lessons** per the Case Management section below. If the user declines documentation, skip it gracefully — proceed to steps 2 and 3 (summary + `/exit` prompt) regardless.
 2. **Present a concise summary to the user** (include lessons update if one was made):
    - Issue detected
    - Root cause identified
@@ -140,3 +206,6 @@ After the fix is applied and verified (Verification: PASSED):
 5. **Using bash SSH to connect to devices**: Never SSH to devices via the Bash tool. All device interactions must go through MCP tools (`push_config`, `run_show`, `get_ospf`, etc.). Bash SSH bypasses credentials management, transport abstraction, and safety guardrails.
 6. **Using Task sub-agents for MCP tool calls**: Never use the `Task` tool to run network investigations or MCP tool calls (`get_ospf`, `get_eigrp`, `traceroute`, `push_config`, etc.). Sub-agents do not inherit the parent session's MCP connection and will attempt bash workarounds that fail. Call all MCP tools directly in the main agent session.
 7. **Using readMcpResource for local project files**: Never use `readMcpResource` to read local files — it is not supported and will always return an error. Use the **Read** tool instead for all local project files (skill files, `sla_paths/paths.json`, `intent/INTENT.json`, `cases/`, `deferred.json`, etc.).
+8. **Investigating non-scope devices during on-call** (violates Principle 1): `scope_devices` in paths.json is the complete investigation boundary. If traceroute transits a non-scope device, treat the last in-scope hop as the breaking hop and apply Principle 3. Never run protocol tools on out-of-scope devices.
+9. **Chasing a missing route through downstream devices** (violates Principle 4): A missing route on device X means check X's neighbors first — not other path devices. Missing adjacencies on X explain missing routes everywhere downstream.
+10. **Skipping adjacency check before protocol skill deep-dive** (violates Principle 3): When a breaking hop has zero neighbors, go directly to the Adjacency Checklist. Do not read LSDB, NSSA, redistribution, or path-selection sections. Timer/passive/area/auth checks resolve the vast majority of root causes.

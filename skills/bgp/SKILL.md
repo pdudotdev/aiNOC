@@ -3,6 +3,8 @@ name: BGP Troubleshooting
 description: "BGP session state, missing routes, prefix policy, default-originate, next-hop-self, route reflector — decision trees and checklists"
 ---
 
+> **PREREQUISITE**: Before using this skill, you MUST have already run `get_interfaces(device)` and `get_bgp(device, "summary")` on the target device. If sessions are not Established, go directly to the **Session Checklist** below — do not read the full skill from the top. If all sessions are Established, proceed with the relevant symptom section.
+
 # BGP Troubleshooting Skill
 
 ## Scope

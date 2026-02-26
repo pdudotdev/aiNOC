@@ -3,6 +3,8 @@ name: EIGRP Troubleshooting
 description: "EIGRP neighbor issues, topology/DUAL, stub configuration, redistribution metrics, MD5 auth — symptom-first methodology"
 ---
 
+> **PREREQUISITE**: Before using this skill, you MUST have already run `get_interfaces(device)` and `get_eigrp(device, "neighbors")` on the target device. If neighbors are missing, go directly to the **Neighbor Checklist** below — do not read the full skill from the top. If all neighbors are present with Q=0, proceed with the relevant symptom section.
+
 # EIGRP Troubleshooting Skill
 
 ## Scope

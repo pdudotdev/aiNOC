@@ -97,6 +97,34 @@
         "ecmp_next_hops": ["R2C", "R3C"],
         "egress_devices": ["R2C", "R3C"],
         "scope_devices": ["R11C", "R1A", "R2C", "R3C", "R12C"]
+    },
+    {
+        "id": "R20M_TO_R14C",
+        "description": "R20M with ECMP via egress nodes R18M and R19M to ISP A R14C",
+        "source_device": "R20M",
+        "source_interface": "Ether2",
+        "source_ip": "172.16.77.6",
+        "destination_device": "R14C",
+        "destination_ip": "220.40.40.1",
+        "ecmp": true,
+        "ecmp_node": "R20M",
+        "ecmp_next_hops": ["R18M", "R19M"],
+        "egress_devices": ["R18M", "R19M"],
+        "scope_devices": ["R20M", "R18M", "R19M", "R14C"]
+    },
+    {
+        "id": "R20M_TO_R17C",
+        "description": "R20M with ECMP via egress nodes R18M and R19M to ISP B R17C",
+        "source_device": "R20M",
+        "source_interface": "Ether3",
+        "source_ip": "172.16.77.10",
+        "destination_device": "R17C",
+        "destination_ip": "220.50.50.5",
+        "ecmp": true,
+        "ecmp_node": "R20M",
+        "ecmp_next_hops": ["R18M", "R19M"],
+        "egress_devices": ["R18M", "R19M"],
+        "scope_devices": ["R20M", "R18M", "R19M", "R17C"]
     }
   ]
 }

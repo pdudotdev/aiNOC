@@ -14,7 +14,7 @@ add disabled=no name=default router-id=20.20.20.20
 /routing ospf area
 add disabled=no instance=default name=backbone
 /system logging action
-add name=remoteSyslog remote=172.20.20.1 syslog-facility=local7 target=remote
+add name=remoteSyslog remote=172.20.20.1 remote-log-format=syslog syslog-facility=local7 target=remote
 /ip address
 add address=172.31.255.30/30 interface=ether1 network=172.31.255.28
 add address=172.16.77.6/30 interface=ether2 network=172.16.77.4

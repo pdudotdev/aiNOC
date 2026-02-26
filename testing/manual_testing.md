@@ -268,7 +268,7 @@ Expected: Three separate `O E1 9.9.x.0/24` entries visible instead of a single `
 
 ```
 Why are all routers in the network (e.g. R1A) showing individual routes to R9C's loopbacks.
-Check this and give me all potential fixes to choose from.
+Check this and give me the easiest fix.
 ```
 
 #### Expected agent behavior

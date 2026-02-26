@@ -37,8 +37,9 @@ Using `source_ip` forces the traceroute onto the monitored path. If the source i
 
 Read the output:
 
-- **Path stops at hop N (or fails at source)**: issue is on or before that hop → proceed to Step 3
-- **Timeout at first hop**: issue is on the source device itself (interface down, EIGRP/OSPF neighbor lost, no default route) → proceed to Step 3
+- **Path stops at hop N (or fails at source)**: issue is on or before that hop → proceed to Step 2.5
+- **Timeout at first hop**: issue is on the source device itself (interface down, EIGRP/OSPF neighbor lost, no default route) → proceed to Step 2.5
+- **Path transits a device NOT in scope_devices**: routing anomaly on the last in-scope hop. Do NOT investigate the off-path device. Identify the last hop that IS in scope_devices, run `get_routing(<that_device>, prefix=<destination_ip>)` to confirm it is routing toward the off-path device. Whether the route is present or absent, treat that in-scope device as the breaking hop and proceed immediately to Step 2.5.
 - **Full path to destination**: do NOT conclude "transient" yet — go to Step 1a
 
 ### Step 1a: Source-Device Sanity Check (when traceroute succeeds)
@@ -73,13 +74,13 @@ What would you like to do?
 ```
 
 - If user picks **A**: document the case (mark as FIXED - transient/recovered), curate lessons.md, then proceed to session closure.
-- If user picks **B**: proceed to Step 3 (read the relevant protocol skill and investigate deeper).
+- If user picks **B**: proceed to Step 2.5 on the source device, then Step 3 if neighbors are healthy.
 - If user picks **C**: proceed to session closure without documentation (the event was transient and self-resolved).
 - **Do NOT proceed to Step 3 without the user explicitly requesting it** — unnecessary investigation wastes time and cost.
 
 **Branch B — Issue still present** (source interface down OR expected neighbor missing):
 
-This is the root cause. Proceed directly to Step 3.
+This is the root cause. Proceed directly to Step 2.5.
 
 ---
 
@@ -92,6 +93,31 @@ After fixing one path, verify the ECMP node still has both paths:
 ```
 get_routing(ecmp_node, prefix=<destination or next_hop>)   → expect 2 equal-cost entries
 ```
+
+---
+
+## Step 2.5: Basic Operational Checks (Mandatory — Run Before Anything Else)
+
+**A missing route on the breaking hop is NOT a reason to investigate other devices.**
+It is a reason to check the breaking hop's own state first.
+
+```
+get_interfaces(device=<breaking_hop>)
+get_ospf(device=<breaking_hop>, query="neighbors")    ← or get_eigrp / get_bgp per Step 3 triage table
+```
+
+**Decision gate:**
+
+| Result | Action |
+|--------|--------|
+| Interface down (admin or line-protocol) | Root cause found. Present findings table. Stop. |
+| No neighbors / fewer neighbors than expected | Go directly to the **Adjacency Checklist** in the protocol skill. Do NOT investigate downstream devices. |
+| All neighbors FULL, all interfaces Up/Up | Proceed to Step 3. Issue is in LSDB, RIB, or policy layer. |
+
+> **Do not leave the breaking hop to investigate R5C, R8C, or other devices in the path.**
+> Missing adjacencies on the breaking hop explain missing routes everywhere downstream.
+> Investigating downstream only confirms the problem cascaded — it never finds the root cause.
+> Timer mismatch, passive interface, and area mismatch are caught in one query.
 
 ---
 
@@ -121,6 +147,9 @@ Map the breaking hop to its protocol:
 - **Localize first, don't investigate all**: traceroute narrows to 1-2 devices max before running protocol tools
 - **ECMP: check both paths** before concluding the issue is fixed
 - **Don't re-check devices that are not on the scope_devices list**: out-of-scope devices won't affect this SLA path
+- **Non-scope hop in traceroute: stay in scope**: if traceroute exits scope_devices, do NOT query or investigate the off-path device. Find the last in-scope hop, run `get_routing` on it, then go to Step 2.5.
+- **No route on breaking hop → check its neighbors, not downstream devices**: a missing route means "run Step 2.5 on this device now" — not "go check R5C/R8C to trace the gap". Missing adjacencies on the breaking hop explain missing routes across the entire downstream path.
+- **Step 2.5 before any protocol skill section**: zero neighbors is an adjacency problem (timers, passive, area, auth). Resolve it on the breaking hop before consulting LSDB, redistribution, or area-type sections.
 
 ---
 

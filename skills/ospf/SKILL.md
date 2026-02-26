@@ -3,6 +3,8 @@ name: OSPF Troubleshooting
 description: "OSPF adjacency, LSDB, area types, authentication, route filtering, and redistribution — symptom-first decision trees with lookup tables"
 ---
 
+> **PREREQUISITE**: Before using this skill, you MUST have already run `get_interfaces(device)` and `get_ospf(device, "neighbors")` on the target device. If neighbors are missing or fewer than expected, go directly to the **Adjacency Checklist** below — do not read the full skill from the top. If all neighbors are FULL and all interfaces Up/Up, proceed with the relevant symptom section.
+
 # OSPF Troubleshooting Skill
 
 ## Scope

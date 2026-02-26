@@ -38,7 +38,7 @@ SLA_DOWN_RE = re.compile(
     r'ip\s+sla\s+\d+.*(?:changed.*state|transition).*(?:up|reachable).*(?:to|->)\s*down'
     r'|'
     # MikroTik Netwatch: netwatch,info event down [ type: simple, host: x.x.x.x ]
-    r'netwatch.*event\s+down'
+    r'down\s*\[.*host:'
     r')',
     re.IGNORECASE
 )
@@ -225,11 +225,12 @@ def invoke_deferred_review(device_map):
         "but could not be investigated at the time (logged as SKIPPED in oncall_watcher.log):\n\n"
         f"{event_list}\n\n"
         "Your only task: present this list to the user exactly as shown above and ask:\n"
-        "\"Would you like to investigate any of these? Reply with a number, 'all', or 'none'.\"\n\n"
-        "  - Number or 'all': investigate using the full On-Call workflow (read skills/oncall/SKILL.md\n"
-        "    Step 0 → Step 3). Document the case in cases/cases.md. Curate cases/lessons.md.\n"
-        "    Then return to the deferred list for any remaining failures.\n"
-        "  - 'none': type /exit to close this review session.\n\n"
+        "\"Would you like to investigate any of these?\"\n\n"
+        "  - A number (e.g. 1 or 2): investigate that specific failure using the full On-Call workflow\n"
+        "    (read skills/oncall/SKILL.md Step 0 → Step 3). Document the case in cases/cases.md.\n"
+        "    Curate cases/lessons.md. Then return to the deferred list for any remaining failures.\n"
+        "  - 'all': investigate all failures one by one.\n"
+        "  - /exit: skip and resume watcher monitoring.\n\n"
         "The full event details are also in `deferred.json` if you need to Read them."
     )
 

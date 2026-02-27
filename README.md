@@ -39,6 +39,7 @@ Operating modes of **aiNOC**:
   - User specifies network issue and symptomps at the prompt
 - [x] **On-Call mode (OC)**
   - Agent is invoked by SLA path failure, see [On-Call Mode](#-on-call-mode)
+- [x] See a [**DEMO HERE**](https://www.youtube.com/watch?v=oxSa25R6EgI)
 
 **Important files**:
 - [x] See [file_roles](metadata/about/file_roles.md)
@@ -94,7 +95,6 @@ This repository is **NOT** static. **New features** are being added periodically
 
 ## 📞 On-Call Mode
 **On-Call Mode** has been introduced in v3.0.
-- [x] See a [**DEMO HERE**](https://www.youtube.com/watch?v=oxSa25R6EgI)
 
 ### What it does, in a nutshell?
 - [x] User configures connectivity paths

@@ -177,6 +177,13 @@ def invoke_claude(event, device_map):
         "Please follow the On-Call Mode troubleshooting workflow as defined in your instructions."
     )
 
+    # Remind agent to read lessons from past cases
+    prompt += (
+        "\n\nIMPORTANT: Read cases/lessons.md before starting investigation — "
+        "it contains lessons from past On-Call cases that may be directly relevant."
+    )
+    log_watcher("[lessons.md reminder injected into agent prompt]", console=False)
+
     # Create Jira incident ticket before starting the Claude session
     issue_key = asyncio.run(jira_client.create_issue(
         summary=f"Network Incident: {device_name} — SLA Path Failure",
@@ -195,6 +202,12 @@ def invoke_claude(event, device_map):
             f"Call jira_resolve_issue(issue_key='{issue_key}', resolution_comment=...) at session closure."
         )
         log_watcher(f"Jira ticket created: {issue_key}")
+
+    # Final reminder: lessons evaluation is mandatory (outcome is agent's judgment)
+    prompt += (
+        "\n\nAfter session closure, read and evaluate cases/lessons.md — "
+        "decide whether this case warrants a new lesson or an update to an existing one."
+    )
 
     # Write lock file with this process's PID
     LOCK_FILE.write_text(str(os.getpid()))
@@ -258,6 +271,13 @@ def invoke_deferred_review(device_map):
         "  - /exit: skip and resume watcher monitoring.\n\n"
         "The full event details are also in `deferred.json` if you need to Read them."
     )
+
+    # Remind agent about lessons for deferred investigations
+    prompt += (
+        "\n\nIf you investigate any deferred failure, read cases/lessons.md first "
+        "and evaluate whether the case produces a new lesson worth adding after resolution."
+    )
+    log_watcher("[lessons.md reminder injected into deferred review prompt]", console=False)
 
     LOCK_FILE.write_text(str(os.getpid()))
     log_watcher(f"Deferred review session invoked for {len(events)} failure(s).")

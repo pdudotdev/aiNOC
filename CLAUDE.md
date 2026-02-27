@@ -192,8 +192,8 @@ All case documentation is written to the Jira ticket. There is no local `cases.m
 
 ### Lessons Learned (`cases/lessons.md`)
 - `cases/lessons.md` is pre-approved for Edit in `.claude/settings.local.json` — no user confirmation is required. Use the **Edit** tool directly; do not fall back to Bash.
-- **Review Lessons**: Read `cases/lessons.md` at session start — it contains the top 20 lessons from past cases.
-- **Curate Lessons**: After each case (whether fixed, declined, or transient), read `cases/lessons.md` and decide if any new lesson should be added (if < 20 entries) or should replace a less broadly-applicable entry (if 20 entries). Promotion criteria: the lesson applies broadly to future cases, corrects a methodology mistake, and isn't already captured. Always use the **Edit** tool (not Bash) to update `cases/lessons.md`.
+- **Review Lessons**: Read `cases/lessons.md` at session start — it contains the top 10 lessons from past cases.
+- **Curate Lessons**: After each case (whether fixed, declined, or transient), read `cases/lessons.md` and decide if any new lesson should be added (if < 10 entries) or should replace a less broadly-applicable entry (if 10 entries). Promotion criteria: the lesson applies broadly to future cases, corrects a methodology mistake, and isn't already captured. Always use the **Edit** tool (not Bash) to update `cases/lessons.md`.
 
 ### Task Management per Case
 - **Plan First**: Write a plan (before starting) with checkable items for the full session lifecycle — investigation steps AND a final item: `[ ] Curate lessons.md`. Use **TaskCreate** to register the same tasks in-session so progress is visibly tracked.

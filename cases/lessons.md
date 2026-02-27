@@ -3,7 +3,7 @@
 Curated from resolved cases. Agent updates this file after each case closure.
 Read this file at session start. For detailed case history, refer to Jira tickets.
 
-Maximum 20 entries. Each entry: one actionable lesson in 1-2 lines.
+Maximum 10 entries. Each entry: one actionable lesson in 1-2 lines.
 
 ### Promotion Criteria
 A lesson belongs here if it: (1) applies broadly to future cases, (2) corrects a methodology mistake, and (3) isn't already captured above.
@@ -29,5 +29,3 @@ A lesson belongs here if it: (1) applies broadly to future cases, (2) corrects a
 9. **OSPF passive-interface silently blocks adjacencies**: Passive-interface prevents hello/hello exchange but leaves the physical link and layer 3 connectivity appearing healthy. Result: interface up/up, layer 3 reachable, but neighbor count zero. Always inspect `get_ospf(device, "interfaces")` for `passive` flag when neighbors are absent despite correct parameters (timers, area, auth, network type). This is especially critical on ABRs where passive Area N interfaces prevent inter-area route propagation.
 
 10. **ABR Area 0 interface timer verification is mandatory when inter-area routes vanish**: When inter-area routes (especially to NSSA/stub areas) suddenly disappear while OSPF Area 1 neighbors remain healthy, suspect broken ABR→Area 0 adjacencies caused by timer mismatch. Verify ABR's Area 0 interface dead-intervals match peer routers' (typically 40 sec on Cisco). Dead-intervals of 101/103/30 or other non-standard values prevent neighbor formation on point-to-point links despite up/up interfaces and layer 3 reachability. If `get_ospf(abr, "neighbors")` shows zero neighbors on Area 0 interfaces, always run `show ip ospf interface <interface>` to inspect timers before investigating LSDB or redistribution. Mismatched Area 0 timers cascade to all downstream areas losing both inter-area and external routes.
-
-11. **OSPF EXCHSTART stuck state → check MTU mismatch first**: When OSPF neighbors appear but are stuck in EXCHSTART (not progressing to FULL), MTU mismatch is the most common cause. Hellos (small) succeed but DBD packets (larger) fail or corrupt, halting adjacency. Always compare interface MTU on both sides of a stuck EXCHSTART link (e.g., `show interface X` MTU field). Standard Ethernet IP MTU is 1500 bytes; values like 1400 are non-standard and deviate. Fix the non-standard side, not the peer. If timers and authentication match but EXCHSTART persists, MTU is the next check.

@@ -24,11 +24,12 @@
 aiNOC is a **network troubleshooting framework** for multi-vendor, multi-protocol, multi-area/multi-AS, OSI L2-L4 enterprise networks.
 
 **Key characteristics:**
-- [x] **Multi-vendor support** (3 vendors)
-- [x] **Multi-protocol, L2-L4** (6 skills)
+- [x] **Multi-vendor support**
+- [x] **Multi-protocol, L2-L4**
 - [x] **Multi-area/multi-AS**
-- [x] **SSH/eAPI/REST API** (16 MCP tools)
+- [x] **SSH/eAPI/REST API**
 - [x] **Jira integration**
+- [x] **16 MCP tools, 6 skills**
 - [x] **32 operational guardrails**
 
 Operating modes of **aiNOC**:
@@ -38,7 +39,7 @@ Operating modes of **aiNOC**:
   - Agent is invoked by SLA path failure, see [**On-Call Mode**](#-on-call-mode)
 
 **Important files**:
-- [x] See [**file_roles**](metadata/about/file_roles.md)
+- [x] See [**file roles**](metadata/about/file_roles.md)
 
 **Agent guardrails**:
 - [x] See [**guardrails**](metadata/about/guardrails.md)
@@ -57,7 +58,7 @@ Operating modes of **aiNOC**:
   - *Next video demo coming with v5.0*
 
 ## ♻️ Repository Lifecycle
-This repository is **NOT** static. **New features** are being added periodically (vendors, protocols, integrations, optimizations).
+**New features** are being added periodically (vendors, protocols, integrations, optimizations).
 
 **Stay up-to-date**:
 - [x] **Watch** and **Star** this repository
@@ -133,10 +134,10 @@ v4.0 is a major **quality, reliability, and security** release - no new protocol
 
 | Category | Capabilities |
 |----------|-------------|
-| **OSPF** (multi-area) | Reference bandwidth · Point-to-point links · Passive interfaces · MD5 authentication · External type 1 routes · Default route injection · ABR route summarization · EIGRP ↔ OSPF redistribution · Prefix list filtering · Distribute list filtering · Area types: normal, stubby, totally NSSA |
+| **OSPF** | Reference bandwidth · Point-to-point links · Passive interfaces · MD5 authentication · External type 1 routes · Default route injection · ABR route summarization · EIGRP ↔ OSPF redistribution · Prefix list filtering · Distribute list filtering · Area types: normal, stubby, totally NSSA |
 | **EIGRP** | Passive interfaces · MD5 authentication · Stub summary · OSPF ↔ EIGRP redistribution · Default metric via route maps |
 | **BGP** | eBGP dual-ISP · Default-originate · Prefix lists and route maps · Route reflectors and clients |
-| **Services** | Policy-Based Routing · IP SLA · MikroTik Netwatch · Arista Connectivity Monitor · NAT/PAT on ASBRs · Management APIs · Static routing · Syslog · NTP |
+| **Others** | Policy-Based Routing · IP SLA · MikroTik Netwatch · Arista Connectivity Monitor · NAT/PAT on ASBRs · Management APIs · Static routing · Syslog · NTP |
 
 ## 🛠️ Environment Setup
 **Installation**:

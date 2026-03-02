@@ -83,7 +83,7 @@ v4.0 is a major **quality, reliability, and security** release - no new protocol
 - [x] Structured JSON logging with configurable levels
 
 **Troubleshooting Methodology:**
-- [x] 6 Core Troubleshooting Principles (mandatory, ordered) - see `CLAUDE.md.example`
+- [x] 6 Core Troubleshooting Principles (mandatory, ordered) - see `CLAUDE.example.md`
 - [x] Standalone Mode rewritten - 10 deterministic steps with decision gates
 - [x] Protocol skill prerequisite gates (interfaces + neighbors verified before deep investigation)
 - [x] Role-aware risk assessment using `INTENT.json` and SLA paths

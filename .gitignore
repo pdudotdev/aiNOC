@@ -17,6 +17,6 @@ pending_events.json
 deferred.json
 oncall.lock
 
-# Proprietary behavioral artifacts — use .example versions as templates
+# Proprietary behavioral artifacts — use .example.md versions as templates
 CLAUDE.md
 skills/*/SKILL.md

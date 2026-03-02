@@ -1,6 +1,6 @@
 # ✨ aiNOC
 
-[![Latest Release](https://img.shields.io/badge/version-3.0.0-blue.svg)](https://github.com/pdudotdev/aiNOC/releases/tag/3.0.0)
+[![Latest Release](https://img.shields.io/badge/version-4.0.0-blue.svg)](https://github.com/pdudotdev/aiNOC/releases/tag/4.0.0)
 [![Last Commit](https://img.shields.io/github/last-commit/pdudotdev/aiNOC)](https://github.com/pdudotdev/aiNOCcommits/main/)
 
 ## 📖 **Table of Contents**
@@ -8,7 +8,7 @@
   - [🔭 Overview](#-overview)
   - [🌱 AI Automation 101](#-ai-automation-101)
   - [♻️ Repository Lifecycle](#%EF%B8%8F-repository-lifecycle)
-  - [⭐ What's New in v3.0](#-whats-new-in-v30)
+  - [⭐ What's New in v4.0](#-whats-new-in-v40)
   - [📞 On-Call Mode](#-on-call-mode)
   - [⚒️ Project Tech Stack](#%EF%B8%8F-project-tech-stack)
   - [📋 Included Vendors](#-included-vendors)
@@ -31,7 +31,7 @@ The purpose of this project is to showcase the capabilities of **Claude Code**, 
 - [x] **Multi-protocol**
 - [x] **Multi-area/multi-AS**
 - [x] **SSH/eAPI/REST API**
-- [x] **OSI L3-focused**
+- [x] **OSI L2-L4 focused**
 - [x] **Jira integration**
 
 Operating modes of **aiNOC**:
@@ -39,7 +39,7 @@ Operating modes of **aiNOC**:
   - User specifies network issue and symptomps at the prompt
 - [x] **On-Call mode (OC)**
   - Agent is invoked by SLA path failure, see [On-Call Mode](#-on-call-mode)
-- [x] See a [**DEMO HERE**](https://www.youtube.com/watch?v=oxSa25R6EgI)
+- [x] ▶ See a [**DEMO HERE**](https://www.youtube.com/watch?v=oxSa25R6EgI)
 
 **Important files**:
 - [x] See [file_roles](metadata/about/file_roles.md)
@@ -68,33 +68,48 @@ This repository is **NOT** static. **New features** are being added periodically
 - [x] **Watch** and **Star** this repository
 
 **Current version**:
-- [x] **aiNOC v3.0**
+- [x] **aiNOC v4.0**
 
-## ⭐ What's New in v3.0
-• The **v3.0.0** upgrade is focused on:
-- [x] Multi-mode operations
-- [x] Improving diagnosis flow
-- [x] Optimizing AI performance
-- [x] Less hallucinations and costs
-- [x] Full Jira API integration
+## ⭐ What's New in v4.0
 
-• Updates for MTTR and costs:
-- [x] Added **mcp_tool_map.json** for better use of the MCP tooling
-- [x] Added **sla_paths.json** for clean paths to monitor
-- [x] Updated **INTENT.json** for cleaner network context
-- [x] Added **CLAUDE.md** with clear workflows and guidance
-- [x] Added specific **skills** for troubleshooting coherence
-- [x] Added **cases.md** and **lessons.md** (see **/cases**)
-- [x] Documents to **Jira** and learns lessons for future use
+v4.0 is a major **quality, reliability, and security** release - no new protocols or vendors, but a hardened foundation for v5.0.
 
-• Enhancements:
-- [x] Well-defined test suites
-- [x] Regression tests checklist
-- [x] MikroTik API reference
-- [x] Minor bug fixing
+**Security & Safety:**
+- [x] `push_config` now enforces maintenance windows (blocked outside policy)
+- [x] `run_show` restricted to read-only commands (no config bypass)
+- [x] RouterOS REST validation - forbidden paths blocked, POST rejected
+- [x] Syslog prompt injection mitigation (sanitize + delimiter)
+- [x] Expanded forbidden command set (5 → 14 patterns)
+- [x] TLS/SSL configurable per transport (`VERIFY_TLS`, `ROUTEROS_USE_HTTPS`, `SSH_STRICT_HOST_KEY`)
+
+**Architecture:**
+- [x] Monolithic `MCPServer.py` (798 lines) decomposed into `tools/`, `transport/`, `cache.py`, `input_models/`
+- [x] Bounded LRU cache (256 entries, TTL-based eviction)
+- [x] Connection pooling for eAPI and REST transports
+- [x] HTTP timeouts on all device and Jira connections
+- [x] Structured JSON logging with configurable levels
+
+**Troubleshooting Methodology:**
+- [x] 6 Core Troubleshooting Principles (mandatory, ordered) - see `CLAUDE.md.example`
+- [x] Standalone Mode rewritten - 10 deterministic steps with decision gates
+- [x] Protocol skill prerequisite gates (interfaces + neighbors verified before deep investigation)
+- [x] Role-aware risk assessment using `INTENT.json` and SLA paths
+
+**On-Call & Operational:**
+- [x] SLA recovery (Up) event detection and logging
+- [x] Daemon mode (`-d` flag) with tmux session support
+- [x] systemd service file (`oncall-watcher.service`) for production deployment
+- [x] Pre-change snapshot support in `push_config`
+- [x] Rollback advisory generation for all config changes
+
+**Testing:**
+- [x] 217 unit tests across 9 test files (up from 3 in v3.0)
+- [x] 4 integration test files with `NO_LAB` skip guards
+- [x] 13 manual E2E scenarios (8 standalone, 2 on-call, 3 watcher)
+- [x] Pydantic `Literal` validation on all query parameters
 
 ## 📞 On-Call Mode
-**On-Call Mode** has been introduced in v3.0.
+**On-Call Mode** was introduced in v3.0 and enhanced in v4.0.
 
 ### What it does, in a nutshell?
 - [x] User configures connectivity paths
@@ -503,11 +518,12 @@ Now let's go [back](#%EF%B8%8F-repository-lifecycle) to the top.
 - [x] Access to a private Discord
 
 ## ⬆️ Planned Upgrades
-Expected in version v4.0:
-- [ ] New branch and vendors
+Expected in version v5.0:
+- [ ] Fresh, enterprise-focused topology
+- [ ] New vendors (Juniper, Aruba, SONiC)
+- [ ] New protocols (VRRP/HSRP, STP/MSTP, etc.)
 - [ ] Performance-based SLAs
-- [ ] Netbox integration
-- [ ] Surprise update :)
+- [ ] NetBox integration
 
 ## 📄 Disclaimer
 This project is intended for educational purposes only. You are responsible for building your own test environment and meeting the necessary conditions (e.g., RAM/vCPU, router OS images, Claude subscription/API key, etc.).

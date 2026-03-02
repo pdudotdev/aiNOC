@@ -1,5 +1,5 @@
 # IT-003 — MCP Tool Test Results
-*Generated: 2026-02-25 13:46:54 UTC*
+*Generated: 2026-03-02 11:14:31 UTC*
 
 ## IT-003a: Platform Connectivity
 
@@ -24,8 +24,8 @@
       "compiled_by": "mcpre",
       "rom": "Bootstrap program is Linux",
       "hostname": "R3C",
-      "uptime": "9 hours, 17 minutes",
-      "system_restarted_at": "04:28:45 UTC Wed Feb 25 2026",
+      "uptime": "1 hour, 8 minutes",
+      "system_restarted_at": "10:06:03 UTC Mon Mar 2 2026",
       "system_image": "unix:/iol/iol.bin",
       "last_reload_reason": "Unknown reason",
       "chassis_sn": "14",
@@ -61,10 +61,10 @@
       "imageFormatVersion": "1.0",
       "imageOptimization": "None",
       "kernelVersion": "6.17.0-14-generic",
-      "bootupTimestamp": 1771993713.3228443,
-      "uptime": 33490.58578681946,
-      "memTotal": 32819004,
-      "memFree": 18128880,
+      "bootupTimestamp": 1772445957.4263723,
+      "uptime": 4103.224412679672,
+      "memTotal": 32819000,
+      "memFree": 18609116,
       "isIntlVersion": false
     }
   ]
@@ -80,6 +80,19 @@
   "parsed": [
     {
       ".id": "*2018A000",
+      "bgp": "true",
+      "distance": "20",
+      "dst-address": "0.0.0.0/0",
+      "dynamic": "true",
+      "gateway": "220.50.50.1",
+      "immediate-gw": "220.50.50.1%ether3",
+      "inactive": "false",
+      "routing-table": "main",
+      "scope": "40",
+      "target-scope": "10"
+    },
+    {
+      ".id": "*2018B000",
       "active": "true",
       "bgp": "true",
       "distance": "20",
@@ -93,20 +106,7 @@
       "target-scope": "10"
     },
     {
-      ".id": "*2018B000",
-      "bgp": "true",
-      "distance": "20",
-      "dst-address": "0.0.0.0/0",
-      "dynamic": "true",
-      "gateway": "220.50.50.1",
-      "immediate-gw": "220.50.50.1%ether3",
-      "inactive": "false",
-      "routing-table": "main",
-      "scope": "40",
-      "target-scope": "10"
-    },
-    {
-      ".id": "*2018C030",
+      ".id": "*2018C040",
       "distance": "110",
       "dst-address": "0.0.0.0/0",
       "dynamic": "true",
@@ -125,27 +125,10 @@
       "distance": "0",
       "dst-address": "18.18.18.0/24",
       "dynamic": "true",
-      "ecmp": "true",
       "gateway": "lo1",
       "immediate-gw": "lo1",
       "inactive": "false",
       "local-address": "18.18.18.1%lo1",
-      "routing-table": "main",
-      "scope": "10",
-      "target-scope": "5"
-    },
-    {
-      ".id": "*201830D0",
-      "active": "true",
-      "connect": "true",
-      "distance": "0",
-      "dst-address": "18.18.18.0/24",
-      "dynamic": "true",
-      "ecmp": "true",
-      "gateway": "lo3",
-      "immediate-gw": "lo3",
-      "inactive": "false",
-      "local-address": "18.18.18.3%lo3",
       "routing-table": "main",
       "scope": "10",
       "target-scope": "5"
@@ -215,8 +198,8 @@
       "dst-address": "172.16.77.8/30",
       "dynamic": "true",
       "ecmp": "true",
-      "gateway": "172.16.77.6%ether5",
-      "immediate-gw": "172.16.77.6%ether5",
+      "gateway": "172.16.77.1%ether4",
+      "immediate-gw": "172.16.77.1%ether4",
       "inactive": "false",
       "ospf": "true",
       "routing-table": "main",
@@ -224,14 +207,14 @@
       "target-scope": "10"
     },
     {
-      ".id": "*2018C040",
+      ".id": "*2018C030",
       "active": "true",
       "distance": "110",
       "dst-address": "172.16.77.8/30",
       "dynamic": "true",
       "ecmp": "true",
-      "gateway": "172.16.77.1%ether4",
-      "immediate-gw": "172.16.77.1%ether4",
+      "gateway": "172.16.77.6%ether5",
+      "immediate-gw": "172.16.77.6%ether5",
       "inactive": "false",
       "ospf": "true",
       "routing-table": "main",
@@ -268,7 +251,7 @@
       "target-scope": "5"
     },
     {
-      ".id": "*2018A010",
+      ".id": "*2018B010",
       "active": "true",
       "bgp": "true",
       "distance": "20",
@@ -282,7 +265,7 @@
       "target-scope": "10"
     },
     {
-      ".id": "*2018A020",
+      ".id": "*2018B020",
       "active": "true",
       "bgp": "true",
       "distance": "20",
@@ -296,7 +279,7 @@
       "target-scope": "10"
     },
     {
-      ".id": "*2018B010",
+      ".id": "*2018A030",
       "active": "true",
       "bgp": "true",
       "distance": "20",
@@ -310,7 +293,7 @@
       "target-scope": "10"
     },
     {
-      ".id": "*2018A050",
+      ".id": "*2018B050",
       "bgp": "true",
       "distance": "20",
       "dst-address": "200.50.50.0/30",
@@ -323,7 +306,7 @@
       "target-scope": "10"
     },
     {
-      ".id": "*2018B020",
+      ".id": "*2018A040",
       "active": "true",
       "bgp": "true",
       "distance": "20",
@@ -337,7 +320,7 @@
       "target-scope": "10"
     },
     {
-      ".id": "*2018A060",
+      ".id": "*2018B060",
       "bgp": "true",
       "distance": "20",
       "dst-address": "200.50.50.4/30",
@@ -365,7 +348,7 @@
       "target-scope": "5"
     },
     {
-      ".id": "*2018A030",
+      ".id": "*2018B030",
       "bgp": "true",
       "distance": "20",
       "dst-address": "220.40.40.0/30",
@@ -378,7 +361,7 @@
       "target-scope": "10"
     },
     {
-      ".id": "*2018A040",
+      ".id": "*2018B040",
       "active": "true",
       "bgp": "true",
       "distance": "20",
@@ -407,7 +390,7 @@
       "target-scope": "5"
     },
     {
-      ".id": "*2018B030",
+      ".id": "*2018A010",
       "bgp": "true",
       "distance": "20",
       "dst-address": "220.50.50.0/30",
@@ -420,7 +403,7 @@
       "target-scope": "10"
     },
     {
-      ".id": "*2018A070",
+      ".id": "*2018B070",
       "bgp": "true",
       "distance": "20",
       "dst-address": "220.50.50.0/30",
@@ -433,7 +416,7 @@
       "target-scope": "10"
     },
     {
-      ".id": "*2018B040",
+      ".id": "*2018A020",
       "active": "true",
       "bgp": "true",
       "distance": "20",
@@ -447,7 +430,7 @@
       "target-scope": "10"
     },
     {
-      ".id": "*2018A080",
+      ".id": "*2018B080",
       "bgp": "true",
       "distance": "20",
       "dst-address": "220.50.50.4/30",
@@ -495,15 +478,15 @@
                     "opaqueLsaSupport": false,
                     "doNotUseInRouteCalc": false
                   },
-                  "inactivity": 1772027237.9383678,
+                  "inactivity": 1772450091.6726675,
                   "details": {
                     "areaId": "0.0.0.0",
                     "designatedRouter": "0.0.0.0",
                     "backupDesignatedRouter": "0.0.0.0",
-                    "numberOfStateChanges": 6,
-                    "stateTime": 1772009729.938387,
+                    "numberOfStateChanges": 7,
+                    "stateTime": 1772446043.6726813,
                     "inactivityDefers": 0,
-                    "retransmissionCount": 0,
+                    "retransmissionCount": 1,
                     "bfdState": "adminDown",
                     "bfdRequestSent": false,
                     "grHelperTimer": null,
@@ -528,15 +511,15 @@
                     "opaqueLsaSupport": false,
                     "doNotUseInRouteCalc": false
                   },
-                  "inactivity": 1772027238.938532,
+                  "inactivity": 1772450099.6727834,
                   "details": {
                     "areaId": "0.0.0.0",
                     "designatedRouter": "0.0.0.0",
                     "backupDesignatedRouter": "0.0.0.0",
                     "numberOfStateChanges": 7,
-                    "stateTime": 1772020368.9385433,
+                    "stateTime": 1772446045.672806,
                     "inactivityDefers": 0,
-                    "retransmissionCount": 2,
+                    "retransmissionCount": 3,
                     "bfdState": "adminDown",
                     "bfdRequestSent": false,
                     "grHelperTimer": null,
@@ -561,15 +544,15 @@
                     "opaqueLsaSupport": false,
                     "doNotUseInRouteCalc": false
                   },
-                  "inactivity": 1772027241.9386666,
+                  "inactivity": 1772450099.672907,
                   "details": {
                     "areaId": "0.0.0.2",
                     "designatedRouter": "0.0.0.0",
                     "backupDesignatedRouter": "0.0.0.0",
                     "numberOfStateChanges": 7,
-                    "stateTime": 1771993801.9386773,
+                    "stateTime": 1772446048.6729147,
                     "inactivityDefers": 0,
-                    "retransmissionCount": 1,
+                    "retransmissionCount": 0,
                     "bfdState": "adminDown",
                     "bfdRequestSent": false,
                     "grHelperTimer": null,
@@ -594,15 +577,15 @@
                     "opaqueLsaSupport": false,
                     "doNotUseInRouteCalc": false
                   },
-                  "inactivity": 1772027235.9388402,
+                  "inactivity": 1772450093.6729987,
                   "details": {
                     "areaId": "0.0.0.2",
                     "designatedRouter": "0.0.0.0",
                     "backupDesignatedRouter": "0.0.0.0",
                     "numberOfStateChanges": 7,
-                    "stateTime": 1771993803.9388523,
+                    "stateTime": 1772446044.6730063,
                     "inactivityDefers": 0,
-                    "retransmissionCount": 0,
+                    "retransmissionCount": 2,
                     "bfdState": "adminDown",
                     "bfdRequestSent": false,
                     "grHelperTimer": null,
@@ -639,26 +622,26 @@
                   "Ethernet0/2": {
                     "eigrp_nbr": {
                       "192.168.10.2": {
-                        "peer_handle": 1,
+                        "peer_handle": 0,
                         "hold": 13,
-                        "uptime": "03:14:15",
-                        "srtt": 0.001,
+                        "uptime": "01:06:36",
+                        "srtt": 0.002,
                         "rto": 100,
                         "q_cnt": 0,
-                        "last_seq_number": 194
+                        "last_seq_number": 26
                       }
                     }
                   },
                   "Ethernet0/1": {
                     "eigrp_nbr": {
                       "192.168.10.6": {
-                        "peer_handle": 0,
-                        "hold": 10,
-                        "uptime": "03:14:16",
-                        "srtt": 0.001,
+                        "peer_handle": 1,
+                        "hold": 12,
+                        "uptime": "01:06:36",
+                        "srtt": 0.007,
                         "rto": 100,
                         "q_cnt": 0,
-                        "last_seq_number": 191
+                        "last_seq_number": 28
                       }
                     }
                   }
@@ -724,20 +707,20 @@
       "fp-rx-packet": "0",
       "fp-tx-byte": "0",
       "fp-tx-packet": "0",
-      "last-link-up-time": "2026-02-25 04:29:47",
+      "last-link-up-time": "2026-03-02 10:07:06",
       "link-downs": "0",
-      "mac-address": "0C:00:0F:87:79:00",
+      "mac-address": "0C:00:E6:1F:95:00",
       "mtu": "1500",
       "name": "ether1",
       "running": "true",
-      "rx-byte": "264237",
+      "rx-byte": "22004",
       "rx-drop": "0",
       "rx-error": "0",
-      "rx-packet": "2762",
-      "tx-byte": "4178091",
+      "rx-packet": "293",
+      "tx-byte": "536629",
       "tx-drop": "0",
       "tx-error": "0",
-      "tx-packet": "15502",
+      "tx-packet": "1997",
       "tx-queue-drop": "0",
       "type": "ether"
     },
@@ -751,20 +734,20 @@
       "fp-rx-packet": "0",
       "fp-tx-byte": "0",
       "fp-tx-packet": "0",
-      "last-link-up-time": "2026-02-25 04:29:47",
+      "last-link-up-time": "2026-03-02 10:07:06",
       "link-downs": "0",
-      "mac-address": "AA:C1:AB:80:13:9B",
+      "mac-address": "AA:C1:AB:DE:84:27",
       "mtu": "1500",
       "name": "ether2",
       "running": "true",
-      "rx-byte": "1126408",
+      "rx-byte": "138309",
       "rx-drop": "0",
       "rx-error": "0",
-      "rx-packet": "8864",
-      "tx-byte": "1393873",
+      "rx-packet": "1083",
+      "tx-byte": "172124",
       "tx-drop": "0",
       "tx-error": "0",
-      "tx-packet": "12783",
+      "tx-packet": "1579",
       "tx-queue-drop": "0",
       "type": "ether"
     },
@@ -778,20 +761,20 @@
       "fp-rx-packet": "0",
       "fp-tx-byte": "0",
       "fp-tx-packet": "0",
-      "last-link-up-time": "2026-02-25 04:29:47",
+      "last-link-up-time": "2026-03-02 10:07:06",
       "link-downs": "0",
-      "mac-address": "AA:C1:AB:A1:C4:8C",
+      "mac-address": "AA:C1:AB:EC:09:59",
       "mtu": "1500",
       "name": "ether3",
       "running": "true",
-      "rx-byte": "840676",
+      "rx-byte": "100147",
       "rx-drop": "0",
       "rx-error": "0",
-      "rx-packet": "6696",
-      "tx-byte": "1133026",
+      "rx-packet": "789",
+      "tx-byte": "137524",
       "tx-drop": "0",
       "tx-error": "0",
-      "tx-packet": "9915",
+      "tx-packet": "1187",
       "tx-queue-drop": "0",
       "type": "ether"
     },
@@ -805,20 +788,20 @@
       "fp-rx-packet": "0",
       "fp-tx-byte": "0",
       "fp-tx-packet": "0",
-      "last-link-up-time": "2026-02-25 04:29:47",
+      "last-link-up-time": "2026-03-02 10:07:06",
       "link-downs": "0",
-      "mac-address": "AA:C1:AB:C9:B1:35",
+      "mac-address": "AA:C1:AB:C2:6A:3C",
       "mtu": "1500",
       "name": "ether4",
       "running": "true",
-      "rx-byte": "865253",
+      "rx-byte": "107457",
       "rx-drop": "0",
       "rx-error": "0",
-      "rx-packet": "7056",
-      "tx-byte": "1158028",
+      "rx-packet": "890",
+      "tx-byte": "144074",
       "tx-drop": "0",
       "tx-error": "0",
-      "tx-packet": "10279",
+      "tx-packet": "1290",
       "tx-queue-drop": "0",
       "type": "ether"
     },
@@ -832,20 +815,20 @@
       "fp-rx-packet": "0",
       "fp-tx-byte": "0",
       "fp-tx-packet": "0",
-      "last-link-up-time": "2026-02-25 04:29:47",
+      "last-link-up-time": "2026-03-02 10:07:06",
       "link-downs": "0",
-      "mac-address": "AA:C1:AB:4F:6E:1E",
+      "mac-address": "AA:C1:AB:7E:CB:06",
       "mtu": "1500",
       "name": "ether5",
       "running": "true",
-      "rx-byte": "1672057",
+      "rx-byte": "204529",
       "rx-drop": "0",
       "rx-error": "0",
-      "rx-packet": "17199",
-      "tx-byte": "1405044",
+      "rx-packet": "2084",
+      "tx-byte": "170947",
       "tx-drop": "0",
       "tx-error": "0",
-      "tx-packet": "13264",
+      "tx-packet": "1592",
       "tx-queue-drop": "0",
       "type": "ether"
     },
@@ -857,7 +840,7 @@
       "fp-rx-packet": "0",
       "fp-tx-byte": "0",
       "fp-tx-packet": "0",
-      "last-link-up-time": "2026-02-25 04:29:37",
+      "last-link-up-time": "2026-03-02 10:06:56",
       "link-downs": "0",
       "mac-address": "00:00:00:00:00:00",
       "mtu": "65536",
@@ -885,9 +868,9 @@
       "fp-tx-byte": "0",
       "fp-tx-packet": "0",
       "l2mtu": "65535",
-      "last-link-up-time": "2026-02-25 04:29:54",
+      "last-link-up-time": "2026-03-02 10:07:13",
       "link-downs": "0",
-      "mac-address": "42:CB:8A:1D:B3:09",
+      "mac-address": "22:33:25:1D:9C:FF",
       "mtu": "auto",
       "name": "lo1",
       "running": "true",
@@ -895,10 +878,10 @@
       "rx-drop": "0",
       "rx-error": "0",
       "rx-packet": "0",
-      "tx-byte": "767923",
+      "tx-byte": "93196",
       "tx-drop": "0",
       "tx-error": "0",
-      "tx-packet": "4461",
+      "tx-packet": "543",
       "tx-queue-drop": "0",
       "type": "bridge"
     }
@@ -926,13 +909,13 @@
         "update": {
           "from": "192.168.10.5",
           "interface": "Ethernet0/1",
-          "age": "03:14:16"
+          "age": "01:06:36"
         },
         "paths": {
           "1": {
             "nexthop": "192.168.10.5",
             "from": "192.168.10.5",
-            "age": "03:14:16",
+            "age": "01:06:36",
             "interface": "Ethernet0/1",
             "prefer_non_rib_labels": false,
             "merge_labels": false,
@@ -956,7 +939,7 @@
   "parsed": [
     {
       "messages": [
-        "PING 10.1.1.5 (10.1.1.5) 72(100) bytes of data.\n80 bytes from 10.1.1.5: icmp_seq=1 ttl=255 time=0.515 ms\n80 bytes from 10.1.1.5: icmp_seq=2 ttl=255 time=0.209 ms\n80 bytes from 10.1.1.5: icmp_seq=3 ttl=255 time=0.292 ms\n80 bytes from 10.1.1.5: icmp_seq=4 ttl=255 time=0.209 ms\n80 bytes from 10.1.1.5: icmp_seq=5 ttl=255 time=0.319 ms\n\n--- 10.1.1.5 ping statistics ---\n5 packets transmitted, 5 received, 0% packet loss, time 2ms\nrtt min/avg/max/mdev = 0.209/0.308/0.515/0.112 ms, ipg/ewma 0.468/0.410 ms\n"
+        "PING 10.1.1.5 (10.1.1.5) 72(100) bytes of data.\n80 bytes from 10.1.1.5: icmp_seq=1 ttl=255 time=0.287 ms\n80 bytes from 10.1.1.5: icmp_seq=2 ttl=255 time=0.219 ms\n80 bytes from 10.1.1.5: icmp_seq=3 ttl=255 time=0.176 ms\n80 bytes from 10.1.1.5: icmp_seq=4 ttl=255 time=0.164 ms\n80 bytes from 10.1.1.5: icmp_seq=5 ttl=255 time=0.172 ms\n\n--- 10.1.1.5 ping statistics ---\n5 packets transmitted, 5 received, 0% packet loss, time 1ms\nrtt min/avg/max/mdev = 0.164/0.203/0.287/0.045 ms, ipg/ewma 0.270/0.243 ms\n"
       ]
     }
   ]
@@ -969,7 +952,7 @@
   "device": "R8C",
   "cli_style": "ios",
   "cache_hit": false,
-  "raw": "route-map OSPF-TO-EIGRP, permit, sequence 10\n  Match clauses:\n  Set clauses:\n    metric 1000000 1 255 1 1500\n  Policy routing matches: 0 packets, 0 bytes\nroute-map ACCESS-R2-LO, permit, sequence 10\n  Match clauses:\n    ip address (access-lists): 100\n  Set clauses:\n    ip next-hop 10.1.1.6\n  Policy routing matches: 32 packets, 2190 bytes"
+  "raw": "route-map OSPF-TO-EIGRP, permit, sequence 10\n  Match clauses:\n  Set clauses:\n    metric 1000000 1 255 1 1500\n  Policy routing matches: 0 packets, 0 bytes\nroute-map ACCESS-R2-LO, permit, sequence 10\n  Match clauses:\n    ip address (access-lists): 100\n  Set clauses:\n    ip next-hop 10.1.1.6\n  Policy routing matches: 0 packets, 0 bytes"
 }
 ```
 
@@ -980,18 +963,6 @@
   "cli_style": "routeros",
   "cache_hit": false,
   "parsed": [
-    {
-      ".section": "0",
-      "address": "172.16.77.9",
-      "avg": "0.5",
-      "best": "0.5",
-      "last": "0.5",
-      "loss": "0",
-      "sent": "1",
-      "status": "",
-      "std-dev": "0",
-      "worst": "0.5"
-    },
     {
       ".section": "0",
       "address": "172.16.77.2",
@@ -1019,20 +990,20 @@
       "ipV4Neighbors": [
         {
           "address": "10.1.1.10",
-          "age": 7164,
+          "age": 4021,
           "hwAddress": "aabb.cc00.0d20",
           "interface": "Ethernet1"
         },
         {
           "address": "10.1.1.5",
-          "age": 8350,
+          "age": 4094,
           "hwAddress": "aabb.cc00.1320",
           "interface": "Ethernet2"
         },
         {
           "address": "172.20.20.1",
           "age": 0,
-          "hwAddress": "167c.6efc.feac",
+          "hwAddress": "b637.a93a.176f",
           "interface": "Management0"
         }
       ],
@@ -1063,11 +1034,11 @@
     "cli_style": "ios",
     "cache_hit": true,
     "parsed": {
-      "time": "13:46:46.575",
+      "time": "11:14:23.406",
       "timezone": "UTC",
-      "day_of_week": "Wed",
-      "month": "Feb",
-      "day": "25",
+      "day_of_week": "Mon",
+      "month": "Mar",
+      "day": "2",
       "year": "2026"
     }
   },
@@ -1076,11 +1047,11 @@
     "cli_style": "ios",
     "cache_hit": true,
     "parsed": {
-      "time": "13:46:46.575",
+      "time": "11:14:23.406",
       "timezone": "UTC",
-      "day_of_week": "Wed",
-      "month": "Feb",
-      "day": "25",
+      "day_of_week": "Mon",
+      "month": "Mar",
+      "day": "2",
       "year": "2026"
     }
   },
@@ -1089,11 +1060,11 @@
     "cli_style": "ios",
     "cache_hit": false,
     "parsed": {
-      "time": "13:46:52.879",
+      "time": "11:14:29.631",
       "timezone": "UTC",
-      "day_of_week": "Wed",
-      "month": "Feb",
-      "day": "25",
+      "day_of_week": "Mon",
+      "month": "Mar",
+      "day": "2",
       "year": "2026"
     }
   }
@@ -1111,14 +1082,21 @@
     "transport_used": "asyncssh",
     "result": "interface Loopback99\nip address 10.99.99.1 255.255.255.255\nno shutdown\n"
   },
-  "execution_time_seconds": 0.62,
+  "execution_time_seconds": 0.59,
   "risk_assessment": {
     "risk": "high",
     "devices": 1,
     "reasons": [
+      "R3C has critical role(s): ASBR, IGP_REDISTRIBUTOR, NAT_EDGE",
+      "Change affects 6 SLA monitoring paths",
       "Interface disruption possible"
     ]
-  }
+  },
+  "rollback_advisory": [
+    "no interface Loopback99",
+    "no ip address 10.99.99.1 255.255.255.255",
+    "shutdown"
+  ]
 }
 ```
 
@@ -1212,14 +1190,18 @@
     "transport_used": "asyncssh",
     "result": "no interface Loopback99\n"
   },
-  "execution_time_seconds": 0.43,
+  "execution_time_seconds": 0.42,
   "risk_assessment": {
-    "risk": "low",
+    "risk": "high",
     "devices": 1,
     "reasons": [
-      "Minor configuration change"
+      "R3C has critical role(s): ASBR, IGP_REDISTRIBUTOR, NAT_EDGE",
+      "Change affects 6 SLA monitoring paths"
     ]
-  }
+  },
+  "rollback_advisory": [
+    "interface Loopback99"
+  ]
 }
 ```
 
@@ -1247,12 +1229,17 @@
   },
   "execution_time_seconds": 0.03,
   "risk_assessment": {
-    "risk": "low",
+    "risk": "high",
     "devices": 1,
     "reasons": [
-      "Minor configuration change"
+      "R1A has critical role(s): ABR",
+      "Change affects 5 SLA monitoring paths"
     ]
-  }
+  },
+  "rollback_advisory": [
+    "no interface Loopback99",
+    "no ip address 10.99.99.1/32"
+  ]
 }
 ```
 
@@ -1340,36 +1327,6 @@
           },
           "nonRoutableClassEIntf": false
         },
-        "Loopback111": {
-          "name": "Loopback111",
-          "interfaceStatus": "connected",
-          "lineProtocolStatus": "up",
-          "mtu": 65535,
-          "ipv4Routable240": false,
-          "ipv4Routable0": false,
-          "interfaceAddress": {
-            "ipAddr": {
-              "address": "1.11.111.1",
-              "maskLen": 24
-            }
-          },
-          "nonRoutableClassEIntf": false
-        },
-        "Loopback222": {
-          "name": "Loopback222",
-          "interfaceStatus": "connected",
-          "lineProtocolStatus": "up",
-          "mtu": 65535,
-          "ipv4Routable240": false,
-          "ipv4Routable0": false,
-          "interfaceAddress": {
-            "ipAddr": {
-              "address": "2.22.222.2",
-              "maskLen": 24
-            }
-          },
-          "nonRoutableClassEIntf": false
-        },
         "Management0": {
           "name": "Management0",
           "interfaceStatus": "connected",
@@ -1408,14 +1365,18 @@
       }
     ]
   },
-  "execution_time_seconds": 0.02,
+  "execution_time_seconds": 0.03,
   "risk_assessment": {
-    "risk": "low",
+    "risk": "high",
     "devices": 1,
     "reasons": [
-      "Minor configuration change"
+      "R1A has critical role(s): ABR",
+      "Change affects 5 SLA monitoring paths"
     ]
-  }
+  },
+  "rollback_advisory": [
+    "interface Loopback99"
+  ]
 }
 ```
 
@@ -1428,7 +1389,7 @@
     "transport_used": "rest",
     "result": [
       {
-        ".id": "*C",
+        ".id": "*E",
         "actual-mtu": "1500",
         "ageing-time": "5m",
         "arp": "enabled",
@@ -1442,7 +1403,7 @@
         "forward-delay": "15s",
         "igmp-snooping": "false",
         "l2mtu": "65535",
-        "mac-address": "72:54:A8:E2:DA:AF",
+        "mac-address": "46:03:E7:68:6A:B6",
         "max-learned-entries": "auto",
         "max-message-age": "20s",
         "mtu": "auto",
@@ -1459,12 +1420,16 @@
   },
   "execution_time_seconds": 0.01,
   "risk_assessment": {
-    "risk": "low",
+    "risk": "high",
     "devices": 1,
     "reasons": [
-      "Minor configuration change"
+      "R18M has critical role(s): ASBR, NAT_EDGE",
+      "Change affects 2 SLA monitoring path(s)"
     ]
-  }
+  },
+  "rollback_advisory": [
+    "# RouterOS PUT rollback requires manual action: /rest/interface/bridge"
+  ]
 }
 ```
 
@@ -1484,20 +1449,20 @@
       "fp-rx-packet": "0",
       "fp-tx-byte": "0",
       "fp-tx-packet": "0",
-      "last-link-up-time": "2026-02-25 04:30:00",
+      "last-link-up-time": "2026-03-02 10:06:57",
       "link-downs": "0",
-      "mac-address": "0C:00:54:82:36:00",
+      "mac-address": "0C:00:6B:6D:CE:00",
       "mtu": "1500",
       "name": "ether1",
       "running": "true",
-      "rx-byte": "292968",
+      "rx-byte": "47298",
       "rx-drop": "0",
       "rx-error": "0",
-      "rx-packet": "3061",
-      "tx-byte": "4272937",
+      "rx-packet": "531",
+      "tx-byte": "643006",
       "tx-drop": "0",
       "tx-error": "0",
-      "tx-packet": "15760",
+      "tx-packet": "2126",
       "tx-queue-drop": "0",
       "type": "ether"
     },
@@ -1511,20 +1476,20 @@
       "fp-rx-packet": "0",
       "fp-tx-byte": "0",
       "fp-tx-packet": "0",
-      "last-link-up-time": "2026-02-25 04:30:00",
+      "last-link-up-time": "2026-03-02 10:06:57",
       "link-downs": "0",
-      "mac-address": "AA:C1:AB:34:67:80",
+      "mac-address": "AA:C1:AB:0F:35:1A",
       "mtu": "1500",
       "name": "ether2",
       "running": "true",
-      "rx-byte": "779532",
+      "rx-byte": "93453",
       "rx-drop": "0",
       "rx-error": "0",
-      "rx-packet": "5760",
-      "tx-byte": "1070958",
+      "rx-packet": "683",
+      "tx-byte": "130031",
       "tx-drop": "0",
       "tx-error": "0",
-      "tx-packet": "8974",
+      "tx-packet": "1080",
       "tx-queue-drop": "0",
       "type": "ether"
     },
@@ -1538,20 +1503,20 @@
       "fp-rx-packet": "0",
       "fp-tx-byte": "0",
       "fp-tx-packet": "0",
-      "last-link-up-time": "2026-02-25 04:30:00",
+      "last-link-up-time": "2026-03-02 10:06:57",
       "link-downs": "0",
-      "mac-address": "AA:C1:AB:4C:04:58",
+      "mac-address": "AA:C1:AB:5B:8E:0D",
       "mtu": "1500",
       "name": "ether3",
       "running": "true",
-      "rx-byte": "801663",
+      "rx-byte": "99666",
       "rx-drop": "0",
       "rx-error": "0",
-      "rx-packet": "6110",
-      "tx-byte": "1093746",
+      "rx-packet": "775",
+      "tx-byte": "135767",
       "tx-drop": "0",
       "tx-error": "0",
-      "tx-packet": "9329",
+      "tx-packet": "1167",
       "tx-queue-drop": "0",
       "type": "ether"
     },
@@ -1565,20 +1530,20 @@
       "fp-rx-packet": "0",
       "fp-tx-byte": "0",
       "fp-tx-packet": "0",
-      "last-link-up-time": "2026-02-25 04:30:00",
+      "last-link-up-time": "2026-03-02 10:06:57",
       "link-downs": "0",
-      "mac-address": "AA:C1:AB:45:1A:48",
+      "mac-address": "AA:C1:AB:F8:4E:79",
       "mtu": "1500",
       "name": "ether4",
       "running": "true",
-      "rx-byte": "1392052",
+      "rx-byte": "171504",
       "rx-drop": "0",
       "rx-error": "0",
-      "rx-packet": "12776",
-      "tx-byte": "1127187",
+      "rx-packet": "1573",
+      "tx-byte": "139133",
       "tx-drop": "0",
       "tx-error": "0",
-      "tx-packet": "8866",
+      "tx-packet": "1090",
       "tx-queue-drop": "0",
       "type": "ether"
     },
@@ -1592,25 +1557,25 @@
       "fp-rx-packet": "0",
       "fp-tx-byte": "0",
       "fp-tx-packet": "0",
-      "last-link-up-time": "2026-02-25 04:30:00",
+      "last-link-up-time": "2026-03-02 10:06:57",
       "link-downs": "0",
-      "mac-address": "AA:C1:AB:07:5C:EB",
+      "mac-address": "AA:C1:AB:90:85:E9",
       "mtu": "1500",
       "name": "ether5",
       "running": "true",
-      "rx-byte": "1552732",
+      "rx-byte": "189333",
       "rx-drop": "0",
       "rx-error": "0",
-      "rx-packet": "15492",
-      "tx-byte": "1827470",
+      "rx-packet": "1868",
+      "tx-byte": "223315",
       "tx-drop": "0",
       "tx-error": "0",
-      "tx-packet": "19518",
+      "tx-packet": "2369",
       "tx-queue-drop": "0",
       "type": "ether"
     },
     {
-      ".id": "*C",
+      ".id": "*E",
       "actual-mtu": "1500",
       "comment": "Test loopback",
       "disabled": "false",
@@ -1620,9 +1585,9 @@
       "fp-tx-byte": "0",
       "fp-tx-packet": "0",
       "l2mtu": "65535",
-      "last-link-up-time": "2026-02-25 13:46:54",
+      "last-link-up-time": "2026-03-02 11:14:31",
       "link-downs": "0",
-      "mac-address": "72:54:A8:E2:DA:AF",
+      "mac-address": "46:03:E7:68:6A:B6",
       "mtu": "auto",
       "name": "Loopback99",
       "running": "true",
@@ -1645,7 +1610,7 @@
       "fp-rx-packet": "0",
       "fp-tx-byte": "0",
       "fp-tx-packet": "0",
-      "last-link-up-time": "2026-02-25 04:29:50",
+      "last-link-up-time": "2026-03-02 10:06:57",
       "link-downs": "0",
       "mac-address": "00:00:00:00:00:00",
       "mtu": "65536",
@@ -1673,9 +1638,9 @@
       "fp-tx-byte": "0",
       "fp-tx-packet": "0",
       "l2mtu": "65535",
-      "last-link-up-time": "2026-02-25 04:30:07",
+      "last-link-up-time": "2026-03-02 10:07:14",
       "link-downs": "0",
-      "mac-address": "6A:39:26:93:F9:9E",
+      "mac-address": "36:63:A7:C4:52:45",
       "mtu": "auto",
       "name": "lo1",
       "running": "true",
@@ -1683,38 +1648,10 @@
       "rx-drop": "0",
       "rx-error": "0",
       "rx-packet": "0",
-      "tx-byte": "767923",
+      "tx-byte": "92326",
       "tx-drop": "0",
       "tx-error": "0",
-      "tx-packet": "4461",
-      "tx-queue-drop": "0",
-      "type": "bridge"
-    },
-    {
-      ".id": "*A",
-      "actual-mtu": "1500",
-      "comment": "Loopback3",
-      "disabled": "false",
-      "dynamic": "false",
-      "fp-rx-byte": "0",
-      "fp-rx-packet": "0",
-      "fp-tx-byte": "0",
-      "fp-tx-packet": "0",
-      "l2mtu": "65535",
-      "last-link-up-time": "2026-02-25 12:37:37",
-      "link-downs": "0",
-      "mac-address": "FA:F1:28:AB:AC:6C",
-      "mtu": "auto",
-      "name": "lo3",
-      "running": "true",
-      "rx-byte": "0",
-      "rx-drop": "0",
-      "rx-error": "0",
-      "rx-packet": "0",
-      "tx-byte": "97140",
-      "tx-drop": "0",
-      "tx-error": "0",
-      "tx-packet": "567",
+      "tx-packet": "536",
       "tx-queue-drop": "0",
       "type": "bridge"
     }
@@ -1735,11 +1672,15 @@
   },
   "execution_time_seconds": 0.03,
   "risk_assessment": {
-    "risk": "low",
+    "risk": "high",
     "devices": 1,
     "reasons": [
-      "Minor configuration change"
+      "R18M has critical role(s): ASBR, NAT_EDGE",
+      "Change affects 2 SLA monitoring path(s)"
     ]
-  }
+  },
+  "rollback_advisory": [
+    "# RouterOS DELETE rollback requires manual action: /rest/interface/bridge/*E"
+  ]
 }
 ```

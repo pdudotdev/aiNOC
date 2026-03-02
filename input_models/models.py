@@ -1,5 +1,6 @@
 import json
-from pydantic import BaseModel, Field, model_validator
+from typing import Literal
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class BaseParamsModel(BaseModel):
@@ -25,17 +26,24 @@ class BaseParamsModel(BaseModel):
 # OSPF query - input model
 class OspfQuery(BaseParamsModel):
     device: str = Field(..., description="Device name from inventory")
-    query: str = Field(..., description="neighbors | database | borders | config | interfaces | details")
+    # Validated against PLATFORM_MAP keys — invalid queries are caught here, not at runtime
+    query: Literal["neighbors", "database", "borders", "config", "interfaces", "details"] = Field(
+        ..., description="neighbors | database | borders | config | interfaces | details"
+    )
 
 # EIGRP query - input model
 class EigrpQuery(BaseParamsModel):
     device: str = Field(..., description="Device name from inventory")
-    query: str = Field(..., description="neighbors | topology | config | interfaces")
+    query: Literal["neighbors", "topology", "config", "interfaces"] = Field(
+        ..., description="neighbors | topology | config | interfaces"
+    )
 
 # BGP query - input model
 class BgpQuery(BaseParamsModel):
     device: str
-    query: str = Field(..., description="summary | detail | config")
+    query: Literal["summary", "table", "config"] = Field(
+        ..., description="summary | table | config"
+    )
 
 class RoutingQuery(BaseParamsModel):
     device: str
@@ -44,7 +52,10 @@ class RoutingQuery(BaseParamsModel):
 # Routing policies query - input model
 class RoutingPolicyQuery(BaseParamsModel):
     device: str
-    query: str = Field(..., description="route_maps | prefix_lists | policy_based_routing | access_lists | nat_pat")
+    query: Literal[
+        "redistribution", "route_maps", "prefix_lists",
+        "policy_based_routing", "access_lists", "nat_pat"
+    ] = Field(..., description="redistribution | route_maps | prefix_lists | policy_based_routing | access_lists | nat_pat")
 
 # Interfaces query - input model
 class InterfacesQuery(BaseParamsModel):
@@ -68,11 +79,36 @@ class ShowCommand(BaseParamsModel):
     device: str = Field(..., description="Device name from inventory (e.g. R1, R2, R3)")
     command: str = Field(..., description="Show command to execute on the device")
 
+    @field_validator("command")
+    @classmethod
+    def must_be_read_only(cls, v: str) -> str:
+        """Enforce read-only commands: CLI must start with 'show', RouterOS JSON must use GET."""
+        stripped = v.strip()
+        # RouterOS JSON action: parse and enforce GET method only
+        try:
+            parsed = json.loads(stripped)
+            if isinstance(parsed, dict):
+                method = parsed.get("method", "").upper()
+                if method != "GET":
+                    raise ValueError(
+                        f"run_show only allows GET for RouterOS actions, got {method!r}"
+                    )
+                return v
+        except json.JSONDecodeError:
+            pass
+        # CLI command: must start with "show " (case-insensitive)
+        if not stripped.lower().startswith("show "):
+            raise ValueError(
+                f"run_show only accepts read-only commands (must start with 'show '). Got: {stripped!r}"
+            )
+        return v
+
 # Config commands - input model
 class ConfigCommand(BaseParamsModel):
     """Send configuration commands to one or more devices."""
     devices: list[str] = Field(..., description="Device names from inventory (e.g. ['R1','R2','R3'])")
     commands: list[str] = Field(..., description="Configuration commands to apply")
+    snapshot_before: bool = Field(False, description="If true, capture OSPF state snapshot before applying changes")
 
 # Empty placeholder - input model
 class EmptyInput(BaseParamsModel):

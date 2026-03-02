@@ -1,10 +1,18 @@
-fastmcp
-scrapli[genie]
-scrapli-community
-asyncssh
-aiohttp
-python-dotenv
-pydantic
-pytz
-pytest
-pytest-timeout
+# Runtime dependencies — pinned to major.minor to allow patch updates
+# while preventing breaking changes across major/minor boundaries.
+# Generated from working environment on 2026-03-02.
+# Run: pip install -r requirements.txt
+# To update: pip install --upgrade <package> then update the pin here.
+
+fastmcp>=3.0,<4.0
+scrapli[genie]>=2026.2,<2027.0
+scrapli-community>=2025.1,<2026.0
+asyncssh>=2.22,<3.0
+aiohttp>=3.13,<4.0
+python-dotenv>=1.2,<2.0
+pydantic>=2.12,<3.0
+pytz>=2024.1
+
+# Development / test dependencies (not needed in production)
+pytest>=9.0,<10.0
+pytest-timeout>=2.4,<3.0

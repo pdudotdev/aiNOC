@@ -6,23 +6,24 @@ meaningful data. No configuration changes are made.
 """
 
 import asyncio
+import os
 import sys
 from pathlib import Path
 
 import pytest
 
-# Add project root so MCPServer can be imported
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from MCPServer import (
-    get_interfaces,
-    get_ospf,
-    ping,
-    InterfacesQuery,
-    OspfQuery,
-    PingInput,
+# Skip all tests in this module if NO_LAB is set (e.g. in CI without a running lab)
+pytestmark = pytest.mark.skipif(
+    os.environ.get("NO_LAB", "0") == "1",
+    reason="Lab not running — set NO_LAB=0 to enable integration tests",
 )
+
+from tools.operational import get_interfaces, ping
+from tools.protocol    import get_ospf
+from input_models.models import InterfacesQuery, OspfQuery, PingInput
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────

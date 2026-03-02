@@ -229,7 +229,7 @@ Why does R8C forward packets from R9C's 192.168.20.2 interface destined for 2.2.
 4. Calls `get_routing_policies(R8C, "access_lists")` → finds ACL 100 matching host 192.168.20.2 → host 2.2.2.66
 5. Identifies PBR on Et0/3 overriding normal routing decisions
 6. Correctly diagnoses root cause with explanation of ACL match and next-hop override
-7. Agent documents the issue to `cases.md` automatically.
+7. Agent documents the issue to the Jira ticket automatically (if Jira is configured).
 
 #### Verify (diagnostic only)
 
@@ -294,6 +294,162 @@ Expected: Single `O E1 9.9.0.0/22` present.
 ```
 router eigrp 20
   eigrp stub connected summary
+```
+
+---
+
+### ST-006 — BGP Timer Mismatch → Default Route Lost (R2C)
+
+**Protocol**: BGP | **Device**: R2C (Cisco IOS) | **Symptom**: BGP sessions flapping, default route missing
+
+#### Setup (break)
+
+SSH to R2C and apply non-default BGP timers:
+```
+router bgp 1010
+  neighbor 200.40.40.2 timers 3 9
+  neighbor 200.50.50.2 timers 3 9
+```
+
+#### Verify break
+
+From R2C:
+```
+show ip bgp summary
+```
+Expected: ISP_A and ISP_B neighbors in Idle/Active state (session flapping due to timer mismatch with ISP peers).
+
+From R3C or R4C:
+```
+show ip route 0.0.0.0
+```
+Expected: Default route absent or unstable.
+
+#### Agent prompt
+```
+R2C is losing its BGP sessions to both ISP_A and ISP_B. Default route is flapping or absent on downstream devices. Please investigate.
+```
+
+#### Expected agent behavior
+
+1. Reads `skills/bgp/SKILL.md`
+2. Calls `get_bgp(R2C, "summary")` → neighbors in Idle/Active
+3. Calls `get_bgp(R2C, "config")` → identifies `timers 3 9` (non-default)
+4. BGP default timers: keepalive 60s / hold-time 180s; ISP peers use defaults
+5. Proposes removing non-default timers: `no neighbor 200.40.40.2 timers` and `no neighbor 200.50.50.2 timers`
+6. Asks approval, applies, verifies sessions return to Established
+7. Verifies default route returns on downstream devices
+
+#### Teardown (if agent did not fix)
+
+```
+router bgp 1010
+  no neighbor 200.40.40.2 timers
+  no neighbor 200.50.50.2 timers
+```
+
+---
+
+### ST-007 — OSPF Area 1 Type Change → External Routes Lost (R2C + R6A)
+
+**Protocol**: OSPF | **Devices**: R2C (Cisco IOS), R6A (Arista EOS) | **Symptom**: External routes missing in Area 1
+
+#### Setup (break)
+
+SSH to R2C and change Area 1 from NSSA to normal:
+```
+router ospf 1
+  no area 1 nssa
+```
+
+#### Verify break
+
+From R6A:
+```
+show ip route
+```
+Expected: External routes (type O E1 or O N1) for EIGRP-redistributed prefixes are **absent** from R6A's routing table.
+
+From R9C:
+```
+show ip route 172.16.0.0
+```
+Expected: Route to Area 2 prefix absent (inter-area route cascade failure).
+
+#### Agent prompt
+```
+R6A and R9C have lost external routes. OSPF routes to EIGRP-side prefixes (192.168.x.x) and inter-area routes are missing. Please investigate.
+```
+
+#### Expected agent behavior
+
+1. Reads `skills/ospf/SKILL.md`
+2. Reads INTENT.json → Area 1 intended type: NSSA
+3. Calls `get_ospf(R2C, "config")` → Area 1 shows no NSSA configuration (changed to normal)
+4. Calls `get_ospf(R6A, "config")` → R6A still configured as NSSA; mismatch detected
+5. R2C is the ABR → the config was removed from R2C; R2C deviates from intent
+6. Proposes restoring `area 1 nssa` on R2C (the ABR side is the authoritative side)
+7. Asks approval, applies, verifies external routes return on R6A and R9C
+
+#### Teardown (if agent did not fix)
+
+```
+router ospf 1
+  area 1 nssa
+```
+
+---
+
+### ST-008 — Multi-Vendor OSPF Timer Mismatch (R18M ↔ R20M)
+
+**Protocol**: OSPF | **Devices**: R18M, R20M (both MikroTik RouterOS) | **Symptom**: OSPF adjacency down between MikroTik peers
+
+#### Setup (break)
+
+SSH to R18M (or use REST API) and set a non-default hello interval:
+```json
+{"method": "PATCH", "path": "/rest/routing/ospf/interface-template/<id>", "body": {"hello-interval": "5s"}}
+```
+
+Or via terminal:
+```
+/routing ospf interface-template set [find] hello-interval=5s
+```
+
+#### Verify break
+
+From R18M:
+```
+/routing ospf neighbor print
+```
+Expected: R20M absent (dead-interval mismatch prevents adjacency).
+
+From R20M:
+```
+show ip route (via run_show)
+```
+Expected: Routes from R18M absent.
+
+#### Agent prompt
+```
+OSPF adjacency between R18M and R20M is down. R20M cannot reach prefixes advertised by R18M. Please investigate.
+```
+
+#### Expected agent behavior
+
+1. Reads `skills/ospf/SKILL.md`
+2. Calls `get_ospf(R18M, "neighbors")` → R20M absent
+3. Calls `get_ospf(R18M, "interfaces")` → hello-interval 5s (non-default)
+4. Calls `get_ospf(R20M, "interfaces")` → hello-interval 10s (default)
+5. Identifies R18M as the misconfigured side (R20M uses RouterOS defaults: hello 10 / dead 40)
+6. Proposes resetting R18M hello-interval to default via REST PATCH
+7. Asks approval, applies, verifies adjacency returns
+
+#### Teardown (if agent did not fix)
+
+Reset R18M hello-interval to default:
+```json
+{"method": "PATCH", "path": "/rest/routing/ospf/interface-template/<id>", "body": {"hello-interval": "10s"}}
 ```
 
 ---
@@ -381,7 +537,7 @@ Claude Code session opens automatically in the terminal where `oncall_watcher.lo
 7. Proposes removing passive-interface on R3C Ethernet0/3 and Ethernet1/0
 8. Asks user approval (displayed in the agent session)
 9. Applies fix, verifies R4C route to 10.10.10.10 returns
-10. Agent documents the issue to `cases.md` automatically.
+10. Agent documents the issue to the Jira ticket automatically (if Jira is configured).
 
 **NOTE: Keep the session open and see step 11 below after verifying the fix!**
 
@@ -411,7 +567,7 @@ Expected: Latest operation return code: OK
 
 #### Documentation check
 
-- New case in `cases/cases.md` with R4C context
+- Jira ticket updated with findings and resolution (if Jira is configured)
 - `Verification: PASSED`
 - `Case Status: FIXED`
 
@@ -447,13 +603,86 @@ During the previous On-Call session the following SLA path failures were detecte
 
 Would you like to investigate any of these? Reply with a number, 'all', or 'none'.
 
-- Number or 'all': I'll investigate using the full On-Call workflow, document the case in cases/cases.md, curate cases/lessons.md, and return to the deferred list for any remaining failures.
+- Number or 'all': I'll investigate using the full On-Call workflow, document the case in the Jira ticket, curate cases/lessons.md, and return to the deferred list for any remaining failures.
 - 'none': Type /exit to close this review session.
 ```
 14. If multiple SLA path failures occured during the initial investigation, they will be listed here and the user can choose a number to investigate a specific issue, or `/exit` to exit.
 15. If the user enters `/exit`, then the agent quits and the monitoring process resumes automatically to listen for new issues:
 ```
 [Watcher] Deferred review session ended. Resuming monitoring
+```
+
+---
+
+### OC-002 — Concurrent SLA Failures from Single Link Down (R3C + Deferred Queue)
+
+**SLA Paths**: `R4C_TO_R10C`, `R5C_TO_R12C` | **Break device**: R3C | **Tests**: Deferred event queue with multiple failures
+
+#### Purpose
+
+Validate that when a single infrastructure failure (R3C going down) causes **multiple simultaneous SLA path failures**, the watcher correctly:
+1. Investigates only the first failure in a dedicated session
+2. Defers subsequent failures to the deferred queue
+3. Presents all deferred failures in a follow-up review session
+4. Lets the user select which deferred failures to investigate
+
+#### Setup (break)
+
+SSH to R3C and shut both OSPF interfaces:
+```
+interface Ethernet0/2
+  shutdown
+interface Ethernet0/1
+  shutdown
+```
+
+This breaks two SLA paths simultaneously:
+- `R4C_TO_R10C` (R4C → R3C → R1A → R10C): R4C loses next-hop via R3C
+- `R5C_TO_R12C` (R5C → R3C → R12C): R5C loses next-hop to ISP A
+
+#### Expected watcher behavior
+
+1. Two SLA Down events arrive within seconds of each other in `/var/log/network.json`
+2. Watcher detects the **first** event (e.g. R4C) and invokes agent — lock file written
+3. Second event (R5C) arrives while agent is running — watcher logs `SKIPPED (agent busy)` and `SKIPPED (deferred - occurred during active session)` entries in `oncall_watcher.log`
+4. Agent investigates R4C path failure, identifies R3C interfaces shut, proposes fix
+5. User types `/exit` to close the primary session
+6. Watcher immediately opens a deferred review session listing the R5C failure
+7. User selects `1` to investigate, or `/exit` to skip
+8. After deferred review session closes, watcher resumes monitoring
+
+#### Expected agent behavior (primary session)
+
+1. Reads `skills/oncall/SKILL.md`
+2. Looks up `R4C_TO_R10C` → scope: R4C, R3C, R1A, R10C
+3. Traceroutes from R4C → stops at R4C (first hop unreachable) or R3C
+4. Reads `skills/ospf/SKILL.md`
+5. Calls `get_ospf(R3C, "neighbors")` → no neighbors
+6. Calls `get_interfaces(R3C)` → Ethernet0/1 and Ethernet0/2 admin-down
+7. Root cause: interfaces shut → proposes `no shutdown` on both
+8. Asks user approval, applies fix, verifies route returns on R4C
+
+#### Verify fix
+
+From R4C:
+```
+show ip route 10.10.10.10
+```
+Expected: Route via R3C returns.
+
+In `oncall_watcher.log`:
+```
+SKIPPED (deferred - occurred during active session) - R5C (...)
+Deferred review session invoked for 1 failure(s).
+```
+
+#### Teardown (if agent did not fix)
+
+```
+interface Ethernet0/2
+  no shutdown
+interface Ethernet0/1
+  no shutdown
 ```
 
 ---
@@ -470,12 +699,20 @@ echo '{"ts":"2026-01-01T00:00:00Z","device":"172.20.20.201","msg":"%SYS-5-CONFIG
 ```
 Expected: Watcher does **not** invoke agent. Log shows no new `Agent invoked` entry.
 
-### WB-002 - SLA Up Events Are Ignored
+### WB-002 - SLA Up (Recovery) Events Are Logged Without Agent Invocation
 
 ```bash
 echo '{"ts":"2026-01-01T00:00:00Z","device":"172.20.20.204","msg":"%TRACK-6-STATE: 1 ip sla 1 reachability Down -> Up"}' >> /var/log/network.json
 ```
-Expected: No agent invocation. (Only `Down` transitions trigger.)
+Expected: **No agent invocation.** The watcher detects the Up event, logs a recovery entry,
+and resumes monitoring without starting a Claude session.
+
+In `oncall_watcher.log`:
+```
+SLA RECOVERY: <device-name> (172.20.20.204): %TRACK-6-STATE: 1 ip sla 1 reachability Down -> Up
+```
+
+Verify: no new `Agent invoked` entry appears in the log after the Up event.
 
 ### WB-003 - MikroTik Netwatch Event Detected
 
@@ -488,15 +725,15 @@ Expected: Watcher **does** invoke agent (MikroTik format matched).
 
 ## Case Documentation Checks
 
-After any Standalone or On-Call test run:
+After any On-Call test run (Jira must be configured):
 
-1. **New case added to cases.md**:
-Check the last `📄 CASE NO.` in the file, e.g. `CASE NO. - 00019-R4C-SLA`
+1. **Jira ticket updated with findings**:
+   Check the Jira ticket (SUP project) for a comment with the full case structure from `case_format.md`.
 
-2. **Case contains required fields**:
-All fields described in `case_format.md` are present.
+2. **Case comment contains required fields**:
+   All fields described in `cases/case_format.md` are present: Commands Used, Proposed Fixes, Verification.
 
-3. **Lessons learned** (optional, check if lessons.md was updated):
+3. **Lessons learned** (check if `cases/lessons.md` was updated):
 
 ---
 

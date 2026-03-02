@@ -1,0 +1,41 @@
+"""Scrapli SSH executor for Cisco IOS-XE devices (asyncssh transport)."""
+from scrapli import AsyncScrapli
+from settings import USERNAME, PASSWORD, SSH_STRICT_KEY, SSH_TIMEOUT_TRANSPORT, SSH_TIMEOUT_OPS
+
+
+def _connection_params(device: dict) -> dict:
+    return {
+        "host":              device["host"],
+        "platform":          device["platform"],
+        "transport":         device["transport"],
+        "auth_username":     USERNAME,
+        "auth_password":     PASSWORD,
+        "auth_strict_key":   SSH_STRICT_KEY,
+        "timeout_transport": SSH_TIMEOUT_TRANSPORT,
+        "timeout_ops":       SSH_TIMEOUT_OPS,
+    }
+
+
+async def execute_ssh(device: dict, command: str) -> tuple[str, object]:
+    """Execute a show command via Scrapli SSH.
+
+    Returns (raw_output, parsed_output) where parsed_output is a Genie-parsed
+    dict for IOS devices, or None if parsing is unavailable.
+    """
+    async with AsyncScrapli(**_connection_params(device)) as conn:
+        response = await conn.send_command(command)
+        raw_output = response.result
+        parsed_output = None
+        if device.get("cli_style") == "ios":
+            try:
+                parsed_output = response.genie_parse_output()
+            except Exception:
+                parsed_output = None
+    return raw_output, parsed_output
+
+
+async def push_ssh(device: dict, dev_name: str, commands: list[str]) -> tuple[str, dict]:
+    """Push configuration commands via Scrapli SSH."""
+    async with AsyncScrapli(**_connection_params(device)) as conn:
+        response = await conn.send_configs(commands)
+    return dev_name, {"transport_used": "asyncssh", "result": response.result}

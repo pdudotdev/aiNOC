@@ -1,0 +1,18 @@
+[Unit]
+Description=aiNOC On-Call Watcher
+Documentation=file:/home/mcp/mcp-project/README.md
+After=network.target
+
+[Service]
+Type=simple
+User=mcp
+WorkingDirectory=/home/mcp/mcp-project
+ExecStart=/usr/bin/python3 /home/mcp/mcp-project/oncall_watcher.py -d
+Restart=on-failure
+RestartSec=10
+
+# Environment — override or add variables as needed
+# EnvironmentFile=/home/mcp/mcp-project/.env
+
+[Install]
+WantedBy=multi-user.target

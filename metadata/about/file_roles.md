@@ -8,7 +8,7 @@ A structured overview of the key files, services, and directories that power the
 
 **Purpose:** Institutional memory file.
 
-A curated list (maximum 20 entries) of lessons learned from past troubleshooting cases:
+A curated list (maximum 10 entries) of lessons learned from past troubleshooting cases:
 
 - Common gotchas  
 - Recurring patterns  
@@ -102,7 +102,7 @@ Prevents unnecessary fallback commands.
 Defines approved configuration windows:
 
 - Monday–Friday  
-- 06:00–18:00 UTC  
+- 05:00–20:00 UTC
 
 Outside these hours:
 - Config pushes are blocked automatically.
@@ -158,12 +158,12 @@ When an SLA path fails:
 
 Contains:
 
-- 6-principle troubleshooting methodology  
-- Standalone & On-Call workflows  
-- Complete MCP tool list  
-- Lessons curation process  
-- Case management workflow  
-- 11 common pitfalls to avoid  
+- 6-principle troubleshooting methodology
+- Standalone & On-Call workflows
+- Complete MCP tool list
+- Lessons curation process
+- Case management workflow
+- 13 common pitfalls to avoid
 
 Everything the agent needs to operate lives here.
 
@@ -185,25 +185,36 @@ It bridges troubleshooting sessions with the ticketing system.
 
 ## ✅ `MCPServer.py`
 
-**Purpose:** FastMCP tool server.
+**Purpose:** FastMCP tool server entry point (~50 lines).
 
-Exposes all troubleshooting tools:
+Imports and registers all tools from the decomposed module structure:
 
-- `get_ospf`  
-- `get_eigrp`  
-- `get_bgp`  
-- `get_routing`  
-- `ping`  
-- `traceroute`  
-- `push_config` 
-- etc.
+```
+MCPServer.py          — tool registration and mcp.run()
+transport/
+    __init__.py       — transport dispatcher (execute_command)
+    ssh.py            — Scrapli SSH (Cisco IOS-XE)
+    eapi.py           — aiohttp eAPI (Arista EOS)
+    rest.py           — aiohttp REST (MikroTik RouterOS)
+    pool.py           — session pool management
+tools/
+    protocol.py       — get_ospf, get_eigrp, get_bgp
+    routing.py        — get_routing, get_routing_policies
+    operational.py    — get_interfaces, ping, traceroute, run_show
+    config.py         — push_config, validate_commands, FORBIDDEN
+    state.py          — get_intent, snapshot_state, check_maintenance_window, assess_risk
+    jira_tools.py     — jira_add_comment, jira_resolve_issue
+cache.py              — bounded LRU cache (max 256 entries)
+input_models/models.py — all Pydantic input models
+logging_config.py     — JSONFormatter, ainoc.* logger hierarchy
+```
 
 Workflow:
-1. Receives tool call  
-2. Uses `platform_map.py` for vendor translation  
-3. Executes command  
-4. Parses output  
-5. Returns structured data  
+1. Receives tool call
+2. Uses `platform_map.py` for vendor translation
+3. Executes command via transport layer
+4. Parses output
+5. Returns structured data
 
 ---
 

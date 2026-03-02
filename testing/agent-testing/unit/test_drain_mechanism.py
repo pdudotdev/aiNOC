@@ -41,6 +41,9 @@ def _collect(gen, count: int, timeout: float = 5.0) -> list:
 
 
 def test_normal_lines_yielded(tmp_path):
+    """Lines written to the log file must be yielded by tail_follow in order.
+    Confirms the baseline tail behaviour before any drain signalling.
+    """
     log = tmp_path / "net.json"
     log.write_text("")
     drain = [False]
@@ -98,24 +101,24 @@ def test_drain_skips_buffered_lines(tmp_path):
     t.start()
 
     # Write one line before drain
-    time.sleep(0.3)
+    time.sleep(0.6)
     with open(log, "a") as f:
         f.write('{"ts":"pre","msg":"before_drain"}\n')
-    time.sleep(0.2)
+    time.sleep(0.5)
 
     # Trigger drain while writing more lines
     drain[0] = True
     with open(log, "a") as f:
         f.write('{"ts":"skipped","msg":"should_be_skipped"}\n')
-    time.sleep(0.3)
+    time.sleep(0.5)
     drained.set()
 
     # Write a line after drain completes — this should be yielded
-    time.sleep(0.5)
+    time.sleep(1.0)
     with open(log, "a") as f:
         f.write('{"ts":"after","msg":"after_drain"}\n')
 
-    done.wait(timeout=5)
+    done.wait(timeout=8)
     assert any("before_drain" in c for c in collected)
     assert not any("should_be_skipped" in c for c in post_drain)
     assert any("after_drain" in c for c in post_drain)

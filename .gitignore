@@ -8,3 +8,15 @@ __pycache__/
 clab-mcp-lab/
 .MCPServer.py.swp
 testing/agent-testing/integration/test_mcp_tools_results.md
+
+# Device state snapshots — contain running configs with credentials
+snapshots/
+
+# On-call watcher operational state — runtime-only, never commit
+pending_events.json
+deferred.json
+oncall.lock
+
+# Proprietary behavioral artifacts — use .example versions as templates
+CLAUDE.md
+skills/*/SKILL.md

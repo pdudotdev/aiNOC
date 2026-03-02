@@ -27,11 +27,3 @@ Device(s): R10C
 
 🔹 Verification: PASSED
 🔹 Case Status: FIXED
-
-📋 CASE METADATA
-
-🔸 Case Handling Plan:
-
-
-🔸 Lessons Learned:
-

@@ -24,6 +24,9 @@ JIRA_ISSUE_TYPE  = os.getenv("JIRA_ISSUE_TYPE", "[System] Incident")
 
 log = logging.getLogger(__name__)
 
+# Timeout for all Jira API calls — shorter than device timeout since Jira is cloud-hosted.
+_JIRA_TIMEOUT = aiohttp.ClientTimeout(total=15, connect=5)
+
 
 def _is_configured() -> bool:
     return bool(JIRA_BASE_URL and JIRA_EMAIL and JIRA_API_TOKEN and JIRA_PROJECT_KEY)
@@ -77,7 +80,7 @@ async def create_issue(
         }
     }
 
-    async with aiohttp.ClientSession(headers=_headers()) as session:
+    async with aiohttp.ClientSession(headers=_headers(), timeout=_JIRA_TIMEOUT) as session:
         url = f"{JIRA_BASE_URL}/rest/api/3/issue"
         async with session.post(url, json=body) as resp:
             if resp.status == 201:
@@ -114,7 +117,7 @@ async def add_comment(issue_key: str, comment_text: str) -> None:
         return
 
     body = {"body": _to_adf(comment_text)}
-    async with aiohttp.ClientSession(headers=_headers()) as session:
+    async with aiohttp.ClientSession(headers=_headers(), timeout=_JIRA_TIMEOUT) as session:
         url = f"{JIRA_BASE_URL}/rest/api/3/issue/{issue_key}/comment"
         async with session.post(url, json=body) as resp:
             if resp.status not in (200, 201):
@@ -141,7 +144,7 @@ async def resolve_issue(
         log.warning("Jira not configured — skipping resolve of %s", issue_key)
         return
 
-    async with aiohttp.ClientSession(headers=_headers()) as session:
+    async with aiohttp.ClientSession(headers=_headers(), timeout=_JIRA_TIMEOUT) as session:
         url = f"{JIRA_BASE_URL}/rest/api/3/issue/{issue_key}/transitions"
         async with session.get(url) as resp:
             if resp.status != 200:
@@ -163,7 +166,7 @@ async def resolve_issue(
 
     if transition_id:
         resolution_name = "Won't Fix" if resolution.lower() in {"won't fix", "wont fix"} else "Done"
-        async with aiohttp.ClientSession(headers=_headers()) as session:
+        async with aiohttp.ClientSession(headers=_headers(), timeout=_JIRA_TIMEOUT) as session:
             payload = {
                 "transition": {"id": transition_id},
                 "fields": {"resolution": {"name": resolution_name}},

@@ -10,6 +10,7 @@ Requires live device access.
 
 import asyncio
 import json
+import os
 import sys
 from collections import OrderedDict
 from datetime import datetime, timezone
@@ -20,18 +21,18 @@ import pytest
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from MCPServer import (
-    execute_command,
-    get_ospf,
-    get_eigrp,
-    get_bgp,
-    get_interfaces,
-    get_routing,
-    get_routing_policies,
-    ping,
-    traceroute,
-    run_show,
-    push_config,
+# Skip all tests in this module if NO_LAB is set (e.g. in CI without a running lab)
+pytestmark = pytest.mark.skipif(
+    os.environ.get("NO_LAB", "0") == "1",
+    reason="Lab not running — set NO_LAB=0 to enable integration tests",
+)
+
+from transport          import execute_command
+from tools.protocol     import get_ospf, get_eigrp, get_bgp
+from tools.routing      import get_routing, get_routing_policies
+from tools.operational  import get_interfaces, ping, traceroute, run_show
+from tools.config       import push_config
+from input_models.models import (
     OspfQuery,
     EigrpQuery,
     BgpQuery,

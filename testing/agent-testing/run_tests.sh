@@ -9,16 +9,20 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+TEST_DIR="${SCRIPT_DIR}"
 MODE="${1:-all}"
 
 echo "========================================"
 echo " aiNOC Agent Test Suite"
 echo " Mode: ${MODE}"
-echo " Dir:  ${SCRIPT_DIR}"
+echo " Root: ${PROJECT_ROOT}"
 echo "========================================"
 
-# Ensure we're running from the agent-testing directory
-cd "${SCRIPT_DIR}"
+# Run from project root so that all project modules are on the Python path.
+# Test paths are prefixed with the relative path from the project root.
+cd "${PROJECT_ROOT}"
+TEST_PREFIX="testing/agent-testing"
 
 # Check dependencies
 if ! python3 -c "import pytest" 2>/dev/null; then
@@ -48,24 +52,38 @@ run_pytest() {
 
 case "${MODE}" in
     unit)
-        run_pytest "UT-001 SLA Patterns"     "unit/test_sla_patterns.py"
-        run_pytest "UT-002 Platform Map"     "unit/test_platform_map.py"
-        run_pytest "UT-003 Drain Mechanism"  "unit/test_drain_mechanism.py"
+        run_pytest "UT-001 SLA Patterns"        "${TEST_PREFIX}/unit/test_sla_patterns.py"
+        run_pytest "UT-002 Platform Map"        "${TEST_PREFIX}/unit/test_platform_map.py"
+        run_pytest "UT-003 Drain Mechanism"     "${TEST_PREFIX}/unit/test_drain_mechanism.py"
+        run_pytest "UT-004 Input Validation"    "${TEST_PREFIX}/unit/test_input_validation.py"
+        run_pytest "UT-005 Cache"               "${TEST_PREFIX}/unit/test_cache.py"
+        run_pytest "UT-006 Command Validation"  "${TEST_PREFIX}/unit/test_command_validation.py"
+        run_pytest "UT-007 Maintenance Window"  "${TEST_PREFIX}/unit/test_maintenance_window.py"
+        run_pytest "UT-008 Risk Assessment"     "${TEST_PREFIX}/unit/test_risk_assessment.py"
+        run_pytest "UT-009 Syslog Sanitize"     "${TEST_PREFIX}/unit/test_syslog_sanitize.py"
         ;;
 
     integration)
-        run_pytest "IT-001 MCP Connectivity"  "integration/test_mcp_connectivity.py"
-        run_pytest "IT-002 Watcher Events"    "integration/test_watcher_events.py"
-        run_pytest "IT-003 MCP Tools"         "integration/test_mcp_tools.py"
+        run_pytest "IT-001 MCP Connectivity"  "${TEST_PREFIX}/integration/test_mcp_connectivity.py"
+        run_pytest "IT-002 Watcher Events"    "${TEST_PREFIX}/integration/test_watcher_events.py"
+        run_pytest "IT-003 MCP Tools"         "${TEST_PREFIX}/integration/test_mcp_tools.py"
+        run_pytest "IT-004 Transport Layer"   "${TEST_PREFIX}/integration/test_transport.py"
         ;;
 
     all)
-        run_pytest "UT-001 SLA Patterns"      "unit/test_sla_patterns.py"
-        run_pytest "UT-002 Platform Map"      "unit/test_platform_map.py"
-        run_pytest "UT-003 Drain Mechanism"   "unit/test_drain_mechanism.py"
-        run_pytest "IT-001 MCP Connectivity"  "integration/test_mcp_connectivity.py"
-        run_pytest "IT-002 Watcher Events"    "integration/test_watcher_events.py"
-        run_pytest "IT-003 MCP Tools"         "integration/test_mcp_tools.py"
+        run_pytest "UT-001 SLA Patterns"        "${TEST_PREFIX}/unit/test_sla_patterns.py"
+        run_pytest "UT-002 Platform Map"        "${TEST_PREFIX}/unit/test_platform_map.py"
+        run_pytest "UT-003 Drain Mechanism"     "${TEST_PREFIX}/unit/test_drain_mechanism.py"
+        run_pytest "UT-004 Input Validation"    "${TEST_PREFIX}/unit/test_input_validation.py"
+        run_pytest "UT-005 Cache"               "${TEST_PREFIX}/unit/test_cache.py"
+        run_pytest "UT-006 Command Validation"  "${TEST_PREFIX}/unit/test_command_validation.py"
+        run_pytest "UT-007 Maintenance Window"  "${TEST_PREFIX}/unit/test_maintenance_window.py"
+        run_pytest "UT-008 Risk Assessment"     "${TEST_PREFIX}/unit/test_risk_assessment.py"
+        run_pytest "UT-009 Syslog Sanitize"     "${TEST_PREFIX}/unit/test_syslog_sanitize.py"
+        run_pytest "IT-001 MCP Connectivity"    "${TEST_PREFIX}/integration/test_mcp_connectivity.py"
+        run_pytest "IT-002 Watcher Events"      "${TEST_PREFIX}/integration/test_watcher_events.py"
+        run_pytest "IT-003 MCP Tools"           "${TEST_PREFIX}/integration/test_mcp_tools.py"
+        run_pytest "IT-004 Transport Layer"     "${TEST_PREFIX}/integration/test_transport.py"
         ;;
 
     *)

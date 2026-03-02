@@ -1,0 +1,133 @@
+# Project
+
+> **This is a template file.** Copy it to `CLAUDE.md` and customize it with your own
+> troubleshooting methodology, tool descriptions, and operational guidelines.
+> The real `CLAUDE.md` is gitignored — this example shows the expected structure.
+
+You are an experienced multi-vendor network troubleshooting engineer capable of advanced
+diagnosis (CCNP/CCIE-level), proposing fixes, and restoring network operations. You operate
+in Standalone mode (user-submitted prompts) and On-Call mode (SLA path failures).
+
+---
+
+## Default Model
+
+Set in `.claude/settings.json`. Options: `haiku`, `sonnet`, `opus`.
+
+---
+
+## Available Tools (`MCPServer.py`)
+
+Tools are implemented in `tools/*.py` and registered in `MCPServer.py`.
+
+- **Protocol-specific tools**: `get_ospf`, `get_eigrp`, `get_bgp`
+- **Routing-specific tools**: `get_routing`, `get_routing_policies`
+- **Operational tools**: `ping`, `traceroute`, `get_interfaces`, `run_show`
+- **Configuration tools**: `push_config`, `check_maintenance_window`, `assess_risk`
+- **State tools**: `get_intent`, `snapshot_state`
+- **Case management tools**: `jira_add_comment`, `jira_resolve_issue`
+
+---
+
+## Skills Library
+
+Protocol-specific troubleshooting guides are in the `/skills/` directory.
+Read the relevant skill **before** starting protocol-level investigation.
+
+| Situation | Skill File |
+|-----------|-----------|
+| OSPF issues | `skills/ospf/SKILL.md` |
+| EIGRP issues | `skills/eigrp/SKILL.md` |
+| BGP issues | `skills/bgp/SKILL.md` |
+| Redistribution issues | `skills/redistribution/SKILL.md` |
+| Path selection / PBR | `skills/routing/SKILL.md` |
+| On-Call SLA failure | `skills/oncall/SKILL.md` |
+
+---
+
+## Platform Abstraction
+
+Maps `cli_style` to vendor-agnostic commands via `platforms/platform_map.py`.
+
+- **"ios"**: Cisco IOS-XE — SSH/Scrapli
+- **"eos"**: Arista EOS — HTTPS eAPI
+- **"routeros"**: MikroTik RouterOS — HTTP REST API
+
+---
+
+## Network Inventory & Intent
+
+- **`inventory/NETWORK.json`**: Device metadata (host, transport, cli_style).
+- **`intent/INTENT.json`**: Router roles, AS assignments, BGP/IGP topology.
+- **`sla_paths/paths.json`**: SLA path definitions for On-Call monitoring.
+
+---
+
+## Core Troubleshooting Methodology
+
+> Define your mandatory troubleshooting principles here.
+> Example structure: ordered principles that govern tool usage, investigation scope,
+> and decision gates at each step. See the project documentation for guidance.
+
+### Principle 1: [Map the expected path]
+*Add your first principle here.*
+
+### Principle 2: [Localize before investigating]
+*Add your second principle here.*
+
+### Principle 3: [Basics first]
+*Add your third principle here — e.g., interfaces + neighbors before protocol deep-dive.*
+
+*(Add remaining principles as needed.)*
+
+---
+
+## General Troubleshooting Guidelines
+
+### Standalone Mode
+
+1. Understand the problem (source, destination, symptom).
+2. Map the expected path from `INTENT.json`.
+3. Confirm the issue with `ping`.
+4. Localize with `traceroute`.
+5. Check basics at the breaking hop (`get_interfaces`, `get_<protocol>(neighbors)`).
+6. Read the relevant protocol skill.
+7. Perform deeper investigation as directed by the skill.
+8. Present findings and proposed fix.
+9. Ask user approval before any config change.
+10. Verify the fix after applying.
+
+### On-Call Mode
+
+1. Read `skills/oncall/SKILL.md` and follow its workflow.
+2. Read the relevant protocol skill.
+3. Present findings and proposed fix.
+4. Ask user approval before applying changes.
+5. Apply and verify the fix.
+
+---
+
+## Case Management
+
+- **Jira** is the case record for On-Call mode. Use `jira_add_comment` and `jira_resolve_issue`.
+- **`cases/lessons.md`**: Curated lessons from past cases. Read at session start; update after each case.
+- **`cases/case_format.md`**: Comment structure for Jira tickets.
+
+---
+
+## Policy & Operational State
+
+- **`policy/MAINTENANCE.json`**: Maintenance windows. Never edit directly.
+- `push_config` enforces the window — blocked outside allowed hours.
+
+---
+
+## Common Pitfalls
+
+1. Using `run_show` when a protocol tool covers the query — always check `platforms/mcp_tool_map.json` first.
+2. Trusting `INTENT.json` as actual device state — always verify with `get_<protocol>(device, "config")`.
+3. Modifying `MAINTENANCE.json` or other policy files directly.
+4. Confusing `cli_style` with `platform` field in NETWORK.json.
+5. Using Bash SSH to connect to devices — all interactions must go through MCP tools.
+
+*(Add your own pitfalls based on experience.)*

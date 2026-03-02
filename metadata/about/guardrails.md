@@ -145,10 +145,10 @@ Prevents premature deep-dives.
 # 📝 Case Documentation & Lesson Integrity
 
 ## ✅ Mandatory Case Documentation
-- Every case appended to `cases/cases.md`
-- 5-digit sequential ID required
+- Every On-Call case documented as a Jira ticket comment (see `cases/case_format.md` for structure)
+- `cases/cases.md` was replaced by Jira Service Management integration in v3.0
 - Prevents duplicate documentation
-- Enables lesson mining
+- Enables lesson mining via `cases/lessons.md`
 
 ## ✅ Lessons Curation (`cases/lessons.md`)
 - Pre-curated top 10 lessons

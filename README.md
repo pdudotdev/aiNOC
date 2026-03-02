@@ -31,7 +31,7 @@ aiNOC is a **network troubleshooting framework** for multi-vendor, multi-protoco
 
 Operating modes of **aiNOC**:
 - [x] **Standalone mode (ST)**
-  - User specifies network issue and symptomps at the prompt
+  - User specifies network issue and symptoms at the prompt
 - [x] **On-Call mode (OC)**
   - Agent is invoked by SLA path failure, see [On-Call Mode](#-on-call-mode)
 - [x] ▶ See a [**DEMO HERE**](https://www.youtube.com/watch?v=oxSa25R6EgI)
@@ -99,25 +99,30 @@ v4.0 is a major **quality, reliability, and security** release - no new protocol
 - [x] Pydantic `Literal` validation on all query parameters
 
 ## ⚒️ Project Tech Stack
-Main tools:
-- [x] Claude Code
-- [x] MCP (FastMCP)
-- [x] ContainerLab
-- [x] Python
-- [x] Scrapli
-- [x] Genie
-- [x] REST API
-- [x] EOS eAPI
-- [x] Jira API
-- [x] Vector
-- [x] Ubuntu
-- [x] VS Code
-- [x] VirtualBox/VMware
+
+| Tool | ✓ |
+|------|---|
+| Claude Code | ✓ |
+| MCP (FastMCP) | ✓ |
+| ContainerLab | ✓ |
+| Python | ✓ |
+| Scrapli | ✓ |
+| Genie | ✓ |
+| REST API | ✓ |
+| EOS eAPI | ✓ |
+| Jira API | ✓ |
+| Vector | ✓ |
+| Ubuntu | ✓ |
+| VS Code | ✓ |
+| VirtualBox/VMware | ✓ |
 
 ## 📋 Supported Vendors
-- [x] **Arista**: EOS (cEOS)
-- [x] **Cisco**: IOS/IOS-XE (IOL)
-- [x] **MikroTik**: RouterOS
+
+| Vendor | Platform |
+|--------|----------|
+| Arista | EOS (cEOS) |
+| Cisco | IOS/IOS-XE (IOL) |
+| MikroTik | RouterOS |
 
 ## 🎓 Troubleshooting Scope
 - [x] **OSPF multi-area**:
@@ -175,10 +180,12 @@ pip install -r requirements.txt
 ![topology](metadata/topology/TOPOLOGY-v2.0.png)
 
 **Connection types:**
-Multiple connection types, for diversity:
-- [x] **Cisco IOS**: Scrapli SSH
-- [x] **Arista EOS**: Arista eAPI
-- [x] **MikroTik RouterOS**: REST API
+
+| Vendor | Transport |
+|--------|-----------|
+| Cisco IOS | Scrapli SSH |
+| Arista EOS | Arista eAPI |
+| MikroTik RouterOS | REST API |
 
 **Naming conventions:**
 - [x] **RXY** where:
@@ -209,7 +216,7 @@ Multiple connection types, for diversity:
 - [x] Once a new log arrives, the agent is invoked
 - [x] Agent gets log details pre-filled in prompt
 - [x] Agent starts troubleshooting procedures
-- [x] Agent creates a new Jira ticket / case
+- [x] Watcher creates a new Jira ticket / case
 - [x] Identifies root cause and potential fix
 - [x] Upon user approval, applies and verifies the fix
 - [x] Logs results to Jira ticket and marks completion

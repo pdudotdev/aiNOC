@@ -185,7 +185,7 @@ It bridges troubleshooting sessions with the ticketing system.
 
 ## ✅ `MCPServer.py`
 
-**Purpose:** FastMCP tool server entry point (~50 lines).
+**Purpose:** FastMCP tool server entry point (~60 lines).
 
 Imports and registers all tools from the decomposed module structure:
 

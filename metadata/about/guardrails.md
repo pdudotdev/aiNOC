@@ -146,7 +146,7 @@ Prevents premature deep-dives.
 
 ## ✅ Mandatory Case Documentation
 - Every On-Call case documented as a Jira ticket comment (see `cases/case_format.md` for structure)
-- `cases/cases.md` was replaced by Jira Service Management integration in v3.0
+- `cases/cases.md` was replaced by Jira Service Management (removed in v4.0)
 - Prevents duplicate documentation
 - Enables lesson mining via `cases/lessons.md`
 
@@ -215,3 +215,39 @@ Prevents:
   - Returns cached result
   - No device connection made
 - `run_show` excluded (TTL = 0)
+
+---
+
+# 🔒 v4.0 Security Controls
+
+## ✅ `run_show` Read-Only Enforcement (Pitfall #13)
+- `ShowCommand` Pydantic model validates at MCP boundary
+- CLI commands: must start with `show ` (case-insensitive)
+- RouterOS actions: must use `method: GET`
+- Any other input raises `ValidationError` before execution
+- Prevents config bypass via `run_show`
+
+## ✅ RouterOS REST Validation
+- Forbidden REST paths blocked before any HTTP call
+- POST method rejected (not supported on RouterOS 7.x)
+- Config changes must use `push_config` with PUT / PATCH / DELETE
+
+## ✅ Syslog Prompt Injection Mitigation
+- Syslog messages sanitized before injection into agent prompt
+- Delimiter markers isolate log content from instructions
+- Prevents malicious log entries from hijacking agent behavior
+
+## ✅ Expanded Forbidden Command Set
+- Grown from 5 → 14 blocked patterns in `tools/config.py`
+- Covers: reload, erase, write erase, format, delete, and others
+- Applied before any `push_config` execution
+
+## ✅ TLS/SSL Configuration (Env-Var Only, Pitfall #12)
+- Controlled by: `VERIFY_TLS`, `ROUTEROS_USE_HTTPS`, `SSH_STRICT_HOST_KEY`
+- Read once at import time — not runtime-configurable
+- Agent cannot toggle or bypass TLS settings mid-session
+
+## ✅ Pre-Change Snapshots (`push_config`)
+- `snapshot_state` captures device state before applying changes
+- Enables manual before/after diff review
+- Rollback advisory generated for every config change

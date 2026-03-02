@@ -12,7 +12,7 @@ import pytest
 
 # Import the regex directly from oncall_watcher without running main()
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
-from oncall_watcher import SLA_DOWN_RE, SLA_UP_RE
+from oncall.watcher import SLA_DOWN_RE, SLA_UP_RE
 
 
 # ── Messages that MUST match ──────────────────────────────────────────────────

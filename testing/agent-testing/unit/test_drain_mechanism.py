@@ -17,7 +17,7 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
-from oncall_watcher import tail_follow
+from oncall.watcher import tail_follow
 
 
 def _collect(gen, count: int, timeout: float = 5.0) -> list:

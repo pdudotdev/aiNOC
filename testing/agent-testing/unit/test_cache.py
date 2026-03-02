@@ -4,8 +4,8 @@ from unittest.mock import patch
 
 import pytest
 
-import cache
-from cache import cache_get, cache_set, MAX_CACHE_SIZE, CMD_TTL
+from core import cache
+from core.cache import cache_get, cache_set, MAX_CACHE_SIZE, CMD_TTL
 
 
 def _clear():
@@ -47,7 +47,7 @@ def test_cache_key_normalisation():
 def test_cache_miss_after_ttl_expires():
     _clear()
     result = {"raw": "data"}
-    with patch("cache.time") as mock_time:
+    with patch("core.cache.time") as mock_time:
         mock_time.time.return_value = 1000.0
         cache_set("R1A", "show version", result)
 
@@ -64,7 +64,7 @@ def test_expired_entry_deleted_on_get():
     """Expired entries must be removed from the cache on access."""
     _clear()
     result = {"raw": "stale"}
-    with patch("cache.time") as mock_time:
+    with patch("core.cache.time") as mock_time:
         mock_time.time.return_value = 1000.0
         cache_set("R2C", "show ip bgp summary", result)
 

@@ -7,7 +7,7 @@ After=network.target
 Type=simple
 User=mcp
 WorkingDirectory=/home/mcp/mcp-project
-ExecStart=/usr/bin/python3 /home/mcp/mcp-project/oncall_watcher.py -d
+ExecStart=/usr/bin/python3 /home/mcp/mcp-project/oncall/watcher.py -d
 Restart=on-failure
 RestartSec=10
 

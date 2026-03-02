@@ -1,6 +1,6 @@
 """Jira case management tool handlers — thin wrappers around jira_client functions."""
-from jira_client import add_comment as _add_comment
-from jira_client import resolve_issue as _resolve_issue
+from core.jira_client import add_comment as _add_comment
+from core.jira_client import resolve_issue as _resolve_issue
 from input_models.models import JiraCommentInput, JiraResolveInput
 
 

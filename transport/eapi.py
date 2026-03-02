@@ -1,5 +1,5 @@
 """Arista EOS eAPI executor (HTTPS JSON-RPC)."""
-from settings import VERIFY_TLS
+from core.settings import VERIFY_TLS
 from transport.pool import get_eapi_session
 
 

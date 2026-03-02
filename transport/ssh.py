@@ -1,6 +1,6 @@
 """Scrapli SSH executor for Cisco IOS-XE devices (asyncssh transport)."""
 from scrapli import AsyncScrapli
-from settings import USERNAME, PASSWORD, SSH_STRICT_KEY, SSH_TIMEOUT_TRANSPORT, SSH_TIMEOUT_OPS
+from core.settings import USERNAME, PASSWORD, SSH_STRICT_KEY, SSH_TIMEOUT_TRANSPORT, SSH_TIMEOUT_OPS
 
 
 def _connection_params(device: dict) -> dict:

@@ -21,7 +21,7 @@ import pytest
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from oncall_watcher import (
+from oncall.watcher import (
     is_sla_down_event,
     is_lock_stale,
     cleanup_lock,
@@ -63,7 +63,7 @@ def test_stale_lock_nonexistent_pid(tmp_path, monkeypatch):
     """A lock file pointing to a nonexistent PID is detected as stale."""
     lock = tmp_path / "test.lock"
     lock.write_text("999999")  # very unlikely to exist
-    monkeypatch.setattr("oncall_watcher.LOCK_FILE", lock)
+    monkeypatch.setattr("oncall.watcher.LOCK_FILE", lock)
     assert is_lock_stale()
 
 
@@ -71,7 +71,7 @@ def test_stale_lock_current_pid(tmp_path, monkeypatch):
     """A lock file pointing to the current process is NOT stale."""
     lock = tmp_path / "test.lock"
     lock.write_text(str(os.getpid()))
-    monkeypatch.setattr("oncall_watcher.LOCK_FILE", lock)
+    monkeypatch.setattr("oncall.watcher.LOCK_FILE", lock)
     assert not is_lock_stale()
 
 
@@ -79,7 +79,7 @@ def test_cleanup_lock_removes_file(tmp_path, monkeypatch):
     """cleanup_lock() removes the lock file if it exists."""
     lock = tmp_path / "test.lock"
     lock.write_text("12345")
-    monkeypatch.setattr("oncall_watcher.LOCK_FILE", lock)
+    monkeypatch.setattr("oncall.watcher.LOCK_FILE", lock)
     cleanup_lock()
     assert not lock.exists()
 
@@ -87,7 +87,7 @@ def test_cleanup_lock_removes_file(tmp_path, monkeypatch):
 def test_cleanup_lock_no_error_when_absent(tmp_path, monkeypatch):
     """cleanup_lock() does not raise if lock file doesn't exist."""
     lock = tmp_path / "nonexistent.lock"
-    monkeypatch.setattr("oncall_watcher.LOCK_FILE", lock)
+    monkeypatch.setattr("oncall.watcher.LOCK_FILE", lock)
     cleanup_lock()   # Should not raise
 
 
@@ -123,7 +123,7 @@ def test_concurrent_events_captured(tmp_path, monkeypatch):
         },
     ]
     log_file.write_text("\n".join(json.dumps(e) for e in events))
-    monkeypatch.setattr("oncall_watcher.LOG_FILE", str(log_file))
+    monkeypatch.setattr("oncall.watcher.LOG_FILE", str(log_file))
 
     device_map = {
         "172.20.20.204": "R4C",
@@ -174,7 +174,7 @@ def test_deferred_deduplication(tmp_path, monkeypatch):
         },
     ]
     log_file.write_text("\n".join(json.dumps(e) for e in events))
-    monkeypatch.setattr("oncall_watcher.LOG_FILE", str(log_file))
+    monkeypatch.setattr("oncall.watcher.LOG_FILE", str(log_file))
 
     device_map = {"172.20.20.204": "R4C", "172.20.20.211": "R11C"}
     deferred = scan_for_deferred_events(

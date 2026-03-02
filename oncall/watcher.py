@@ -21,13 +21,13 @@ import asyncio
 from datetime import datetime, timezone
 from pathlib import Path
 
-import jira_client
-from logging_config import setup_watcher_logging
+from core import jira_client
+from core.logging_config import setup_watcher_logging
 
 
 # Configuration
 LOG_FILE = os.environ.get("NETWORK_LOG_FILE", "/var/log/network.json")
-PROJECT_DIR = Path(__file__).parent
+PROJECT_DIR = Path(__file__).parent.parent
 INVENTORY_FILE = PROJECT_DIR / "inventory" / "NETWORK.json"
 LOCK_FILE = PROJECT_DIR / "oncall.lock"
 WATCHER_LOG = PROJECT_DIR / "oncall_watcher.log"

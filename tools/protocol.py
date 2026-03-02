@@ -1,5 +1,5 @@
 """Protocol diagnostic tools: get_ospf, get_eigrp, get_bgp."""
-from inventory import devices
+from core.inventory import devices
 from platforms.platform_map import PLATFORM_MAP
 from transport import execute_command
 from input_models.models import OspfQuery, EigrpQuery, BgpQuery

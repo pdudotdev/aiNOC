@@ -4,7 +4,7 @@ import json
 import logging
 import time
 
-from inventory import devices
+from core.inventory import devices
 
 log = logging.getLogger("ainoc.tools.config")
 from transport.ssh  import push_ssh

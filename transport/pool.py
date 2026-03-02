@@ -6,7 +6,7 @@ each asyncio.run() spins up a new loop).
 """
 import asyncio
 import aiohttp
-from settings import USERNAME, PASSWORD
+from core.settings import USERNAME, PASSWORD
 
 # Timeout applied to all device-facing HTTP connections.
 DEVICE_TIMEOUT = aiohttp.ClientTimeout(total=30, connect=10)

@@ -3,8 +3,8 @@ vendor-specific transport module (SSH, eAPI, or REST).
 """
 import logging
 
-from cache import cache_get, cache_set, CMD_TTL
-from inventory import devices
+from core.cache import cache_get, cache_set, CMD_TTL
+from core.inventory import devices
 from transport.ssh  import execute_ssh
 from transport.eapi import execute_eapi
 from transport.rest import execute_rest

@@ -4,15 +4,15 @@ aiNOC MCP Server — tool registration entry point.
 This module is intentionally thin. All business logic lives in:
   transport/   — vendor-specific network transports (SSH, eAPI, REST)
   tools/       — MCP tool handler functions
-  cache.py     — bounded LRU result cache
-  inventory.py — device inventory (NETWORK.json)
-  settings.py  — credentials and transport configuration
+  core/cache.py        — bounded LRU result cache
+  core/inventory.py    — device inventory (NETWORK.json)
+  core/settings.py     — credentials and transport configuration
 """
 import logging
 from contextlib import asynccontextmanager
 from fastmcp import FastMCP
 
-from logging_config import setup_logging
+from core.logging_config import setup_logging
 from transport.pool import close_sessions
 
 setup_logging()

@@ -1,5 +1,5 @@
 """Routing table and policy tools: get_routing, get_routing_policies."""
-from inventory import devices
+from core.inventory import devices
 from platforms.platform_map import PLATFORM_MAP
 from transport import execute_command
 from input_models.models import RoutingQuery, RoutingPolicyQuery

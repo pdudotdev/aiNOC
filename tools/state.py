@@ -8,7 +8,7 @@ from datetime import datetime, time as dt_time
 
 log = logging.getLogger("ainoc.tools.state")
 
-from inventory import devices
+from core.inventory import devices
 from transport import execute_command
 from input_models.models import EmptyInput, SnapshotInput, RiskInput
 

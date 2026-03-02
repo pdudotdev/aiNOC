@@ -23,7 +23,7 @@ pytestmark = pytest.mark.skipif(
 
 
 from transport import execute_command
-from cache import _CACHE, CMD_TTL
+from core.cache import _CACHE, CMD_TTL
 
 
 def _run(coro):

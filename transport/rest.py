@@ -1,6 +1,6 @@
 """MikroTik RouterOS REST API executor (HTTP/HTTPS)."""
 import json
-from settings import VERIFY_TLS, ROUTEROS_HTTPS
+from core.settings import VERIFY_TLS, ROUTEROS_HTTPS
 from transport.pool import get_rest_session
 
 

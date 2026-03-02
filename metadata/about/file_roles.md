@@ -169,7 +169,7 @@ Everything the agent needs to operate lives here.
 
 ---
 
-## ✅ `jira_client.py`
+## ✅ `core/jira_client.py`
 
 **Purpose:** Jira Service Management integration.
 
@@ -204,9 +204,12 @@ tools/
     config.py         — push_config, validate_commands, FORBIDDEN
     state.py          — get_intent, snapshot_state, check_maintenance_window, assess_risk
     jira_tools.py     — jira_add_comment, jira_resolve_issue
-cache.py              — bounded LRU cache (max 256 entries)
+core/cache.py         — bounded LRU cache (max 256 entries)
+core/inventory.py     — device inventory loader (NETWORK.json)
+core/settings.py      — credentials and transport configuration
+core/logging_config.py — JSONFormatter, ainoc.* logger hierarchy
+core/jira_client.py   — async Jira REST v3 client
 input_models/models.py — all Pydantic input models
-logging_config.py     — JSONFormatter, ainoc.* logger hierarchy
 ```
 
 Workflow:
@@ -218,7 +221,7 @@ Workflow:
 
 ---
 
-## ✅ `oncall_watcher.py`
+## ✅ `oncall/watcher.py`
 
 **Purpose:** Automated SLA monitoring sentry.
 
@@ -233,7 +236,7 @@ Acts as the handoff from passive monitoring to active investigation.
 
 ---
 
-## ✅ `oncall_watcher.log`
+## ✅ `oncall_watcher.log` (root, gitignored)
 
 **Purpose:** Watcher activity log.
 

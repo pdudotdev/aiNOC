@@ -6,7 +6,7 @@ import json
 import os
 
 _INVENTORY_FILE = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "inventory", "NETWORK.json"
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "inventory", "NETWORK.json"
 )
 
 if not os.path.exists(_INVENTORY_FILE):

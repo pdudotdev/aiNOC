@@ -6,17 +6,17 @@
 ## 📖 **Table of Contents**
 - 📜 **aiNOC Project**
   - [🔭 Overview](#-overview)
-  - [♻️ Repository Lifecycle](#%EF%B8%8F-repository-lifecycle)
+  - [♻️ Repository Lifecycle](#️-repository-lifecycle)
   - [🍀 Here's a Quick Demo](#-heres-a-quick-demo)
   - [⭐ What's New in v4.0](#-whats-new-in-v40)
-  - [⚒️ Current Tech Stack](#%EF%B8%8F-current-tech-stack)
+  - [⚒️ Current Tech Stack](#️-current-tech-stack)
   - [📋 Supported Vendors](#-supported-vendors)
-  - [🖇️ Supported Transports](#-supported-transports)
+  - [🖇️ Supported Transports](#️-supported-transports)
   - [🎓 Troubleshooting Scope](#-troubleshooting-scope)
-  - [🛠️ Installation & Usage](#%EF%B8%8F-installation-usage)
+  - [🛠️ Installation & Usage](#️-installation--usage)
   - [🔄 Test Network Topology](#-test-network-topology)
   - [📞 aiNOC in On-Call Mode](#ainoc-in-on-call-mode)
-  - [⬆️ Planned Upgrades](#%EF%B8%8F-planned-upgrades)
+  - [⬆️ Planned Upgrades](#️-planned-upgrades)
   - [🌱 AI Automation 101](#-ai-automation-101)
   - [📄 Disclaimer](#-disclaimer)
   - [📜 License](#-license)
@@ -63,7 +63,7 @@ Create `settings.json` under `.claude/`:
 
 ![arch](metadata/topology/ARCHv3.png)
 
-## 🍀 Here's a Demo
+## 🍀 Here's a Quick Demo
 - [x] ▶ See a [**DEMO HERE**](https://www.youtube.com/watch?v=oxSa25R6EgI) for v3.0.
   - *Next video demo coming with v5.0*
 
@@ -114,7 +114,7 @@ v4.0 is a major **quality, reliability, and security** release - no new protocol
 - [x] 12 manual E2E scenarios (7 standalone, 1 on-call, 1 maintenance window, 3 watcher)
 - [x] Pydantic `Literal` validation on all query parameters
 
-## ⚒️ Tech Stack
+## ⚒️ Current Tech Stack
 
 | Tool | ✓ |
 |------|---|
@@ -157,7 +157,7 @@ v4.0 is a major **quality, reliability, and security** release - no new protocol
 | **BGP** | eBGP dual-ISP · Default-originate · Prefix lists and route maps · Route reflectors and clients |
 | **Others** | Policy-Based Routing · IP SLA · MikroTik Netwatch · Arista Connectivity Monitor · NAT/PAT on ASBRs · Management APIs · Static routing · Syslog · NTP |
 
-## 🛠️ Installation
+## 🛠️ Installation & Usage
 **Step 1**:
 ```
 git clone https://github.com/pdudotdev/aiNOC/
@@ -208,7 +208,7 @@ sudo systemctl status vector
 - [x] They are the network's fallback configs for `containerlab redeploy -t lab.yml`
 - [x] Default credentials: see **.env** file at [**.env.example**](.env.example)
 
-## 📞 On-Call Mode
+## 📞 aiNOC in On-Call Mode
 **On-Call Mode** was introduced in v3.0 and enhanced in v4.0.
 
 ### What it does, in a nutshell?

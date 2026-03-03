@@ -4,10 +4,27 @@ All notable changes to this project are documented in this file.
 
 ---
 
+## [v4.5.0]
+
+> On-Call-first architecture. Standalone mode retired as an official mode. Tool set simplified.
+
+### 🏗 Architecture
+- Retired Standalone Mode as an official workflow — On-Call is now the primary mode; ad-hoc console troubleshooting remains supported via the 6 Core Principles
+- Removed `snapshot_state` tool and all snapshot infrastructure (feature was write-only — no programmatic reader existed)
+- Added `on_call: bool` parameter to `push_config` — bypasses the maintenance window when `True` (On-Call fixes apply at any hour)
+- Risk assessment (`assess_risk`) now surfaced before user approval: agent calls it in On-Call step 4 and includes risk level in the findings table
+
+### 🧪 Testing
+- 229 unit tests: removed 6 snapshot input validation tests, added 3 on_call model/bypass tests
+- Manual E2E: retired ST-00x Standalone test suite; OC-001, MW-001, and WB-001–004 remain
+- 15 MCP tools registered (snapshot_state removed)
+
+---
+
 ## [v4.0.0]
 
-> Major **quality, reliability, and security** release.  
-> No new protocols or vendors — hardened foundation for v5.0.
+> Major **quality, reliability, and security** release.
+> No new protocols or vendors — hardened foundation for v4.5.
 
 ### 🔐 Security & Safety
 - Enforced maintenance windows in `push_config` (blocked outside policy)
@@ -41,11 +58,11 @@ All notable changes to this project are documented in this file.
 - SLA recovery (Up) event detection and logging
 - Added daemon mode (`-d` flag) with tmux session support
 - Added systemd service file (`oncall/oncall-watcher.service`) for production deployment
-- Added pre-change snapshot support in `push_config`
+- ~~Added pre-change snapshot support in `push_config`~~ *(removed in v4.5 — feature was write-only)*
 - Generated rollback advisory for all config changes
 
 ### 🧪 Testing
-- 230 unit tests across 9 test files (up from 3 in v3.0)
+- 230 unit tests across 9 test files (up from 3 in v3.0) *(229 in v4.5 after snapshot tests removed)*
 - 4 integration test files with `NO_LAB` skip guards
 - 12 manual E2E scenarios:
   - 7 standalone

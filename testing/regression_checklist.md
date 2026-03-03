@@ -7,19 +7,11 @@ Run this checklist after any significant change to `MCPServer.py`, `oncall/watch
 |---|-------|------|--------|
 | 1 | All unit tests pass | — | `./run_tests.sh unit` |
 | 2 | Integration tests pass (lab required) | — | `./run_tests.sh integration` |
-| 3 | OSPF adjacency diagnosis — EOS | 1 | ST-001A |
-| 4 | EIGRP passive-interface diagnosis | 1 | ST-002 |
-| 5 | Redistribution diagnosis | 1 | ST-003 |
-| 6 | BGP timer mismatch diagnosis | 1 | ST-006 |
-| 7 | Full On-Call pipeline (passive-interface) | 1 | OC-001 Primary |
-| 8 | OSPF adjacency diagnosis — RouterOS | 2 | ST-001B |
-| 9 | EIGRP stub configuration | 2 | ST-005 |
-| 10 | OSPF area type change (multi-device) | 2 | ST-007 |
-| 11 | Maintenance window blocks push_config | 2 | MW-001 |
-| 12 | PBR investigation (diagnostic only) | 3 | ST-004 |
-| 13 | Watcher event filtering and recovery logging | 3 | WB-001 – WB-004 |
+| 3 | Full On-Call pipeline (passive-interface) | 1 | OC-001 Primary |
+| 4 | Maintenance window blocks push_config (without on_call) | 2 | MW-001 |
+| 5 | Watcher event filtering and recovery logging | 3 | WB-001 – WB-004 |
 
-**NOTE:** On-Call cases are documented as Jira tickets (see Jira project SUP). Standalone mode has no Jira integration.
+**NOTE:** On-Call cases are documented as Jira tickets (see Jira project SUP).
 
 ---
 
@@ -33,7 +25,7 @@ Run this checklist after any significant change to `MCPServer.py`, `oncall/watch
 | `test_input_validation.py` | Literal enum rejection, ShowCommand read-only enforcement |
 | `test_cache.py` | Bounded LRU eviction, TTL expiry, cache hit/miss |
 | `test_command_validation.py` | FORBIDDEN CLI list, RouterOS JSON path/method validation, rollback advisory |
-| `test_maintenance_window.py` | check_maintenance_window inside/outside window; push_config blocked outside |
+| `test_maintenance_window.py` | check_maintenance_window inside/outside window; push_config blocked outside; on_call bypass |
 | `test_risk_assessment.py` | Risk scoring: role/SLA-path/keyword/device-count escalation |
 | `test_syslog_sanitize.py` | sanitize_syslog_msg: non-printable stripping, truncation at 500 chars |
 
@@ -48,4 +40,4 @@ Run this checklist after any significant change to `MCPServer.py`, `oncall/watch
 
 ---
 
-**MW-001 verification**: `push_config` enforces the maintenance window — it returns an error dict when `check_maintenance_window` returns `allowed: false`. To test: temporarily narrow the window in `MAINTENANCE.json` to exclude current time, submit a Standalone prompt, approve the proposed fix, and confirm the agent reports a maintenance window block. Restore `MAINTENANCE.json` after testing.
+**MW-001 verification**: `push_config` enforces the maintenance window — it returns an error dict when `check_maintenance_window` returns `allowed: false` and `on_call=False`. To test: temporarily narrow the window in `MAINTENANCE.json` to exclude current time, trigger an On-Call session without `on_call=True`, approve the proposed fix, and confirm the agent reports a maintenance window block. Restore `MAINTENANCE.json` after testing.

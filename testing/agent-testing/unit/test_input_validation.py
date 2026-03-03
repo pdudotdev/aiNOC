@@ -5,7 +5,7 @@ from pydantic import ValidationError
 
 from input_models.models import (
     OspfQuery, EigrpQuery, BgpQuery, RoutingPolicyQuery, ShowCommand,
-    ConfigCommand, SnapshotInput,
+    ConfigCommand,
 )
 
 
@@ -184,36 +184,18 @@ def test_show_command_routeros_bad_path_rejected(bad_path):
         ShowCommand(device="R18M", command=action)
 
 
-# ── SnapshotInput profile validation ─────────────────────────────────────────
+# ── ConfigCommand on_call field ───────────────────────────────────────────────
 
-@pytest.mark.parametrize("profile", ["ospf", "stp", "eigrp", "bgp"])
-def test_snapshot_profile_valid(profile):
-    """Valid snapshot profiles must be accepted by SnapshotInput."""
-    m = SnapshotInput(devices=["R1A"], profile=profile)
-    assert m.profile == profile
-
-
-@pytest.mark.parametrize("profile", ["all", "", "OSPF", "isis"])
-def test_snapshot_profile_invalid(profile):
-    """Invalid snapshot profiles must raise ValidationError at model construction.
-    Only 'ospf', 'stp', 'eigrp', and 'bgp' are defined; other values are rejected.
-    """
-    with pytest.raises(ValidationError):
-        SnapshotInput(devices=["R1A"], profile=profile)
-
-
-# ── ConfigCommand snapshot_before field ───────────────────────────────────────
-
-def test_config_command_snapshot_before_defaults_false():
-    """snapshot_before must default to False to preserve backward-compatible push_config behaviour."""
+def test_config_command_on_call_defaults_false():
+    """on_call must default to False — maintenance window check applies by default."""
     m = ConfigCommand(devices=["R1A"], commands=["ip ospf hello-interval 10"])
-    assert m.snapshot_before is False
+    assert m.on_call is False
 
 
-def test_config_command_snapshot_before_true():
-    """snapshot_before=True must be accepted and stored by ConfigCommand."""
-    m = ConfigCommand(devices=["R1A"], commands=["ip ospf hello-interval 10"], snapshot_before=True)
-    assert m.snapshot_before is True
+def test_config_command_on_call_true():
+    """on_call=True must be accepted and stored by ConfigCommand."""
+    m = ConfigCommand(devices=["R1A"], commands=["ip ospf hello-interval 10"], on_call=True)
+    assert m.on_call is True
 
 
 # ── BaseParamsModel.parse_string_input ─────────────────────────────────────────

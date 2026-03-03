@@ -165,11 +165,11 @@ When an SLA path fails:
 Contains:
 
 - 6-principle troubleshooting methodology
-- Standalone & On-Call workflows
+- On-Call workflow (primary mode)
 - Complete MCP tool list
 - Lessons curation process
 - Case management workflow
-- 14 common pitfalls to avoid
+- 15 common pitfalls to avoid
 
 Everything the agent needs to operate lives here.
 
@@ -208,7 +208,7 @@ tools/
     routing.py        — get_routing, get_routing_policies
     operational.py    — get_interfaces, ping, traceroute, run_show
     config.py         — push_config, validate_commands, FORBIDDEN
-    state.py          — get_intent, snapshot_state, check_maintenance_window, assess_risk
+    state.py          — get_intent, check_maintenance_window, assess_risk
     jira_tools.py     — jira_add_comment, jira_resolve_issue
 core/cache.py         — bounded LRU cache (max 256 entries)
 core/inventory.py     — device inventory loader (NETWORK.json)

@@ -1,6 +1,6 @@
 # ✨ aiNOC
 
-[![Latest Release](https://img.shields.io/badge/version-4.0.4-blue.svg)](https://github.com/pdudotdev/aiNOC/releases/tag/4.0.4)
+[![Latest Release](https://img.shields.io/badge/version-4.5.0-blue.svg)](https://github.com/pdudotdev/aiNOC/releases/tag/4.5.0)
 [![Last Commit](https://img.shields.io/github/last-commit/pdudotdev/aiNOC)](https://github.com/pdudotdev/aiNOCcommits/main/)
 
 ![Cisco IOS-XE](https://img.shields.io/badge/Cisco-IOS--XE-0176C1)
@@ -39,15 +39,14 @@ aiNOC is an AI-based **network troubleshooting framework** for multi-vendor, mul
 - [x] **Multi-protocol, L2-L4**
 - [x] **Multi-area/multi-AS**
 - [x] **SSH/eAPI/REST API**
-- [x] **16 MCP tools, 6 skills**
+- [x] **15 MCP tools, 6 skills**
 - [x] **32 operational guardrails**
 - [x] **Jira integration**
 
-Operating modes of **aiNOC**:
-- [x] **Standalone mode (ST)**
-  - User specifies network issue and symptoms at the prompt
-- [x] **On-Call mode (OC)**
+Operating mode of **aiNOC**:
+- [x] **On-Call mode (OC)** *(primary)*
   - Agent is invoked by SLA path failures, see [**On-Call Mode**](#-on-call-mode)
+  - Ad-hoc troubleshooting via the console is also supported
 
 **Important project files**:
 - [x] See [**file roles**](metadata/about/file_roles.md)
@@ -86,45 +85,10 @@ Create `settings.json` under `.claude/`:
 - [x] **Watch** and **Star** this repository
 
 **Current version**:
-- [x] **aiNOC v4.0**
+- [x] **aiNOC v4.5**
 
-## ⭐ What's New in v4.0
-
-v4.0 is a major **quality, reliability, and security** release - no new protocols or vendors, but a hardened foundation for v5.0.
-
-**Security & Safety:**
-- [x] `push_config` now enforces maintenance windows (blocked outside policy)
-- [x] `run_show` restricted to read-only commands (no config bypass)
-- [x] RouterOS REST validation - forbidden paths blocked, POST rejected
-- [x] Syslog prompt injection mitigation (sanitize + delimiter)
-- [x] Expanded forbidden command set (5 → 14 patterns)
-- [x] TLS/SSL configurable per transport (`VERIFY_TLS`, `ROUTEROS_USE_HTTPS`, `SSH_STRICT_HOST_KEY`)
-
-**Architecture:**
-- [x] Monolithic `MCPServer.py` (798 lines) decomposed into `tools/`, `transport/`, `core/`, `input_models/`
-- [x] Bounded LRU cache (256 entries, TTL-based eviction)
-- [x] Connection pooling for eAPI and REST transports
-- [x] HTTP timeouts on all device and Jira connections
-- [x] Structured JSON logging with configurable levels
-
-**Troubleshooting Methodology:**
-- [x] 6 Core Troubleshooting Principles (mandatory, ordered) - see `CLAUDE.example.md`
-- [x] Standalone Mode rewritten - 10 deterministic steps with decision gates
-- [x] Protocol skill prerequisite gates (interfaces + neighbors verified before deep investigation)
-- [x] Role-aware risk assessment using `INTENT.json` and SLA paths
-
-**On-Call & Operational:**
-- [x] SLA recovery (Up) event detection and logging
-- [x] Daemon mode (`-d` flag) with tmux session support
-- [x] systemd service file (`oncall/oncall-watcher.service`) for production deployment
-- [x] Pre-change snapshot support in `push_config`
-- [x] Rollback advisory generation for all config changes
-
-**Testing:**
-- [x] 230 unit tests across 9 test files (up from 3 in v3.0)
-- [x] 4 integration test files with `NO_LAB` skip guards
-- [x] 12 manual E2E scenarios (7 standalone, 1 on-call, 1 maintenance window, 3 watcher)
-- [x] Pydantic `Literal` validation on all query parameters
+## ⭐ What's New in v4.5
+- [x] See **changelog.md**
 
 ## ⚒️ Current Tech Stack
 

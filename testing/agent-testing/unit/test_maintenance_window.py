@@ -115,3 +115,31 @@ def test_push_config_proceeds_inside_window():
 
     assert "error" not in result
     assert result.get("R1A") == {"output": "ok"}
+
+
+def test_push_config_on_call_bypasses_maintenance_window():
+    """push_config must skip the maintenance window check when on_call=True.
+    On-Call fixes must be applicable at any time — the window blocks scheduled changes only.
+    """
+    from tools.config import push_config
+
+    blocked_mw = {
+        "allowed": False,
+        "current_time": "2026-03-07T12:00:00+00:00",
+        "reason": "Outside maintenance window",
+    }
+    mock_push_result = ("R1A", {"output": "ok"})
+
+    params = ConfigCommand(
+        devices=["R1A"],
+        commands=["ip ospf hello-interval 10"],
+        on_call=True,
+    )
+
+    with patch("tools.config.check_maintenance_window", new=AsyncMock(return_value=blocked_mw)), \
+         patch("tools.config.assess_risk", new=AsyncMock(return_value={"risk": "low", "devices": 1, "reasons": []})), \
+         patch("tools.config._push_to_device_safe", new=AsyncMock(return_value=mock_push_result)):
+        result = _run(push_config(params))
+
+    assert "error" not in result
+    assert result.get("R1A") == {"output": "ok"}

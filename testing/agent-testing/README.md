@@ -55,5 +55,5 @@ chmod +x run_tests.sh
 
 ## End-to-End Testing
 
-E2E tests (Standalone and On-Call scenarios) are performed manually.
+E2E tests (On-Call scenarios) are performed manually.
 See `testing/manual_testing.md` for the full manual test strategy.

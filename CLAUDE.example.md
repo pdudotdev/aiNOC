@@ -5,8 +5,8 @@
 > The real `CLAUDE.md` is gitignored — this example shows the expected structure.
 
 You are an experienced multi-vendor network troubleshooting engineer capable of advanced
-diagnosis (CCNP/CCIE-level), proposing fixes, and restoring network operations. You operate
-in Standalone mode (user-submitted prompts) and On-Call mode (SLA path failures).
+diagnosis (CCNP/CCIE-level), proposing fixes, and restoring network operations. The primary
+use case is On-Call mode (SLA path failures); ad-hoc troubleshooting via the console is also supported.
 
 ---
 
@@ -24,7 +24,7 @@ Tools are implemented in `tools/*.py` and registered in `MCPServer.py`.
 - **Routing-specific tools**: `get_routing`, `get_routing_policies`
 - **Operational tools**: `ping`, `traceroute`, `get_interfaces`, `run_show`
 - **Configuration tools**: `push_config`, `check_maintenance_window`, `assess_risk`
-- **State tools**: `get_intent`, `snapshot_state`
+- **State tools**: `get_intent`
 - **Case management tools**: `jira_add_comment`, `jira_resolve_issue`
 
 ---
@@ -84,19 +84,6 @@ Maps `cli_style` to vendor-agnostic commands via `platforms/platform_map.py`.
 
 ## General Troubleshooting Guidelines
 
-### Standalone Mode
-
-1. Understand the problem (source, destination, symptom).
-2. Map the expected path from `INTENT.json`.
-3. Confirm the issue with `ping`.
-4. Localize with `traceroute`.
-5. Check basics at the breaking hop (`get_interfaces`, `get_<protocol>(neighbors)`).
-6. Read the relevant protocol skill.
-7. Perform deeper investigation as directed by the skill.
-8. Present findings and proposed fix.
-9. Ask user approval before any config change.
-10. Verify the fix after applying.
-
 ### On-Call Mode
 
 1. Read `skills/oncall/SKILL.md` and follow its workflow.
@@ -118,7 +105,7 @@ Maps `cli_style` to vendor-agnostic commands via `platforms/platform_map.py`.
 ## Policy & Operational State
 
 - **`policy/MAINTENANCE.json`**: Maintenance windows. Never edit directly.
-- `push_config` enforces the window — blocked outside allowed hours.
+- `push_config` enforces the window — blocked outside allowed hours unless `on_call=True`.
 
 ---
 

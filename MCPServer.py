@@ -23,7 +23,7 @@ log = logging.getLogger("ainoc")
 from tools.protocol    import get_ospf, get_eigrp, get_bgp
 from tools.routing     import get_routing, get_routing_policies
 from tools.operational import get_interfaces, ping, traceroute, run_show
-from tools.state       import get_intent, snapshot_state, check_maintenance_window, assess_risk
+from tools.state       import get_intent, check_maintenance_window, assess_risk
 from tools.config      import push_config
 from tools.jira_tools  import jira_add_comment, jira_resolve_issue
 
@@ -47,14 +47,13 @@ mcp.tool(name="ping")(ping)
 mcp.tool(name="traceroute")(traceroute)
 mcp.tool(name="run_show")(run_show)
 mcp.tool(name="get_intent")(get_intent)
-mcp.tool(name="snapshot_state")(snapshot_state)
 mcp.tool(name="check_maintenance_window")(check_maintenance_window)
 mcp.tool(name="assess_risk")(assess_risk)
 mcp.tool(name="push_config")(push_config)
 mcp.tool(name="jira_add_comment")(jira_add_comment)
 mcp.tool(name="jira_resolve_issue")(jira_resolve_issue)
 
-log.info("aiNOC MCP Server started — 16 tools registered")
+log.info("aiNOC MCP Server started — 15 tools registered")
 
 if __name__ == "__main__":
     mcp.run()

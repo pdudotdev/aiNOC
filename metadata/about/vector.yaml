@@ -1,0 +1,28 @@
+data_dir: "/var/lib/vector"
+
+sources:
+  syslog:
+    type: syslog
+    address: "0.0.0.0:514"
+    mode: udp
+
+transforms:
+  sla_events:
+    type: remap
+    inputs: ["syslog"]
+    source: |
+      . = {
+        "ts": .timestamp,
+        "device": .source_ip,
+        "severity": .severity,
+        "facility": .facility,
+        "msg": .message
+      }
+
+sinks:
+  file:
+    type: file
+    inputs: ["sla_events"]
+    path: "/var/log/network.json"
+    encoding:
+      codec: json

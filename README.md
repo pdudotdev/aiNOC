@@ -139,8 +139,8 @@ v4.0 is a major **quality, reliability, and security** release - no new protocol
 | **BGP** | eBGP dual-ISP · Default-originate · Prefix lists and route maps · Route reflectors and clients |
 | **Others** | Policy-Based Routing · IP SLA · MikroTik Netwatch · Arista Connectivity Monitor · NAT/PAT on ASBRs · Management APIs · Static routing · Syslog · NTP |
 
-## 🛠️ Environment Setup
-**Installation**:
+## 🛠️ Installation
+**Step 1**:
 ```
 git clone https://github.com/pdudotdev/aiNOC/
 cd aiNOC
@@ -150,7 +150,28 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-⚠️ **NOTE:** The included **CLAUDE.md** and **skills** are templates. You can customize them with your own troubleshooting methodology, tool descriptions, and operational guidelines.
+**Step 2**:
+The included **CLAUDE.md** and **skills** are templates. You can **customize them** with your own troubleshooting methodology, tool descriptions, and operational guidelines.
+
+**Step 3**:
+- Configure IP SLA, Connectivity Monitor, Netwatch etc. paths in your network
+- Make sure they are being tracked and logged remotely to Vector (Syslog)
+- Configure the transforms inside `/etc/vector/vector.yaml` - [**example**](metadata/about/vector.yaml)
+- aiNOC monitors Vector's /var/log/network.json file for specific logs
+
+**Step 4**:
+Run **aiNOC** in **On-Call Mode**, either in **default** or **daemon** mode:
+```
+python3 oncall_watcher.py          # default: interactive terminal
+python3 oncall_watcher.py -d       # daemon mode, across reboots
+```
+
+**Step 5**:
+Check **Watcher** and **Vector** are running:
+```
+sudo systemctl status oncall_watcher.service
+sudo systemctl status vector
+```
 
 ## 🔄 Test Network Topology
 **Network diagram**:

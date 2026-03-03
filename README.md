@@ -62,7 +62,7 @@ Operating modes of **aiNOC**:
 
 ⚠️ **NOTE:** Due to the intermittent nature of troubleshooting, it's worth using an advanced model by default - costs won't become unsustainable even if troubleshooting several issues per day.
 
-**Set your default model**:
+**Set your default model**:<br/>
 Create `settings.json` under `.claude/`:
 ```
 {

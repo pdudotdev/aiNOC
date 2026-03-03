@@ -15,7 +15,7 @@
   - [🎓 Troubleshooting Scope](#-troubleshooting-scope)
   - [🛠️ Installation & Usage](#️-installation--usage)
   - [🔄 Test Network Topology](#-test-network-topology)
-  - [📞 aiNOC in On-Call Mode](#ainoc-in-on-call-mode)
+  - [📞 aiNOC in On-Call Mode](#-ainoc-in-on-call-mode)
   - [⬆️ Planned Upgrades](#️-planned-upgrades)
   - [🌱 AI Automation 101](#-ai-automation-101)
   - [📄 Disclaimer](#-disclaimer)

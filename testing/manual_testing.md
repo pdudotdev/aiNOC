@@ -201,14 +201,14 @@ These checks can be done without breaking lab config.
 
 Inject a syslog message that is NOT an SLA Down event:
 ```bash
-echo '{"ts":"2026-01-01T00:00:00Z","device":"172.20.20.201","msg":"%SYS-5-CONFIG_I: Configured from console"}' >> /var/log/network.json
+echo '{"ts":"2026-01-01T00:00:00Z","device":"172.20.20.201","msg":"%SYS-5-CONFIG_I: Configured from console"}' | sudo tee -a /var/log/network.json
 ```
 Expected: Watcher does **not** invoke agent. Log shows no new `Agent invoked` entry.
 
 ### WB-002 — SLA Up (Recovery) Events Are Logged Without Agent Invocation
 
 ```bash
-echo '{"ts":"2026-01-01T00:00:00Z","device":"172.20.20.204","msg":"%TRACK-6-STATE: 1 ip sla 1 reachability Down -> Up"}' >> /var/log/network.json
+echo '{"ts":"2026-01-01T00:00:00Z","device":"172.20.20.204","msg":"%TRACK-6-STATE: 1 ip sla 1 reachability Down -> Up"}' | sudo tee -a /var/log/network.json
 ```
 Expected: **No agent invocation.** The watcher detects the Up event, logs a recovery entry,
 and resumes monitoring without starting a Claude session.
@@ -223,7 +223,7 @@ Verify: no new `Agent invoked` entry appears in the log after the Up event.
 ### WB-003 — MikroTik Netwatch Event Detected
 
 ```bash
-echo '{"ts":"2026-01-01T00:00:00Z","device":"172.20.20.218","msg":"netwatch,info event down [ type: simple, host: 10.0.0.1 ]"}' >> /var/log/network.json
+echo '{"ts":"2026-01-01T00:00:00Z","device":"172.20.20.218","msg":"netwatch,info event down [ type: simple, host: 10.0.0.1 ]"}' | sudo tee -a /var/log/network.json
 ```
 Expected: Watcher **does** invoke agent (MikroTik format matched).
 
@@ -238,7 +238,7 @@ Expected at startup: `Watcher started in DAEMON mode` in `logs/oncall_watcher.lo
 
 Inject an SLA Down event:
 ```bash
-echo '{"ts":"2026-01-01T00:00:00Z","device":"172.20.20.204","msg":"%TRACK-6-STATE: 1 ip sla 1 reachability Up -> Down"}' >> /var/log/network.json
+echo '{"ts":"2026-01-01T00:00:00Z","device":"172.20.20.204","msg":"%TRACK-6-STATE: 1 ip sla 1 reachability Up -> Down"}' | sudo tee -a /var/log/network.json
 ```
 
 Verify:
@@ -263,4 +263,4 @@ After any On-Call test run (Jira must be configured):
 2. **Case comment contains required fields**:
    All fields described in `cases/case_format.md` are present: Commands Used, Proposed Fixes, Verification.
 
-3. **Lessons learned** (check if `cases/lessons.md` was updated):
+3. **Lessons learned** (check if `cases/lessons.md` was updated - not always the case, the agent decides).

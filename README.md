@@ -220,7 +220,6 @@ Expected in version v5.0:
 - [ ] Fresh, enterprise-focused topology
 - [ ] New vendors (Juniper, Aruba, SONiC)
 - [ ] New protocols and services
-- [ ] Performance-based SLAs
 - [ ] NetBox integration
 
 ## 🌱 AI Automation 101

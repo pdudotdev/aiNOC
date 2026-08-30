@@ -244,5 +244,5 @@ You are responsible for defining your own troubleshooting methodologies and cont
 ## 📜 License
 Licensed under the [**GNU General Public License v3.0**](LICENSE).
 
-## 📧 Collaborations
+## 📧 Hi
 Wanna say hello? Send me a DM at [**LinkedIn**](https://www.linkedin.com/in/tmihaicatalin/)

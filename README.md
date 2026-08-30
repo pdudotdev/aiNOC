@@ -72,10 +72,8 @@ AI-based **network troubleshooting framework** for multi-vendor, multi-protocol,
 ▫️ **Agent guardrails list**:
 - [x] See [**guardrails**](metadata/about/guardrails.md)
 
-▫️ **Supported models**:
-- [x] Haiku 4.5
-- [x] Sonnet 4.6
-- [x] Opus 4.6 (default, best reasoning)
+▫️ **Recommended models**:
+- [x] Opus 4.6+ (1M)
 
 ⚠️ **NOTE:** Due to the intermittent nature of troubleshooting, it's worth using an advanced model by default. Costs won't become unsustainable even if addressing and fixing several issues per day.
 
@@ -247,8 +245,4 @@ You are responsible for defining your own troubleshooting methodologies and cont
 Licensed under the [**GNU General Public License v3.0**](LICENSE).
 
 ## 📧 Collaborations
-Interested in collaborating?
-- **Email**:  
-  - Reach out at [**hello@ainoc.dev**](mailto:hello@ainoc.dev)
-- **LinkedIn**:
-  - Let's discuss via [**LinkedIn**](https://www.linkedin.com/in/tmihaicatalin/)
+Wanna say hello? Send me a DM at [**LinkedIn**](https://www.linkedin.com/in/tmihaicatalin/)

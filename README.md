@@ -33,7 +33,7 @@
   - [♻️ Repository Lifecycle](#️-repository-lifecycle)
   - [📄 Disclaimer](#-disclaimer)
   - [📜 License](#-license)
-  - [📧 Collaborations](#-collaborations)
+  - [📧 Hi](#-hi)
 
 ## 🔭 Overview
 AI-based **network troubleshooting framework** for multi-vendor, multi-protocol, multi-area/multi-AS enterprise networks.
